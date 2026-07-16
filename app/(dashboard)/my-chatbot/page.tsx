@@ -7,12 +7,12 @@ import React, { useEffect, useState } from 'react'
 
 const MyChatBot = () => {
   const { data, isLoading, refetchTimeTable } = useGetModels()
-  const [toallConversations, setTotalConversations] = useState({});
+  const [toallConversations, setTotalConversations] = useState<any>({});
 
   useEffect(() => {
 
    const s = data?.res?.reduce(
-  (acc, curr) => {
+  (acc: any, curr: any) => {
     // Add times
     acc.totalTimes += curr.times || 0;
 

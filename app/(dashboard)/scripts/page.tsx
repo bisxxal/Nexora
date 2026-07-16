@@ -13,12 +13,12 @@ const ScriptsPage = () => {
   const [chatbots, setChatbots] = useState(() => {
     if (typeof window !== 'undefined') {
       const val = localStorage.getItem('models');
-      return JSON.parse(val);
+      if (val) return JSON.parse(val);
     }
     return null;
   }) 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = chatbots?.res.find(c => c.collection_name === e.target.value);
+    const selected = chatbots?.res.find((c: Chatbot) => c.collection_name === e.target.value);
     setSelectedChatbot(selected || null);
   };
 
@@ -59,7 +59,7 @@ const ScriptsPage = () => {
               className="mt-5 border-2 bordercolor outline-none px-5 py-2 rounded-3xl"
             >
               <option value="">Select Chatbot</option>
-              {chatbots?.res?.map((chatbot, index) => (
+              {chatbots?.res?.map((chatbot: Chatbot, index: number) => (
                 <option key={index} value={chatbot.collection_name}>
                   {chatbot.name ? chatbot.name : chatbot.collection_name}
                 </option>

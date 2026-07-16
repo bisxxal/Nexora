@@ -12,6 +12,18 @@ export default function ChatbotPage({ collections, welcomeMessage, id }: { colle
   const [isLoading, setIsLoading] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
+  const [sessionId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      let sid = sessionStorage.getItem('chat_session_id');
+      if (!sid) {
+        sid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem('chat_session_id', sid);
+      }
+      return sid;
+    }
+    return 'default-session';
+  });
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
@@ -21,14 +33,15 @@ export default function ChatbotPage({ collections, welcomeMessage, id }: { colle
     if (!input.trim() || !collections || !id) return
 
     const userMsg = { role: "user", content: input }
-    setMessages((m) => [...m, userMsg])
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages)
     setInput("")
     setIsLoading(true)
 
     try {
-      const res = await chatAIAction(input, collections, id);
-      const formattedResponse = formatedText(res!);
-      setMessages((m) => [...m, { role: "assistant", content: formattedResponse }])
+      const res = await chatAIAction(input, collections, id, sessionId);
+      const formattedResponse =  formatedText(res!);
+      setMessages([...updatedMessages, { role: "assistant", content: formattedResponse }])
     } catch (err) {
       setMessages((m) => [...m, { role: "assistant", content: "Oops! Something went wrong." }])
     } finally {

@@ -21,8 +21,8 @@ const BotennicaChatbot = () => {
 };
     
     // Initialize Botennica
-    if (window.botennica && window.botennica.init) {
-      window.botennica.init(config);
+    if ((window as any).botennica && (window as any).botennica.init) {
+      (window as any).botennica.init(config);
     }
   }, []);
 

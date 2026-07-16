@@ -109,7 +109,7 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
                     source: "youtube",
                 },
             }));
-            name = enrichedDocs[0].metadata?.title;
+            name = (enrichedDocs[0].metadata as any)?.title;
 
             const vectorStore = await QdrantVectorStore.fromDocuments(
                 enrichedDocs,
@@ -152,7 +152,7 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
                     collectionName: collecttion,
                 }
             );
-            name = enrichedDocs[0].metadata?.title;
+            name = (enrichedDocs[0].metadata as any)?.title;
             const res = createModelsInPrisma(collecttion, type, mode, name, userId);
             return JSON.parse(JSON.stringify(res));
 

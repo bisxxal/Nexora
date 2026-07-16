@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 export const useGetModels = () => {
-    const [localData, setLocalData] = useState<[]>();
+    const [localData, setLocalData] = useState<any>();
     const [isCheckingLocal, setIsCheckingLocal] = useState(true);
 
     useEffect(() => {
