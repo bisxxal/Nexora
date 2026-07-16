@@ -6,9 +6,8 @@ import { QdrantVectorStore } from "@langchain/qdrant";
 import prisma from "@/lib/prisma";
 
 const qclient = new QdrantClient({
-    // url: process.env.QDRANT_URL!,
-    // apiKey: process.env.QDRANT_API_KEY!,
-    url: "http://localhost:6333",
+    url: process.env.QDRANT_URL!,
+    apiKey: process.env.QDRANT_API_KEY!,
 });
 
 const client = new OpenAI({
