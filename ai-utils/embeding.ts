@@ -10,7 +10,8 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { Document } from "@langchain/core/documents";
-
+import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github";
+ 
 const emmbeddings = new OpenAIEmbeddings({
     model: "text-embedding-3-small",
     apiKey: process.env.OPENAI_API_KEY,
@@ -18,10 +19,11 @@ const emmbeddings = new OpenAIEmbeddings({
 const qclient = new QdrantClient({
     url: process.env.QDRANT_URL!,
     apiKey: process.env.QDRANT_API_KEY!,
+    // url: "http://localhost:6333",/
 });
 
 
-export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web', collecttion: string, mode: 'bot' | 'notebook') => {
+export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web' | 'github', collecttion: string, mode: 'bot' | 'notebook') => {
     const session = await getServerSession(authOptions);
     const userId = session?.user.id!;
     let docs;
@@ -29,6 +31,62 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
     if (!url && !collecttion && !type) {
         return "Invalid parameters"
     }
+
+    if (type === 'github') {
+
+        if(!process.env.GITHUB_TOKEN){
+
+            console.log("GitHub token is not set in environment variables");
+        }
+ 
+        const loader = new GithubRepoLoader(
+                url, {
+            branch: "main",
+            recursive: true,
+            maxConcurrency: 5,
+            unknown: "warn",
+            accessToken: process.env.GITHUB_TOKEN,
+        });
+
+        let docs = await loader.load();
+
+        // custom ignore patterns
+        const ignorePatterns = [
+            /\.md$/,
+            /node_modules/,
+            /dist/,
+            /build/,
+            /tests?/,
+            /\.github/,
+            /\.vscode/,
+            /yarn\.lock/,
+            /package-lock\.json/,
+        ];
+
+        docs = docs.filter((doc) =>
+            !ignorePatterns.some((p) => p.test(doc.metadata.source))
+        );
+
+
+        const splitter = new RecursiveCharacterTextSplitter({
+            chunkSize: 1200,
+            chunkOverlap: 200,
+        });
+
+        const splitDocs = await splitter.splitDocuments(docs);
+
+        const vectorStore = await QdrantVectorStore.fromDocuments(
+            splitDocs,
+            emmbeddings,
+            {
+                client: qclient,
+                collectionName: collecttion,
+            }
+        );
+        const res = createModelsInPrisma(collecttion, type, mode, `github${userId}//`, userId);
+        return JSON.parse(JSON.stringify(res));
+    }
+
     if (type === 'yt') {
         try {
             const loader = YoutubeLoader.createFromUrl(url, {
@@ -136,7 +194,7 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
         }
 
     }
-    
+
 }
 
 export const LoadPdfEmbedings = async (url: string, mode: 'bot' | 'notebook') => {

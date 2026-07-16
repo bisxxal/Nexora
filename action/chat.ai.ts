@@ -6,8 +6,9 @@ import { QdrantVectorStore } from "@langchain/qdrant";
 import prisma from "@/lib/prisma";
 
 const qclient = new QdrantClient({
-    url: process.env.QDRANT_URL!,
-    apiKey: process.env.QDRANT_API_KEY!,
+    // url: process.env.QDRANT_URL!,
+    // apiKey: process.env.QDRANT_API_KEY!,
+    url: "http://localhost:6333",
 });
 
 const client = new OpenAI({
@@ -47,7 +48,6 @@ export const chatAIAction = async (userQuary: string, collection: string, id:str
             ${JSON.stringify(releventChunk, null, 2)}
             `;
 
-
     const response = await client.chat.completions.create({
         model: "gemini-2.5-flash",
         messages: [
@@ -72,6 +72,7 @@ export const chatAIAction = async (userQuary: string, collection: string, id:str
 
     });
   }
+  console.log(response.choices)
     return response.choices[0].message.content;
 }
 

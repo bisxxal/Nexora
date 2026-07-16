@@ -16,11 +16,16 @@ function DashBoardPage() {
     const youtube = formData.get("youtube") as string
     const website = formData.get("website") as string
     const textData = formData.get("textData") as string
+    const github = formData.get("github") as string
 
     try {
       if (youtube) {
-        const collectionName = data?.user.name + "_youtube_collection" + Date.now(); 
+        const collectionName = data?.user.name + "_youtube_collection" + Date.now();
         createCollections.mutate({ textData: youtube, type: 'yt', collectionName })
+      }
+      if (github) {
+        const collectionName = data?.user.name + "_github_collection" + Date.now();
+        createCollections.mutate({ textData: github, type: 'github', collectionName })
       }
       if (website) {
         const collectionName = data?.user.name + "_web_collection" + Date.now();
@@ -35,11 +40,11 @@ function DashBoardPage() {
   }
 
   const createCollections = useMutation({
-    mutationFn: async ({ textData, type, collectionName }: { textData: string, type: 'web'|'text'|'yt'; collectionName: string }) => {
-      return await generateEmbeddings(textData, type , collectionName, 'bot');
+    mutationFn: async ({ textData, type, collectionName }: { textData: string, type: 'web' | 'text' | 'yt'|'github'; collectionName: string }) => {
+      return await generateEmbeddings(textData, type, collectionName, 'bot');
     },
     onSuccess: (data) => {
-      if (data ) {
+      if (data) {
         toastSuccess('collection added successfully!');
         client.invalidateQueries({ queryKey: ['modelsinfo'] });
       } else {
@@ -60,7 +65,7 @@ function DashBoardPage() {
           <p className=" text-lg font-medium">Creating collection...</p>
         </div>
       }
-      <PdfUploader mode="bot"/>
+      <PdfUploader mode="bot" />
       <form action={sumbitForm}>
         <div className="card  mb-6 p-4  py-5 rounded-3xl flex flex-col placeholder:text-gray-50">
           <h2 className="text-2xl text-gray-700 font-bold mb-4">Add YouTube Content</h2>
@@ -79,6 +84,18 @@ function DashBoardPage() {
             type="text"
             name="website"
             placeholder="https://bisxxal.tech"
+            className="w-full p-2 mb-4 border-2 bordercolor outline-none placeholder:text-amber-900/30 !rounded-xl"
+          />
+          <button disabled={createCollections.isPending} className="buttonbg disabled:opacity-20 px-4 py-2 rounded text-white">Submit</button>
+
+        </div>
+
+        <div className="card  mb-6 p-4  py-5 rounded-3xl flex flex-col placeholder:text-gray-50">
+          <h2 className="text-2xl text-gray-700 font-bold mb-4">Add github link</h2>
+          <input
+            type="text"
+            name="github"
+            placeholder="https://github.com/bisxxal"
             className="w-full p-2 mb-4 border-2 bordercolor outline-none placeholder:text-amber-900/30 !rounded-xl"
           />
           <button disabled={createCollections.isPending} className="buttonbg disabled:opacity-20 px-4 py-2 rounded text-white">Submit</button>

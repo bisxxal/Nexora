@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-
+    "postinstall": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "studio": "prisma studio",
     "prisma:docker": "npm run prisma:migrate && npm run studio",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@langchain/community": "^1.0.0",
+    "@langchain/community": "^1.0.4",
     "@langchain/core": "^1.0.2",
     "@langchain/openai": "^1.0.0",
     "@langchain/qdrant": "^1.0.0",
@@ -27,6 +27,7 @@
     "langchain": "^1.0.2",
     "lucide-react": "^0.548.0",
     "next": "15.4.1",
+    "next-auth": "^4.24.14",
     "openai": "^6.7.0",
     "pdf-parse": "^1.1.1",
     "prisma": "^6.18.0",
