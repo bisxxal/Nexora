@@ -3,7 +3,7 @@ import { chatAIAction } from "@/action/chat.ai";
 import { formatedText } from "@/lib/util";
 import { useState, useRef, useEffect } from "react"
 
-export default function ChatbotPage({ collections, welcomeMessage, id }: { collections: string, welcomeMessage: string, id: string }) {
+export default function ChatbotPage({ collections, welcomeMessage, id, sessionId: propSessionId }: { collections: string, welcomeMessage: string, id: string, sessionId?: string }) {
 
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([
     { role: "assistant", content: `<p>${welcomeMessage}</p>` }
@@ -13,6 +13,7 @@ export default function ChatbotPage({ collections, welcomeMessage, id }: { colle
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const [sessionId] = useState(() => {
+    if (propSessionId) return propSessionId;
     if (typeof window !== 'undefined') {
       let sid = sessionStorage.getItem('chat_session_id');
       if (!sid) {

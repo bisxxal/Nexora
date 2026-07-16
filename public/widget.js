@@ -26,9 +26,16 @@
     });
     document.body.appendChild(button);
 
+    // Generate or retrieve session ID from first-party localStorage
+    let sessionId = localStorage.getItem("superbot_session_id");
+    if (!sessionId) {
+      sessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem("superbot_session_id", sessionId);
+    }
+
     // Create iframe (hidden initially)
     const iframe = document.createElement("iframe");
-    iframe.src = `https://super-bot-x.vercel.app/embed?siteId=${siteId}&id=${uniqueid}&welcomeMessage=${welcomeMessage}`;
+    iframe.src = `https://super-bot-x.vercel.app/embed?siteId=${siteId}&id=${uniqueid}&welcomeMessage=${welcomeMessage}&sessionId=${sessionId}`;
     Object.assign(iframe.style, {
       position: "fixed",
       bottom: "90px",
