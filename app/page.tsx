@@ -2,13 +2,11 @@
 import { ArrowRight } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
-import Subscription from "./(dashboard)/subscription/page";
+ import Subscription from "./(dashboard)/subscription/page";
 
 export default function Home() {
   const { data } = useSession();
-  const [show, setShow] = useState(true);
-  return (
+   return (
     <div className=" w-full relative min-h-screen bg-[#E1E5F0] text-[#111827]  ">
       <nav className=" !h-[60px] top-0 left-0 backdrop-blur-2xl z-[30] fixed flex w-full justify-between px-5 items-center border-b bordercolor ">
         <Link className=" textbg text-3xl font-bold" href="/"> Superbot X </Link>
@@ -20,12 +18,7 @@ export default function Home() {
       </nav>
 
       <div className=" px-20 py-6 mt-[50px] max-md:px-2 w-full">
-        <div className=" mx-auto w-fit border rounded-full  p-1">
-          <button onClick={() => setShow(true)} className={`${show ? 'buttonbg shadow-xl' : ''} px-5 !rounded-full py-2`}>Ai bot</button>
-          <button onClick={() => setShow(false)} className={`${!show ? 'buttonbg shadow-xl' : ''} px-5 !rounded-full py-2`}>Notebook</button>
-        </div>
-        {show ? <AiBot /> : <NotebookLLm />}
-
+        <AiBot />
       </div>
 
       <Subscription />

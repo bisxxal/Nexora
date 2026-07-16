@@ -19,7 +19,7 @@ const emmbeddings = new OpenAIEmbeddings({
     model: "text-embedding-3-small",
     apiKey: process.env.OPENAI_API_KEY!,
 });
-export const chatAIAction = async (userQuary: string, collection: string, id:string) => {
+export const chatAIAction = async (userQuary: string, collection: string, id: string) => {
 
     if (!userQuary || !collection) {
         return "Invalid parameters"
@@ -58,20 +58,20 @@ export const chatAIAction = async (userQuary: string, collection: string, id:str
         ]
     });
 
-  if(id){
-      await prisma.models.update({
-        where: {
-            id ,
-        },
-        data: {
-            times: {
-                increment: 1,
+    if (id) {
+        await prisma.models.update({
+            where: {
+                id,
+            },
+            data: {
+                times: {
+                    increment: 1,
+                }
             }
-        }
 
-    });
-  }
-  console.log(response.choices)
+        });
+    }
+    console.log(response.choices)
     return response.choices[0].message.content;
 }
 

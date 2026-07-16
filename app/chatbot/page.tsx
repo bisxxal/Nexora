@@ -3,7 +3,7 @@ import { chatAIAction } from "@/action/chat.ai";
 import { formatedText } from "@/lib/util";
 import { useState, useRef, useEffect } from "react"
 
-export default function ChatbotPage({ collections,welcomeMessage,id }: { collections: string,welcomeMessage: string,id:string }) {
+export default function ChatbotPage({ collections, welcomeMessage, id }: { collections: string, welcomeMessage: string, id: string }) {
 
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([
     { role: "assistant", content: `<p>${welcomeMessage}</p>` }
@@ -18,7 +18,7 @@ export default function ChatbotPage({ collections,welcomeMessage,id }: { collect
 
   const handleSend = async () => {
 
-    if (!input.trim() || !collections || !id ) return
+    if (!input.trim() || !collections || !id) return
 
     const userMsg = { role: "user", content: input }
     setMessages((m) => [...m, userMsg])
@@ -26,8 +26,8 @@ export default function ChatbotPage({ collections,welcomeMessage,id }: { collect
     setIsLoading(true)
 
     try {
-      const res = await chatAIAction(input, collections ,id);
-      const formattedResponse =  formatedText(res!);
+      const res = await chatAIAction(input, collections, id);
+      const formattedResponse = formatedText(res!);
       setMessages((m) => [...m, { role: "assistant", content: formattedResponse }])
     } catch (err) {
       setMessages((m) => [...m, { role: "assistant", content: "Oops! Something went wrong." }])
@@ -40,7 +40,7 @@ export default function ChatbotPage({ collections,welcomeMessage,id }: { collect
     <div className="flex flex-col h-screen max-h-screen  backdrop-blur-[10px] text-white rounded-lg shadow-lg p-4">
       {/* Chat messages */}
       <div className="flex-1 overflow-y-auto space-y-4 p-2 mb-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
-       
+
         {messages.map((msg, i) => (
           <div
             key={i}
@@ -58,13 +58,13 @@ export default function ChatbotPage({ collections,welcomeMessage,id }: { collect
 
         {
           isLoading && (
-           <div className="flex justify-start">
+            <div className="flex justify-start">
               <div className="max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed card rounded-bl-none animate-pulse">
-                   <div className="flex flex-row gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#cb1140c5] animate-bounce"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#cb1140c5] animate-bounce [animation-delay:-.3s]"></div>
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#cb1140c5] animate-bounce [animation-delay:-.5s]"></div>
-                  </div>
+                <div className="flex flex-row gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#cb1140c5] animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#cb1140c5] animate-bounce [animation-delay:-.3s]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#cb1140c5] animate-bounce [animation-delay:-.5s]"></div>
+                </div>
               </div>
             </div>
           )
@@ -72,8 +72,8 @@ export default function ChatbotPage({ collections,welcomeMessage,id }: { collect
         <div ref={chatEndRef} />
       </div>
 
-       
- 
+
+
       <div className="flex items-center card border bordercolor rounded-full px-4 py-2">
         <input
           type="text"
@@ -90,7 +90,7 @@ export default function ChatbotPage({ collections,welcomeMessage,id }: { collect
           Send
         </button>
       </div>
- 
+
       <p className="text-xs text-gray-600 text-center mt-3">
         Powered by <span className="font-semibold text-blue-500">Superbot X AI</span>
       </p>

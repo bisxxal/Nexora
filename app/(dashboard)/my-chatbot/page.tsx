@@ -1,7 +1,7 @@
 'use client'
 import Loading from '@/components/ui/loading'
 import { useGetModels } from '@/hooks/useModel'
-import { Bot, BotIcon, Dot, DotIcon, RefreshCcw } from 'lucide-react'
+import { Bot, BotIcon, DotIcon, RefreshCcw } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
