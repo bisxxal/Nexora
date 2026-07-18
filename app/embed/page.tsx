@@ -9,8 +9,21 @@ function EmbedContent() {
   const welcomeMessage = search.get("welcomeMessage") || "Hello! How can I assist you today?";
   const id = search.get("id") || "";
   const sessionId = search.get("sessionId") || "";
+  const headerTitle = search.get("headerTitle") || "SuperBot AI";
+  const primaryColor = search.get("primaryColor") || "#CB1141";
+  const theme = (search.get("theme") || "light") as "light" | "dark";
 
-  return <ChatbotPage collections={col} welcomeMessage={welcomeMessage} id={id} sessionId={sessionId}/>;
+  return (
+    <ChatbotPage
+      collections={col}
+      welcomeMessage={welcomeMessage}
+      id={id}
+      sessionId={sessionId}
+      headerTitle={headerTitle}
+      primaryColor={primaryColor}
+      theme={theme}
+    />
+  );
 }
 
 export default function EmbedPage() {

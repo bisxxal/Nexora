@@ -3,7 +3,23 @@ import { chatAIAction } from "@/action/chat.ai";
 import { formatedText } from "@/lib/util";
 import { useState, useRef, useEffect } from "react"
 
-export default function ChatbotPage({ collections, welcomeMessage, id, sessionId: propSessionId }: { collections: string, welcomeMessage: string, id: string, sessionId?: string }) {
+export default function ChatbotPage({
+  collections,
+  welcomeMessage,
+  id,
+  sessionId: propSessionId,
+  headerTitle = "SuperBot AI",
+  primaryColor = "#CB1141",
+  theme = "light",
+}: {
+  collections: string;
+  welcomeMessage: string;
+  id: string;
+  sessionId?: string;
+  headerTitle?: string;
+  primaryColor?: string;
+  theme?: "light" | "dark";
+}) {
 
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([
     { role: "assistant", content: `<p>${welcomeMessage}</p>` }
