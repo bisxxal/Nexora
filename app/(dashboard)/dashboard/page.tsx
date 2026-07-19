@@ -1,130 +1,291 @@
-"use client"
-import { generateEmbeddings } from "@/ai-utils/embeding"
-import PdfUploader from "@/components/pdfupload"
-import { toastSuccess } from "@/lib/toast"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { LoaderCircle } from "lucide-react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+'use client';
 
-function DashBoardPage() {
+import { generateEmbeddings } from '@/ai-utils/embeding';
+import PdfUploader from '@/components/pdfupload';
+import { toastSuccess } from '@/lib/toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'motion/react';
+import gsap from 'gsap';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { ArrowRight, Check,  Code2, FileText, Globe2, LoaderCircle, MessageCircle, Plus, Sparkles, Youtube } from 'lucide-react';
+
+const sources = [
+  { name: 'Website', field: 'website', description: 'Crawl pages, docs and your help centre.', placeholder: 'https://yourcompany.com', icon: Globe2, color: 'mint' },
+  { name: 'YouTube', field: 'youtube', description: 'Turn videos into searchable expertise.', placeholder: 'https://youtube.com/watch?v=...', icon: Youtube, color: 'peach' },
+  { name: 'Text note', field: 'textData', description: 'Add FAQs, launch notes or private context.', placeholder: 'Paste a useful piece of context...', icon: FileText, color: 'sky' },
+] as const;
+
+export default function DashBoardPage() {
   const { data } = useSession();
-  const router = useRouter();
   const client = useQueryClient();
-
-  const sumbitForm = async (formData: FormData) => {
-    const youtube = formData.get("youtube") as string
-    const website = formData.get("website") as string
-    const textData = formData.get("textData") as string
-    const github = formData.get("github") as string
-
-    try {
-      if (youtube) {
-        const collectionName = data?.user.name + "_youtube_collection" + Date.now();
-        createCollections.mutate({ textData: youtube, type: 'yt', collectionName })
-      }
-      if (github) {
-        const collectionName = data?.user.name + "_github_collection" + Date.now();
-        createCollections.mutate({ textData: github, type: 'github', collectionName })
-      }
-      if (website) {
-        const collectionName = data?.user.name + "_web_collection" + Date.now();
-        createCollections.mutate({ textData: website, type: 'web', collectionName })
-      }
-      if (textData) {
-        const collectionName = data?.user.name + "_text_collection" + Date.now();
-        createCollections.mutate({ textData, type: 'text', collectionName })
-      }
-    } catch (error) {
-    }
-  }
-
-  const createCollections = useMutation({
-    mutationFn: async ({ textData, type, collectionName }: { textData: string, type: 'web' | 'text' | 'yt'|'github'; collectionName: string }) => {
-      return await generateEmbeddings(textData, type, collectionName, 'bot');
-    },
-    onSuccess: (data) => {
-      if (data) {
-        toastSuccess('collection added successfully!');
-        client.invalidateQueries({ queryKey: ['modelsinfo'] });
-      } else {
-        toastSuccess('failed to add collection ');
-      }
-    },
-  });
-
-  return (
-    <div className=" w-full px-10">
-      <h1 className=" text-center text-gray-600 font-bold text-4xl my-5">Dashboard</h1>
-      <h2 className=" text-xl font-semibold">Upload Context</h2>
-      <p className=" text-gray-500 text-sm my-3">Upload documents or add text to train your AI chatbot. The more context you provide, the better your chatbot will perform.</p>
-
+  const root = useRef<HTMLDivElement>(null);
+  const [activeSource, setActiveSource] = useState<'pdf' | 'website' | 'youtube' | 'textData'>('website');
+ 
+  useLayoutEffect(() => {
+  const ctx = gsap.context(() => {
+    gsap.fromTo(
+      ".dash-reveal",
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.65, stagger: 0.1, ease: "power3.out" }
+    );
+    gsap.fromTo(
+      ".dash-card",
+      { opacity: 0, y: 16 },
       {
-        createCollections.isPending && <div className=" w-full rounded-3xl text-blue-500 card h-[70px] flex items-center justify-center mb-4">
-          <LoaderCircle className=" animate-spin mr-2" />
-          <p className=" text-lg font-medium">Creating collection...</p>
-        </div>
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        stagger: 0.08,
+        delay: 0.28,
+        ease: "power2.out",
       }
-      <PdfUploader mode="bot" />
-      <form action={sumbitForm}>
-        <div className="card  mb-6 p-4  py-5 rounded-3xl flex flex-col placeholder:text-gray-50">
-          <h2 className="text-2xl text-gray-700 font-bold mb-4">Add YouTube Content</h2>
-          <input
-            type="text"
-            name="youtube"
-            placeholder="https://youtu.be/54wpqk927T8?si=WHeiBI-vO8tUbnKC"
-            className="w-full p-2 mb-4 border-2 bordercolor outline-none placeholder:text-amber-900/30 !rounded-xl"
-          />
-          <button disabled={createCollections.isPending} className="buttonbg disabled:opacity-20 px-4 py-2 rounded text-white">Submit</button>
-        </div>
-
-        <div className="card  mb-6 p-4  py-5 rounded-3xl flex flex-col placeholder:text-gray-50">
-          <h2 className="text-2xl text-gray-700 font-bold mb-4">Add Website Content</h2>
-          <input
-            type="text"
-            name="website"
-            placeholder="https://bisxxal.tech"
-            className="w-full p-2 mb-4 border-2 bordercolor outline-none placeholder:text-amber-900/30 !rounded-xl"
-          />
-          <button disabled={createCollections.isPending} className="buttonbg disabled:opacity-20 px-4 py-2 rounded text-white">Submit</button>
-
-        </div>
-
-        <div className="card  mb-6 p-4  py-5 rounded-3xl flex flex-col placeholder:text-gray-50">
-          <h2 className="text-2xl text-gray-700 font-bold mb-4">Add github link</h2>
-          <input
-            type="text"
-            name="github"
-            placeholder="https://github.com/bisxxal"
-            className="w-full p-2 mb-4 border-2 bordercolor outline-none placeholder:text-amber-900/30 !rounded-xl"
-          />
-          <button disabled={createCollections.isPending} className="buttonbg disabled:opacity-20 px-4 py-2 rounded text-white">Submit</button>
-
-        </div>
+    );
+  }, root);
+  return () => ctx.revert();
+}, []);
 
 
-        <div className="card  mb-6 p-4  py-5 rounded-3xl flex flex-col placeholder:text-gray-50">
-          <h2 className="text-2xl text-gray-700 font-bold mb-4">Add text content</h2>
-          <textarea
-            rows={10}
-            name="textData"
-            className="w-full p-2 mb-4 border-2 bordercolor outline-none placeholder:text-amber-900/30 !rounded-xl"
+ const createCollections = useMutation({
+  mutationFn: async ({
+    textData,
+    type,
+    collectionName,
+  }: {
+    textData: string;
+    type: "web" | "text" | "yt" | "github";
+    collectionName: string;
+  }) => generateEmbeddings(textData, type, collectionName, "bot"),
+  onSuccess: (result) => {
+    toastSuccess(
+      result
+        ? "Knowledge source added successfully!"
+        : "We could not add that source."
+    );
+    client.invalidateQueries({ queryKey: ["modelsinfo"] });
+  },
+});
 
-            placeholder="
-Paste or type additional context here... (e.g., FAQ answers, product descriptions, company policies)
-You can add up to 10,000 characters of text context."
-          />
-          <button disabled={createCollections.isPending} className="buttonbg disabled:opacity-20 px-4 py-2 rounded text-white">Submit</button>
-
-        </div>
-
-      </form>
-
-
-
-    </div>
-  )
+async function submitSource(formData: FormData) {
+  const values = [
+    ["youtube", "yt"],
+    ["website", "web"],
+    ["textData", "text"],
+    ["github", "github"],
+  ] as const;
+  const found = values.find(([field]) =>
+    String(formData.get(field) || "").trim()
+  );
+  if (!found) return;
+  const [field, type] = found;
+  const value = String(formData.get(field)).trim();
+  createCollections.mutate({
+    textData: value,
+    type,
+    collectionName: `${
+      data?.user?.name || "superbot"
+    }_${type}_collection${Date.now()}`,
+  });
 }
 
+  const current = sources.find(source => source.field === activeSource);
+  return (
+  <div ref={root} className="dashboard-shell">
+    <section className="dash-hero">
+      <div className="dash-reveal">
+       
+        <h1>
+          Good morning
+          {data?.user?.name ? `, ${data.user.name.split(" ")[0]}` : ""}.<br />
+          <em>What should it learn today?</em>
+        </h1>
+        <p>
+          Give your Superbot the context it needs to have helpful, accurate
+          conversations — then publish it anywhere.
+        </p>
+      </div>
+      
+    </section>
 
-export default DashBoardPage
+    <section className="dash-progress dash-reveal">
+      <div className="progress-item complete">
+        <span>
+          <Check size={14} />
+        </span>
+        <div>
+          <b>Create your workspace</b>
+          <small>Ready to go</small>
+        </div>
+      </div>
+      <div className="progress-line active" />
+      <div className="progress-item active">
+        <span>2</span>
+        <div>
+          <b>Give it knowledge</b>
+          <small>In progress</small>
+        </div>
+      </div>
+      <div className="progress-line" />
+      <div className="progress-item">
+        <span>3</span>
+        <div>
+          <b>Test & publish</b>
+          <small>Up next</small>
+        </div>
+      </div>
+    </section>
+
+    <section className="dashboard-grid">
+      <div className="knowledge-area">
+        <div className="dash-section-heading dash-reveal">
+          <div>
+            <span className="dash-kicker">KNOWLEDGE BASE</span>
+            <h2>
+              Feed your agent <em>the good stuff.</em>
+            </h2>
+          </div>
+          <span className="source-count">
+            <Sparkles size={14} /> 0 sources
+          </span>
+        </div>
+        <div className="source-switcher dash-card">
+          <button
+            onClick={() => setActiveSource("pdf")}
+            className={activeSource === "pdf" ? "selected" : ""}
+          >
+            <FileText size={16} /> PDF
+          </button>
+          {sources.map((source) => (
+            <button
+              key={source.field}
+              onClick={() => setActiveSource(source.field)}
+              className={activeSource === source.field ? "selected" : ""}
+            >
+              <source.icon size={16} />
+              {source.name}
+            </button>
+          ))}
+        </div>
+        <AnimatePresence mode="wait">
+          {activeSource === "pdf" ? (
+            <motion.div
+              key="pdf"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="pdf-frame dash-card"
+            >
+              <PdfUploader mode="bot" />
+            </motion.div>
+          ) : (
+            current && (
+              <motion.form
+                key={current.field}
+                action={submitSource}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className={`source-form ${current.color} dash-card`}
+              >
+                <div className="source-form-icon">
+                  <current.icon size={23} />
+                </div>
+                <div>
+                  <h3>Add from {current.name}</h3>
+                  <p>{current.description}</p>
+                </div>
+                {current.field === "textData" ? (
+                  <textarea
+                    name="textData"
+                    placeholder={current.placeholder}
+                    rows={6}
+                  />
+                ) : (
+                  <input
+                    name={current.field}
+                    placeholder={current.placeholder}
+                  />
+                )}
+                <button
+                  disabled={createCollections.isPending}
+                  className="dash-primary"
+                >
+                  {createCollections.isPending ? (
+                    <LoaderCircle className="spin" size={17} />
+                  ) : (
+                    <Plus size={17} />
+                  )}{" "}
+                  Add to knowledge
+                </button>
+              </motion.form>
+            )
+          )}
+        </AnimatePresence>
+        <div className="github-row dash-card">
+          <Code2 size={19} />
+          <div>
+            <b>Bring a GitHub repository</b>
+            <span>Train your agent on product docs, READMEs and code.</span>
+          </div>
+          <form action={submitSource}>
+            <input name="github" placeholder="github.com/your-org/repo" />
+            <button aria-label="Add GitHub source">
+              <ArrowRight size={16} />
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <aside className="dash-sidebar">
+        <div className="activity-card dash-card">
+          <div className="side-head">
+            <div>
+              <span className="dash-kicker">AT A GLANCE</span>
+              <h3>Today’s pulse</h3>
+            </div>
+            <span className="live-dot">LIVE</span>
+          </div>
+          <div className="mini-metrics">
+            <div>
+              <b>0</b>
+              <span>Conversations</span>
+            </div>
+            <div>
+              <b>—</b>
+              <span>Avg. response</span>
+            </div>
+          </div>
+          <div className="empty-activity">
+            <MessageCircle size={19} />
+            <p>Your agent is waiting for its first conversation.</p>
+          </div>
+          <Link href="/my-chatbot">
+            View agents <ArrowRight size={15} />
+          </Link>
+        </div>
+       
+        <div className="publish-card dash-card">
+          <span className="dash-kicker">WHEN YOU’RE READY</span>
+          <h3>
+            Put your agent
+            <br />
+            on your site.
+          </h3>
+          <p>One lightweight script. Every page covered.</p>
+          <Link href="/scripts" className="dash-secondary">
+            Generate script <ArrowRight size={15} />
+          </Link>
+        </div>
+      </aside>
+    </section>
+    {createCollections.isPending && (
+      <div className="dash-saving">
+        <LoaderCircle className="spin" size={18} />
+        <span>Teaching your agent…</span>
+      </div>
+    )}
+  </div>
+);
+
+}

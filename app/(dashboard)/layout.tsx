@@ -11,10 +11,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main >
+    <main className="relative" >
       <Navbar />
       <div className=" mt-[70px] px-6 max-md:px-2">
-        <Tabs />
+        {/* <Tabs /> */}
         {children}
       </div>
     </main>

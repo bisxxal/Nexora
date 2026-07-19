@@ -1,32 +1,90 @@
 'use client'
- import { useSession } from 'next-auth/react'
-import Image from 'next/image'
+import { ArrowLeftRight, Calendar, ChartLine, User, ChartPie, Home, Bot, CodeXml, CreditCard } from 'lucide-react'
 import Link from 'next/link'
- import React from 'react'
+import { usePathname } from 'next/navigation'
+import React, { useEffect, useRef, useState } from 'react'
 
 const Navbar = () => {
-    const { data, status } = useSession();
-     
-    return (
-        <div className='flex fixed top-0 left-0 w-full backdrop-blur-2xl z-[30] justify-between shadow border-b  bordercolor h-[60px] items-center p-5 max-md:p-3   '>
-            {<Link href={`${data?.user ? "/" : '/'}`} className='  text text-transparent text-2xl center gap-2 max-md:text-lg whitespace-nowrap textbase font-bold'>
-                <p className="textbg">Super bot</p>
-            </Link>}
-            {
-                status !== 'loading' && data ? <div className='center gap-2 max-md:gap-1'>
+    const path = usePathname()
+    const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 })
 
-                     
+    const itemRefs = useRef<(HTMLAnchorElement | null)[]>([])
+    const profileRef = useRef<HTMLAnchorElement | null>(null)
 
-                    <Link href={`/profile`}>
-                        <Image loading='lazy' src={data.user.image!} alt="User Avatar" width={40} height={40} className=' max-md:w-8  rounded-full' />
-                    </Link>
+    const navItems = [
+        { href: '/dashboard', icon: Home , title: 'Home'},
+        { href: '/my-chatbot', icon: Bot , title: 'Bots'},
+        { href: '/scripts', icon: CodeXml , title: 'Scripts'},
+        { href: '/pricing', icon: CreditCard , title: 'pricing'},
+    ]
 
+    useEffect(() => {
+        const activeIndex = navItems.findIndex((item) => item.href === path)
 
-                </div> :
-                    status !== 'loading' && <Link href="/sign-in" className="buttonbg p-2 px-6">
-                        Sign In
-                    </Link>
+        if (activeIndex !== -1) {
+            const el = itemRefs.current[activeIndex]
+            if (el) {
+                setPillStyle({
+                    left: el.offsetLeft,
+                    width: el.offsetWidth,
+                    opacity: 1,
+                })
             }
+        } else {
+            setPillStyle({ left: 0, width: 0, opacity: 0 })
+        }
+    }, [path])
+
+    return (
+        <div className='fixed top-5 z-[100]  buttombar w-full flex justify-center gap-5 h-[60px]  '>
+
+
+ 
+            <div className='pointer-events-auto backdrop-blur-[10px] bg-[#8c8c8c3d]  relative flex items-center p-1 border border-[#d3d3d325] rounded-full'>
+
+                {pillStyle.opacity === 1 && (
+                    <div
+                        className="absolute h-[calc(100%-10px)] top-1 rounded-full bg-[#E5F5AD] transition-all duration-500 ease-in-out -z-10"
+                        style={{
+                            left: `${pillStyle.left}px`,
+                            width: `${pillStyle.width}px`,
+                        }}
+                    />
+                )}
+
+                {navItems.map((item, index) => {
+                    const isActive = path === item.href
+                    const Icon = item.icon
+
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            ref={(el) => { itemRefs.current[index] = el }}
+                            className={`relative px-6 py-2 center flex-col rounded-full transition-all duration-300   ${
+                                isActive ? 'text-[#517533]' : 'text-[#333333f0] '
+                            }`}
+                        >
+                            <Icon size={24} />
+                            <p className=' !text-[9px]  '>
+                                {item.title}
+                            </p>
+                        </Link>
+                    )
+                })}
+            </div> 
+            {/* Profile Button */}
+            <div className='pointer-events-auto backdrop-blur-[10px] bg-[#8c8c8c3d] relative flex items-center justify-center w-16 h-16 border border-[#d3d3d325] p-1  rounded-full'>
+                <Link
+                    ref={profileRef}
+                    href='/profile'
+                    className={`relative w-full h-full center rounded-full  ${
+                        path === '/profile' ? ' bg-[#E5F5AD] border-none text-[#517533]' : 'text-[#333333f0] hover:text-white'
+                    }`}
+                >
+                    <User size={24} />
+                </Link>
+            </div>
 
         </div>
     )

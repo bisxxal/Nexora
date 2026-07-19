@@ -116,7 +116,7 @@ const Subscription = () => {
                 disabled={plan.active}
                 className={`mt-auto py-3 px-6 rounded-lg font-medium transition ${
                   plan.active
-                    ? "buttonbg !rounded-lg text-white cursor-default"
+                    ? "button-light !rounded-lg text-white cursor-default"
                     : "bg-[#cb11403e] text-white hover:bg-gray-200"
                 }`}
               >

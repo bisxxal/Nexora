@@ -11,35 +11,43 @@ const MyChatBot = () => {
 
   useEffect(() => {
 
-   const s = data?.res?.reduce(
-  (acc: any, curr: any) => {
-    // Add times
-    acc.totalTimes += curr.times || 0;
+    const s = data?.res?.reduce(
+      (acc: any, curr: any) => {
+        // Add times
+        acc.totalTimes += curr.times || 0;
 
-    // Add source only if not seen before
-    if (!acc.uniqueSources.has(curr.source)) {
-      acc.uniqueSources.add(curr.source);
-    }
+        // Add source only if not seen before
+        if (!acc.uniqueSources.has(curr.source)) {
+          acc.uniqueSources.add(curr.source);
+        }
 
-    return acc;
-  },
-  { totalTimes: 0, uniqueSources: new Set() }
-);
+        return acc;
+      },
+      { totalTimes: 0, uniqueSources: new Set() }
+    );
 
-// Convert Set size into totalSources
-const result = {
-  totalTimes: s?.totalTimes,
-  totalSources: s?.uniqueSources.size,
-};
+    // Convert Set size into totalSources
+    const result = {
+      totalTimes: s?.totalTimes,
+      totalSources: s?.uniqueSources.size,
+    };
 
     setTotalConversations(result || {});
   }, [data])
   return (
-    <div className=' w-full min-h-screen pb-20'>
+    <div className=' max-w-[1400px] mx-auto min-h-screen pb-20'>
 
       <div className=' flex justify-between px-5 '>
-        <h1 className='text-gray-600 ml-5 text-4xl font-bold my-5 mt-10'>My Chatbots</h1>
-        <button className='w-fit h-[40px] buttonbg px-4 py-0 !rounded-full center gap-3' onClick={() => refetchTimeTable()}>Refetch <RefreshCcw size={20} /> </button>
+
+        <section className="dash-hero -mt-">
+          <div className="dash-reveal">
+            <h1>My Agents</h1>
+           </div>
+        </section>
+
+         <button className='w-fit h-[40px] button-light bg px-4 py-0 !rounded-full center gap-3'
+          onClick={() => refetchTimeTable()}>Refetch <RefreshCcw size={20} />
+        </button>
       </div>
 
       <div className=' flex items-center justify-evenly mb-10'>

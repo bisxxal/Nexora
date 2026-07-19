@@ -24,7 +24,7 @@ type WidgetConfig = {
 
 const defaultConfig: WidgetConfig = {
   buttonLabel: 'Ask AI 💬',
-  buttonColor: '#CB1141',
+  buttonColor: '#bed96d',
   buttonTextColor: '#ffffff',
   buttonPosition: 'right',
   buttonBorderRadius: 14,
@@ -32,7 +32,7 @@ const defaultConfig: WidgetConfig = {
   windowHeight: 500,
   welcomeMessage: 'Hello! How can I assist you today?',
   headerTitle: 'SuperBot AI',
-  primaryColor: '#CB1141',
+  primaryColor: '#bed96d',
   theme: 'light',
 };
 
@@ -99,7 +99,7 @@ const ScriptsPage = () => {
       toastSuccess('Script copied to clipboard!');
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {}
+    } catch (err) { }
   }
 
   // Preview mock messages
@@ -110,34 +110,33 @@ const ScriptsPage = () => {
   ];
 
   const isDark = config.theme === 'dark';
-  const windowBg = isDark ? '#1a1a2e' : '#f8f9fa';
-  const chatBg = isDark ? '#16213e' : '#ffffff';
+  const windowBg = isDark ? '#141424' : '#f8f9fa';
+  const chatBg = isDark ? '#192034' : '#ffffff';
   const textColor = isDark ? '#e2e8f0' : '#1a202c';
   const subTextColor = isDark ? '#94a3b8' : '#6b7280';
-  const inputBg = isDark ? '#0f3460' : '#f1f5f9';
+  const inputBg = isDark ? '#2d3a4a' : '#f1f5f9';
 
   return (
     <div className="min-h-screen" style={{ fontFamily: 'Inter, Arial, sans-serif' }}>
       {/* Header */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold" style={{ letterSpacing: '-0.02em' }}>
-          Widget Customizer
-        </h2>
-        <p className="mt-1 text-gray-500 text-sm">
-          Customize your AI chatbot widget, preview it live, then copy the embed script.
-        </p>
-      </div>
+      <section className="dash-hero -mt-">
+        <div className="dash-reveal">
+          <h1>Widget Customizer</h1>
+          <p>Customize your AI chatbot widget, preview it live, then copy the embed script.</p>
+        </div>
+      </section>
+
 
       {/* 3-column layout */}
-      <div className="flex gap-5 min-h-[680px]" style={{ alignItems: 'flex-start' }}>
+      <div className="flex  gap-5 min-h-[680px]" style={{ alignItems: 'flex-start' }}>
 
         {/* ─── LEFT: Configuration Panel ─── */}
         <div
-          className="flex flex-col gap-4 shrink-0"
+          className="flex bg-[#EFF8D2]! rounded-3xl!  dash-card flex-col gap-4 shrink-0"
           style={{ width: '280px', minWidth: '260px' }}
         >
           {/* Chatbot Selection */}
-          <div className="card rounded-2xl p-4">
+          <div className="card  rounded-2xl p-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Chatbot</p>
             <select
               onChange={handleSelectChange}
@@ -219,7 +218,7 @@ const ScriptsPage = () => {
                 type="range" min={0} max={30} step={1}
                 value={config.buttonBorderRadius}
                 onChange={(e) => set('buttonBorderRadius', parseInt(e.target.value))}
-                className="w-full accent-[#CB1141]"
+                className="w-full accent-[#bed96d] text-[#293A30] "
               />
             </label>
           </div>
@@ -268,7 +267,7 @@ const ScriptsPage = () => {
                   type="range" min={300} max={550} step={10}
                   value={config.windowWidth}
                   onChange={(e) => set('windowWidth', parseInt(e.target.value))}
-                  className="w-full accent-[#CB1141]"
+                  className="w-full accent-[#bed96d] text-[#293A30] "
                 />
               </label>
               <label className="flex-1">
@@ -277,22 +276,22 @@ const ScriptsPage = () => {
                   type="range" min={350} max={700} step={10}
                   value={config.windowHeight}
                   onChange={(e) => set('windowHeight', parseInt(e.target.value))}
-                  className="w-full accent-[#CB1141]"
+                  className="w-full accent-[#bed96d] text-[#293A30] "
                 />
               </label>
             </div>
 
-            <label className="block">
+            <label className="block ">
               <span className="text-xs text-gray-500 mb-2 block">Theme</span>
               <div className="flex gap-2">
                 {(['light', 'dark'] as const).map((t) => (
                   <button
                     key={t}
                     onClick={() => set('theme', t)}
-                    className="flex-1 py-1.5 rounded-xl text-xs font-medium transition-all duration-200"
+                    className="flex-1  py-1.5 rounded-xl text-xs font-medium transition-all duration-200"
                     style={{
                       background: config.theme === t ? config.primaryColor : 'transparent',
-                      color: config.theme === t ? '#fff' : '#6b7280',
+                      color: config.theme === t ? '#293A30' : '#6b7280',
                       border: `2px solid ${config.theme === t ? config.primaryColor : '#e5e7eb'}`,
                     }}
                   >
@@ -328,7 +327,7 @@ const ScriptsPage = () => {
                 <span className="w-3 h-3 rounded-full" style={{ background: '#ff5f56' }} />
                 <span className="w-3 h-3 rounded-full" style={{ background: '#febc2e' }} />
                 <span className="w-3 h-3 rounded-full" style={{ background: '#27c840' }} />
-                <div className="flex-1 mx-4 bg-white rounded-md px-3 py-1 text-xs text-gray-400 font-mono">
+                <div className="flex-1 mx-4 bg-white rounded-full text-center px-3 py-1.5 text-xs text-gray-400 font-mono">
                   yourwebsite.com
                 </div>
               </div>
@@ -337,13 +336,13 @@ const ScriptsPage = () => {
               <div className="relative" style={{ height: '540px', background: windowBg, overflow: 'hidden' }}>
                 {/* Fake page text blocks */}
                 <div className="p-8">
-                  <div className="h-4 rounded-full mb-3 w-3/4" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
-                  <div className="h-3 rounded-full mb-2 w-full" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
-                  <div className="h-3 rounded-full mb-2 w-5/6" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
-                  <div className="h-3 rounded-full mb-6 w-4/6" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
-                  <div className="h-3 rounded-full mb-2 w-full" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
-                  <div className="h-3 rounded-full mb-2 w-3/4" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
-                  <div className="h-3 rounded-full w-5/6" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
+                  <div className="h-5 rounded-full mb-3 w-3/4" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
+                  <div className="h-4 rounded-full mb-2 w-full" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
+                  <div className="h-4 rounded-full mb-2 w-5/6" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
+                  <div className="h-4 rounded-full mb-6 w-4/6" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
+                  <div className="h-4 rounded-full mb-2 w-full" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
+                  <div className="h-4 rounded-full mb-2 w-3/4" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
+                  <div className="h-4 rounded-full w-5/6" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
                 </div>
 
                 {/* ── Chat Window (preview) ── */}
@@ -491,8 +490,8 @@ const ScriptsPage = () => {
                   onClick={() => copyTextToClipboard(generatedScript)}
                   className="text-xs px-3 py-1.5 rounded-xl font-semibold transition-all duration-200"
                   style={{
-                    background: copied ? '#22c55e' : '#CB1141',
-                    color: '#fff',
+                    background: copied ? '#22c55e' : '#bed96d',
+                    color: '#293A30',
                   }}
                 >
                   {copied ? '✓ Copied!' : 'Copy'}
@@ -541,7 +540,7 @@ const ScriptsPage = () => {
 
                 <div className="mt-3 text-xs text-gray-400 flex items-start gap-2 p-3 rounded-xl" style={{ background: 'rgba(203,17,65,0.07)' }}>
                   <span>💡</span>
-                  <span>Paste this <code className="text-[#CB1141]">&lt;script&gt;</code> tag before the closing <code className="text-[#CB1141]">&lt;/body&gt;</code> of your website.</span>
+                  <span>Paste this <code className="text-[#bed96d] text-[#293A30] ">&lt;script&gt;</code> tag before the closing <code className="text-[#bed96d] text-[#293A30] ">&lt;/body&gt;</code> of your website.</span>
                 </div>
               </>
             )}
