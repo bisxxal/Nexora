@@ -1,6 +1,7 @@
 'use client'
 import { toastSuccess } from '@/lib/toast';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import gsap from 'gsap';
 
 type Chatbot = {
   id: string;
@@ -42,6 +43,9 @@ const ScriptsPage = () => {
   const [config, setConfig] = useState<WidgetConfig>(defaultConfig);
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [copied, setCopied] = useState(false);
+
+    const root = useRef<HTMLDivElement>(null);
+  
 
   const [chatbots] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -116,8 +120,32 @@ const ScriptsPage = () => {
   const subTextColor = isDark ? '#94a3b8' : '#6b7280';
   const inputBg = isDark ? '#2d3a4a' : '#f1f5f9';
 
+
+  useLayoutEffect(() => {
+  const ctx = gsap.context(() => {
+    gsap.fromTo(
+      ".dash-reveal",
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.65, stagger: 0.1, ease: "power3.out" }
+    );
+    gsap.fromTo(
+      ".dash-card",
+      { opacity: 0, y: 16 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        stagger: 0.08,
+        delay: 0.28,
+        ease: "power2.out",
+      }
+    );
+  }, root);
+  return () => ctx.revert();
+}, []);
+
   return (
-    <div className="min-h-screen" style={{ fontFamily: 'Inter, Arial, sans-serif' }}>
+    <div ref={root} className="min-h-screen max-w-[1500px] mx-auto" style={{ fontFamily: 'Inter, Arial, sans-serif' }}>
       {/* Header */}
       <section className="dash-hero -mt-">
         <div className="dash-reveal">
@@ -132,7 +160,7 @@ const ScriptsPage = () => {
 
         {/* ─── LEFT: Configuration Panel ─── */}
         <div
-          className="flex bg-[#EFF8D2]! rounded-3xl!  dash-card flex-col gap-4 shrink-0"
+          className="flex bg-[#EFF8D2]! dash-reveal rounded-3xl!  dash-card flex-col gap-4 shrink-0"
           style={{ width: '280px', minWidth: '260px' }}
         >
           {/* Chatbot Selection */}
@@ -314,12 +342,12 @@ const ScriptsPage = () => {
 
         {/* ─── MIDDLE: Live Preview ─── */}
         <div className="flex-1 min-w-0">
-          <div className="card rounded-2xl p-5 h-full min-h-[660px] relative overflow-hidden">
-            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Live Preview</p>
+          <div className="card dash-reveal rounded-3xl p-5 pt-0 h-full min-h-[600px] relative overflow-hidden">
+            <p className="text-xs text-center font-semibold uppercase tracking-widest text-gray-400 mb-2">Live Preview</p>
 
             {/* Fake browser chrome */}
             <div
-              className="rounded-xl overflow-hidden shadow-2xl"
+              className="rounded-3xl overflow-hidden shadow-2xl"
               style={{ background: '#f1f3f4', border: '1px solid #e0e0e0' }}
             >
               {/* Browser top bar */}
@@ -481,7 +509,7 @@ const ScriptsPage = () => {
         </div>
 
         {/* ─── RIGHT: Generated Script ─── */}
-        <div className="flex flex-col gap-4 shrink-0" style={{ width: '320px', minWidth: '280px' }}>
+        <div className="flex dash-reveal flex-col gap-4 shrink-0" style={{ width: '320px', minWidth: '280px' }}>
           <div className="card rounded-2xl p-4 h-full min-h-[660px] flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">Generated Script</p>

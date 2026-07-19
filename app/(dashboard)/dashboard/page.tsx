@@ -96,8 +96,8 @@ async function submitSource(formData: FormData) {
       <div className="dash-reveal">
        
         <h1>
-          Good morning
-          {data?.user?.name ? `, ${data.user.name.split(" ")[0]}` : ""}.<br />
+          Hello
+          {data?.user?.name ? ` , ${data.user.name.split(" ")[0]}` : ""}.<br />
           <em>What should it learn today?</em>
         </h1>
         <p>

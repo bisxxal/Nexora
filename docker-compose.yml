@@ -1,4 +1,4 @@
-1name: Super_bot_rag
+name: Superbot
 
 services:
   rag_model:

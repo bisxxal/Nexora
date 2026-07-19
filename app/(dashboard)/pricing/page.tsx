@@ -1,5 +1,7 @@
- 
-import React from "react";
+'use client'
+
+import { useAnimated } from "@/hooks/useAnimated";
+import React, { useRef } from "react";
 
 const Subscription = () => {
   const plans = [
@@ -55,24 +57,29 @@ const Subscription = () => {
     },
   ];
 
+  const root = useRef<HTMLDivElement>(null);
+
+  const a = useAnimated(root)
+
   return (
-    <div className="min-h-screen   py-16 px-6 sm:px-8">
+    <div ref={root} className="min-h-screen   py-16 px-6 sm:px-8">
       <div className="max-w-6xl mx-auto text-center">
-        <h1 className="text-4xl font-bold textbg mb-4">
-          Superbot X Subscription Plans
-        </h1>
-        <p className="text-gray-600 mb-12">
-          Choose the plan that fits your needs. Scale your AI support
-          effortlessly.
+
+        <div className="dash-hero dash-cd justify-center! center">
+        <h1 className="text-4xl text-center mb-4">Superbot X Subscription Plans</h1>
+        
+        </div>
+        <p className="text-gray-600 dash-cd  -mt-5 mb-12">
+          Choose the plan that fits your needs. Scale your AI support effortlessly.
         </p>
 
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid   md:grid-cols-4 gap-8">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`rounded-2xl hover:scale-[1.05] transition-all shadow-md border p-8 flex flex-col transition-all duration-200 ${
+              className={`rounded-2xl dash-reveal hover:scale-[1.05] transition-all shadow-md border p-8 flex flex-col transition-all duration-200 ${
                 plan.active 
-                  ? "bordercolor card scale-105"
+                  ? "bordercolor card bg-[#d9ddd4] scale-105"
                   : "border-none bg-[#cb114015] hover:shadow-lg"
               }`}
             >
@@ -93,21 +100,8 @@ const Subscription = () => {
               </div>
               <ul className="text-left space-y-2 mb-8">
                 {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center text-gray-700">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 textbg mr-2"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
+                  <li key={index} className="flex items-center text-sm text-gray-700">
+                     
                     {feature}
                   </li>
                 ))}

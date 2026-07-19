@@ -197,22 +197,39 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
 
 }
 
-export const LoadPdfEmbedings = async (url: string, mode: 'bot' | 'notebook') => {
+/**
+ * Called from a Server Action. Accepts a base64-encoded PDF string
+ * (the only JSON-serialisable way to pass binary data through a Server Action boundary),
+ * decodes it locally, generates embeddings, and saves to Qdrant + Prisma.
+ * No remote upload to ImageKit or any third-party storage is performed.
+ */
+export const LoadPdfEmbedingsFromBuffer = async (
+    base64Pdf: string,
+    fileName: string,
+    mode: 'bot' | 'notebook'
+) => {
     const session = await getServerSession(authOptions);
-    const response = await fetch(url);
-    if (!response.ok) {
-        return (`Failed to fetch PDF: ${response.statusText}`);
-    }
-    const pdfBlob = await response.blob();
+
+    // Decode base64 → Buffer → Blob so WebPDFLoader can parse it
+    const pdfBuffer = Buffer.from(base64Pdf, 'base64');
+    const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
+
     const loader = new WebPDFLoader(pdfBlob);
     const docs = await loader.load();
 
-    const collectionName = session?.user.name + "_pdf_collection" + Date.now();
+    const splitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 1000,
+        chunkOverlap: 200,
+    });
+    const splitDocs = await splitter.splitDocuments(docs);
 
-    const vectorStore = await QdrantVectorStore.fromDocuments(docs, emmbeddings, {
+    const collectionName =
+        (session?.user.name ?? 'superbot') + '_pdf_collection' + Date.now();
+
+    await QdrantVectorStore.fromDocuments(splitDocs, emmbeddings, {
         client: qclient,
-        collectionName: collectionName,
-    })
+        collectionName,
+    });
 
     const res = await prisma.models.create({
         data: {
@@ -220,9 +237,9 @@ export const LoadPdfEmbedings = async (url: string, mode: 'bot' | 'notebook') =>
             source: 'pdf',
             userId: session?.user.id!,
             type: mode,
-            name: "Untitled Pdf"
-        }
-    })
+            name: fileName ? fileName.replace(/\.pdf$/i, '') : 'Untitled PDF',
+        },
+    });
 
     return JSON.parse(JSON.stringify(res));
 }

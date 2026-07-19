@@ -1611,3 +1611,17 @@ footer small {
 .bordercolor{
   border: 1px solid #908e8e;
 }
+
+.dash-hero h1 em,
+.texth1 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+@keyframes pulseShimmer {
+  from {
+    background-position: -1000px; 
+  }
+  to { 
+     background-position: 1000px;
+  }
+}
