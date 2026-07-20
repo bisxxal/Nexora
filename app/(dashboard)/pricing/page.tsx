@@ -66,7 +66,7 @@ const Subscription = () => {
       <div className="max-w-6xl mx-auto text-center">
 
         <div className="dash-hero dash-cd justify-center! center">
-        <h1 className="text-4xl text-center mb-4">Superbot X Subscription Plans</h1>
+        <h1 className="text-4xl text-center mb-4">Nexora Subscription Plans</h1>
         
         </div>
         <p className="text-gray-600 dash-cd  -mt-5 mb-12">

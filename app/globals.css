@@ -42,15 +42,13 @@ body {
   padding: 120px max(6vw, 32px);
 }
 .nav-wrap {
-  height: 82px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 max(5vw, 28px);
-  position: relative;
+  padding: 0 max(1vw, 28px);
   z-index: 10;
   border-bottom: 1px solid var(--line);
-  background: rgba(246, 245, 239, 0.82);
   backdrop-filter: blur(12px);
 }
 .brand {
@@ -220,25 +218,7 @@ body {
   height: 530px;
   position: relative;
 }
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(1px);
-}
-.orb-one {
-  width: 290px;
-  height: 290px;
-  right: 15%;
-  top: 5%;
-  background: #d8f77d;
-}
-.orb-two {
-  width: 210px;
-  height: 210px;
-  left: 8%;
-  bottom: 3%;
-  background: #ffbaa2;
-}
+ 
 .browser {
   position: absolute;
   top: 50px;
@@ -520,7 +500,8 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: 4px;
+  border-radius: 14px;
+  box-shadow: -5px 5px 10px 0px rgb(0 0 0 / 13%);
 }
 .card-0 {
   background: #ecf7c7;
@@ -576,6 +557,8 @@ body {
   font-size: clamp(28px, 4vw, 58px);
   font-weight: 700;
   letter-spacing: -2px;
+    box-shadow: 18px 7px 20px 3px rgb(0 0 0 / 59%);
+
 }
 .marquee div {
   animation: marquee 24s linear infinite;
@@ -638,11 +621,12 @@ body {
   margin: auto;
   padding: 55px;
   background: #e3f6a4;
-  border-radius: 15px;
+  border-radius: 25px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 45px;
   align-items: center;
+  box-shadow: 18px 7px 20px 3px rgb(0 0 0 / 30%);
 }
 .code-copy h3 {
   font-size: 34px;
@@ -1624,4 +1608,278 @@ footer small {
   to { 
      background-position: 1000px;
   }
+}
+
+/* ============================================================
+   CHATBOT SHELL
+   ============================================================ */
+
+.chatbot-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100dvh;
+  background: transparent;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ---- Messages scroll area ---- */
+.chatbot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+/* ---- Individual chat row ---- */
+.chat-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.chat-row--user {
+  flex-direction: row-reverse;
+}
+
+/* ---- Avatar dot for assistant ---- */
+.chat-avatar {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #fff;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(99,102,241,.30);
+  margin-top: 2px;
+}
+
+/* ---- Bubbles ---- */
+.chat-bubble {
+  max-width: 80%;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.bubble--user {
+  background: #CB1141;
+  color: #fff;
+  padding: 10px 16px;
+  border-bottom-right-radius: 4px;
+}
+.bubble--assistant {
+  background: #fff;
+  color: #1f2937;
+  padding: 12px 16px;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+
+/* ---- Typing indicator ---- */
+.thinking-bubble {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 14px 18px;
+  min-height: 44px;
+}
+.thinking-bubble span {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #CB1141;
+  animation: blink 1.2s infinite ease-in-out;
+}
+.thinking-bubble span:nth-child(2) { animation-delay: .2s; }
+.thinking-bubble span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: .2; transform: scale(.8); }
+  40%           { opacity: 1;  transform: scale(1);   }
+}
+
+/* ============================================================
+   PROSE (rendered markdown inside assistant bubble)
+   ============================================================ */
+
+.prose-message {
+  font-size: 14px;
+  line-height: 1.7;
+  color: inherit;
+}
+.prose-message p          { margin: 0 0 8px; }
+.prose-message p:last-child { margin-bottom: 0; }
+.prose-message h1,
+.prose-message h2,
+.prose-message h3         { font-weight: 700; margin: 14px 0 6px; color: #111827; }
+.prose-message h1         { font-size: 17px; }
+.prose-message h2         { font-size: 15px; }
+.prose-message h3         { font-size: 14px; }
+.prose-message ul,
+.prose-message ol         { margin: 6px 0 10px 18px; padding: 0; }
+.prose-message li         { margin-bottom: 4px; }
+.prose-message strong     { font-weight: 700; color: #111827; }
+.prose-message em         { font-style: italic; }
+.prose-message hr         { border: none; border-top: 1px solid #e5e7eb; margin: 12px 0; }
+.prose-message blockquote {
+  border-left: 3px solid #CB1141;
+  margin: 10px 0;
+  padding: 6px 12px;
+  background: #fdf2f5;
+  border-radius: 0 8px 8px 0;
+  color: #6b7280;
+  font-style: italic;
+}
+.prose-message table      { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+.prose-message th         { background: #f3f4f6; font-weight: 600; padding: 6px 10px; text-align: left; border: 1px solid #e5e7eb; }
+.prose-message td         { padding: 6px 10px; border: 1px solid #e5e7eb; }
+.prose-message tr:nth-child(even) td { background: #fafafa; }
+
+/* ---- Links ---- */
+.chat-link {
+  color: #6366f1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.chat-link:hover { color: #4f46e5; }
+
+/* ---- Inline code ---- */
+.inline-code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 12.5px;
+  background: #f1f5f9;
+  color: #be185d;
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+/* ============================================================
+   CODE BLOCKS
+   ============================================================ */
+
+.code-block-wrapper {
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px 0;
+  border: 1px solid #2d3748;
+  background: #0d1117;
+  font-size: 13px;
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #161b22;
+  padding: 6px 14px;
+  border-bottom: 1px solid #30363d;
+}
+
+.code-lang {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  color: #8b949e;
+  text-transform: lowercase;
+  letter-spacing: .5px;
+}
+
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #8b949e;
+  font-size: 11px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.copy-btn:hover {
+  background: #21262d;
+  color: #e6edf3;
+}
+
+.code-block-wrapper pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  background: #0d1117 !important;
+}
+.code-block-wrapper code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace !important;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   INPUT BAR
+   ============================================================ */
+
+.chatbot-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 6px rgba(0,0,0,.06);
+  margin: 0 4px 4px;
+}
+
+.chatbot-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #1f2937;
+  font-family: inherit;
+}
+.chatbot-input::placeholder { color: #9ca3af; }
+
+.chatbot-send-btn {
+  padding: 7px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.chatbot-send-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.chatbot-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+  padding: 6px 0 10px;
+  margin: 0;
+}
+.chatbot-footer span {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.logo{
+   background-image: linear-gradient(181deg, #fff 32%, #ffffffad 46%, #0f0f0f 93%);
+   background-clip: text;
+   -webkit-background-clip: text; 
+   color: transparent;
+   font-family: 'new';
+   font-style: italic;
 }

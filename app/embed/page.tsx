@@ -5,13 +5,17 @@ import { Suspense } from 'react';
 
 function EmbedContent() {
   const search = useSearchParams();
-  const col = search.get("siteId") || "";
-  const welcomeMessage = search.get("welcomeMessage") || "Hello! How can I assist you today?";
-  const id = search.get("id") || "";
-  const sessionId = search.get("sessionId") || "";
-  const headerTitle = search.get("headerTitle") || "SuperBot AI";
-  const primaryColor = search.get("primaryColor") || "#CB1141";
-  const theme = (search.get("theme") || "light") as "light" | "dark";
+
+  const col           = search.get("siteId") || "";
+  const id            = search.get("id") || "";
+  const sessionId     = search.get("sessionId") || "";
+
+  const welcomeMessage    = search.get("welcomeMessage")    || "Hello! How can I assist you today?";
+  const headerTitle       = search.get("headerTitle")       || "SuperBot AI";
+  const primaryColor      = search.get("primaryColor")      || "#bed96d";
+  const buttonColor       = search.get("buttonColor")       || "#bed96d";
+  const buttonTextColor   = search.get("buttonTextColor")   || "#ffffff";
+  const theme             = (search.get("theme") || "light") as "light" | "dark";
 
   return (
     <ChatbotPage
@@ -21,6 +25,8 @@ function EmbedContent() {
       sessionId={sessionId}
       headerTitle={headerTitle}
       primaryColor={primaryColor}
+      buttonColor={buttonColor}
+      buttonTextColor={buttonTextColor}
       theme={theme}
     />
   );
@@ -28,7 +34,7 @@ function EmbedContent() {
 
 export default function EmbedPage() {
   return (
-    <Suspense fallback={<>...</>}>
+    <Suspense fallback={<></>}>
       <EmbedContent />
     </Suspense>
   );

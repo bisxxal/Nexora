@@ -32,11 +32,13 @@ export default function Home() {
   }, []);
 
   return (
-  <main ref={root} className="site-shell">
+  <main ref={root} className="site-shell relative ">
     <div className="grain" />
-    <nav className="nav-wrap">
+
+
+    <nav className="nav-wrap fixed! w-[80%]  top-6 rounded-full bg-[#00000012] left-1/2 -translate-x-1/2 ">
       <Link href="/" className="brand">
-        <span>✦</span> superbot
+        <span>✦</span> Nexora
       </Link>
       <div className="nav-links">
         {navItems.map((item, i) => (
@@ -47,12 +49,10 @@ export default function Home() {
         ))}
       </div>
       <div className="nav-actions">
-        <Link href="/sign-in" className="login-link">
-          Log in
-        </Link>
+       
         <Link
           href={data?.user ? "/dashboard" : "/sign-in"}
-          className="button button-dark"
+          className="button rounded-4xl! button-dark"
         >
           {data?.user ? "Dashboard" : "Get started"} <ArrowRight size={16} />
         </Link>
@@ -83,22 +83,20 @@ export default function Home() {
       </AnimatePresence>
     </nav>
 
-    <section className="hero section-pad">
-      <div className="orb orb-one" />
-      <div className="orb orb-two" />
+    <section className="hero mt-[70px]! section-pad"> 
       <div className="hero-copy">
         
-        <h1 className="hero-reveal">
-          Your website
+        <h1 className="hero-reveal font-light! ">
+         <span className='log text-[#17221d]!'> Your website</span> 
           <br />
-          has a new <em>expert.</em>
+        <span className='log text-[#17221d]! '>  has a new</span>  <em className=' '>expert.</em>
         </h1>
         <p className="hero-reveal text-sm!">
           Turn everything your company knows into an AI agent that answers,
           guides, and converts — anywhere your customers need it.
         </p>
         <div className="hero-buttons hero-reveal">
-          <Link href="/sign-in" className="button button-coral">
+          <Link href="/sign-in" className="button button-light">
             Build your agent <ArrowRight size={17} />
           </Link>
           <a href="#demo" className="text-button">
@@ -303,7 +301,7 @@ export default function Home() {
         <pre>
           <code>
             <span>&lt;script</span>
-            {"\n"} src=<i>"https://cdn.superbot.ai/widget.js"</i>
+            {"\n"} src=<i>"https://cdn.Nexora.ai/widget.js"</i>
             {"\n"} data-agent=<i>"your-agent-id"</i>
             {"\n"} async<span>&gt;&lt;/script&gt;</span>
           </code>
@@ -339,7 +337,7 @@ export default function Home() {
     <section className="testimonial section-pad">
       <div className="quote-mark">“</div>
       <blockquote>
-        Superbot feels like we hired our most patient, most knowledgeable
+        Nexora feels like we hired our most patient, most knowledgeable
         teammate — and put them on every page of our website.
       </blockquote>
     
@@ -347,7 +345,7 @@ export default function Home() {
 
     <section className="faq section-pad">
       <div>
-        <span className="eyebrow">QUESTIONS, ANSWERED</span>
+        
         <h2>
           Let’s make it
           <br />
@@ -355,7 +353,7 @@ export default function Home() {
         </h2>
         <p>
           Can’t find what you’re looking for?{" "}
-          <a href="mailto:hello@superbot.ai">Talk to our team.</a>
+          <a href="mailto:hello@Nexora.ai">Talk to our team.</a>
         </p>
       </div>
       <div className="faq-list">
@@ -418,7 +416,7 @@ export default function Home() {
     </section>
     <footer>
       <Link href="/" className="brand">
-        <span>✦</span> superbot
+        <span>✦</span> Nexora
       </Link>
       <p>AI agents for teams that care about the details.</p>
       <div>

@@ -2,6 +2,7 @@
 import { toastSuccess } from '@/lib/toast';
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap';
+import { useGetModels } from '@/hooks/useModel';
 
 type Chatbot = {
   id: string;
@@ -43,27 +44,17 @@ const ScriptsPage = () => {
   const [config, setConfig] = useState<WidgetConfig>(defaultConfig);
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [copied, setCopied] = useState(false);
-
-    const root = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const { data:chatbots, isLoading   } = useGetModels()
   
 
-  const [chatbots] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const val = localStorage.getItem('models');
-      if (val) return JSON.parse(val);
-    }
-    return null;
-  });
-
-  // Build the script whenever config or chatbot changes
-  useEffect(() => {
+   useEffect(() => {
     if (!selectedChatbot) return;
     buildScript();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config, selectedChatbot]);
+   }, [config, selectedChatbot]);
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = chatbots?.res.find((c: Chatbot) => c.collection_name === e.target.value);
+    const selected = chatbots?.res && chatbots?.res.find((c: Chatbot) => c.collection_name === e.target.value);
     setSelectedChatbot(selected || null);
   };
 
