@@ -1,23 +1,23 @@
 (function () {
   window.addEventListener("load", () => {
-    const scriptEl = document.getElementById("superbot-widget");
+    const scriptEl = document.getElementById("Nexora-widget");
 
-    // ── Required IDs ──────────────────────────────────────────
+    // ── Required IDs 
     const siteId    = scriptEl?.getAttribute("data-site-id") || "";
     const uniqueId  = scriptEl?.getAttribute("data-unique-id") || "";
 
-    // ── Button customization ──────────────────────────────────
+    // ── Button customization 
     const buttonLabel        = scriptEl?.getAttribute("data-button-label")        || "Ask AI 💬";
     const buttonColor        = scriptEl?.getAttribute("data-button-color")        || "#CB1141";
     const buttonTextColor    = scriptEl?.getAttribute("data-button-text-color")   || "#ffffff";
     const buttonPosition     = scriptEl?.getAttribute("data-button-position")     || "right"; // "right" | "left"
     const buttonBorderRadius = scriptEl?.getAttribute("data-button-border-radius")|| "14";
 
-    // ── Chat window customization ─────────────────────────────
+    // ── Chat window customization 
     const windowWidth    = scriptEl?.getAttribute("data-window-width")    || "400";
     const windowHeight   = scriptEl?.getAttribute("data-window-height")   || "500";
     const welcomeMessage = scriptEl?.getAttribute("data-welcome-message") || "Hello! How can I assist you today?";
-    const headerTitle    = scriptEl?.getAttribute("data-header-title")    || "SuperBot AI";
+    const headerTitle    = scriptEl?.getAttribute("data-header-title")    || "Nexora AI";
     const primaryColor   = scriptEl?.getAttribute("data-primary-color")   || "#CB1141";
     const theme          = scriptEl?.getAttribute("data-theme")            || "light"; // "light" | "dark"
 
@@ -28,21 +28,21 @@
     const inputBg  = isDark ? "#0f3460" : "#f1f5f9";
     const borderClr = isDark ? "#2d3748" : "#e5e7eb";
 
-    // ── Session ID ────────────────────────────────────────────
-    let sessionId = localStorage.getItem("superbot_session_id");
+    // ── Session ID ──
+    let sessionId = localStorage.getItem("Nexora_session_id");
     if (!sessionId) {
       sessionId = Math.random().toString(36).substring(2, 15) +
                   Math.random().toString(36).substring(2, 15);
-      localStorage.setItem("superbot_session_id", sessionId);
+      localStorage.setItem("Nexora_session_id", sessionId);
     }
 
-    // ── Inject Google Font (Inter) ────────────────────────────
+    // ── Inject Google Font (Inter) ────
     const fontLink = document.createElement("link");
     fontLink.rel  = "stylesheet";
     fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";
     document.head.appendChild(fontLink);
 
-    // ── Global styles (animations) ────────────────────────────
+    // ── Global styles (animations) ────
     const styleEl = document.createElement("style");
     styleEl.textContent = `
       @keyframes sbSlideIn {
@@ -53,15 +53,15 @@
         0%, 100% { transform: scale(1); }
         50%       { transform: scale(1.08); }
       }
-      #superbot-chat-window { animation: sbSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-      #superbot-float-btn:hover { filter: brightness(1.12); transform: scale(1.04) !important; }
-      #superbot-float-btn { transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+      #Nexora-chat-window { animation: sbSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      #Nexora-float-btn:hover { filter: brightness(1.12); transform: scale(1.04) !important; }
+      #Nexora-float-btn { transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
     `;
     document.head.appendChild(styleEl);
 
-    // ── Floating Chat Button ──────────────────────────────────
+    // ── Floating Chat Button 
     const button = document.createElement("div");
-    button.id = "superbot-float-btn";
+    button.id = "Nexora-float-btn";
     button.innerHTML = buttonLabel;
     Object.assign(button.style, {
       position:        "fixed",
@@ -85,9 +85,9 @@
     });
     document.body.appendChild(button);
 
-    // ── Chat Window ───────────────────────────────────────────
+    // ── Chat Window ─
     const chatWindow = document.createElement("div");
-    chatWindow.id = "superbot-chat-window";
+    chatWindow.id = "Nexora-chat-window";
     Object.assign(chatWindow.style, {
       position:     "fixed",
       bottom:       "80px",
@@ -188,7 +188,7 @@
     // Typing indicator
     function showTyping() {
       const wrapper = document.createElement("div");
-      wrapper.id = "superbot-typing";
+      wrapper.id = "Nexora-typing";
       Object.assign(wrapper.style, { display: "flex", justifyContent: "flex-start" });
       const bubble = document.createElement("div");
       bubble.innerHTML = `
@@ -207,7 +207,7 @@
       messagesArea.scrollTop = messagesArea.scrollHeight;
     }
     function hideTyping() {
-      const t = document.getElementById("superbot-typing");
+      const t = document.getElementById("Nexora-typing");
       if (t) t.remove();
     }
 
@@ -274,7 +274,7 @@
 
     // Powered by footer
     const footer = document.createElement("div");
-    footer.innerHTML = `Powered by <span style="color:${primaryColor};font-weight:700">SuperBot X AI</span>`;
+    footer.innerHTML = `Powered by <span style="color:${primaryColor};font-weight:700">Nexora AI</span>`;
     Object.assign(footer.style, {
       textAlign: "center", padding: "6px", fontSize: "10px",
       color: subText, background: inputBg, flexShrink: "0",

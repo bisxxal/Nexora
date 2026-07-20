@@ -2,7 +2,7 @@ import Navbar from "@/components/navbar";
 import Tabs from "@/components/ui/tabs";
 import type { Metadata } from "next";
 export const metadata: Metadata = {
-  title: "Dashboard | SuperBot X",
+  title: "Dashboard | Nexora",
 };
 
 export default function RootLayout({

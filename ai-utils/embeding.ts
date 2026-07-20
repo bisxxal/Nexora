@@ -224,7 +224,7 @@ export const LoadPdfEmbedingsFromBuffer = async (
     const splitDocs = await splitter.splitDocuments(docs);
 
     const collectionName =
-        (session?.user.name ?? 'superbot') + '_pdf_collection' + Date.now();
+        (session?.user.name ?? 'Nexora') + '_pdf_collection' + Date.now();
 
     await QdrantVectorStore.fromDocuments(splitDocs, emmbeddings, {
         client: qclient,

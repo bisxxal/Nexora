@@ -8,9 +8,7 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import { Copy, Check, Send } from "lucide-react";
 
-// ─────────────────────────────────────────────
-// Code-block: dark header + copy button
-// ─────────────────────────────────────────────
+ 
 function CodeBlock({
   children,
   className,
@@ -138,10 +136,7 @@ function AssistantMessage({ content }: { content: string }) {
     </ReactMarkdown>
   );
 }
-
-// ─────────────────────────────────────────────
-// Typing indicator
-// ─────────────────────────────────────────────
+ 
 function TypingDots({ color }: { color: string }) {
   return (
     <div className="flex items-center gap-1 px-1 py-0.5">
@@ -155,16 +150,13 @@ function TypingDots({ color }: { color: string }) {
     </div>
   );
 }
-
-// ─────────────────────────────────────────────
-// Main ChatbotPage
-// ─────────────────────────────────────────────
+ 
 export default function ChatbotPage({
   collections,
   welcomeMessage = "Hello! How can I assist you today?",
   id,
   sessionId: propSessionId,
-  headerTitle = "SuperBot AI",
+  headerTitle = "Nexora AI",
   primaryColor = "#bed96d",
   buttonColor,
   buttonTextColor,
@@ -245,7 +237,7 @@ export default function ChatbotPage({
     /* Full-height flex column — messages scroll, input stays at bottom */
     <div className="flex flex-col h-full w-full bg-white overflow-hidden font-sans">
 
-      {/* ── Header ── */}
+      {/*  Header  */}
       <div
         style={{ backgroundColor: accentColor }}
         className="flex items-center gap-3 px-4 py-3 shrink-0 shadow-sm"
@@ -267,7 +259,7 @@ export default function ChatbotPage({
         </div>
       </div>
 
-      {/* ── Messages ── */}
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
         {messages.map((msg, i) => (
           <div
@@ -326,7 +318,7 @@ export default function ChatbotPage({
         <div ref={chatEndRef} />
       </div>
 
-      {/* ── Input bar — naturally at bottom of flex column ── */}
+      {/*  Input bar — naturally at bottom of flex column  */}
       <div className="shrink-0 px-4 py-3 border-t border-gray-100 bg-white">
         <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 focus-within:border-gray-400 transition-colors">
           <input
@@ -353,7 +345,7 @@ export default function ChatbotPage({
         <p className="text-center text-[10px] text-gray-400 mt-2">
           Powered by{" "}
           <span className="font-semibold" style={{ color: accentColor }}>
-            Superbot X AI
+            Nexora AI
           </span>
         </p>
       </div>

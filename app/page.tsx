@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { AnimatePresence, motion } from 'motion/react';
 import gsap from 'gsap';
-import { ArrowRight, ArrowUpRight, BarChart3, Bot, Check, ChevronDown, Code2, Database, FileText, Globe2, Headphones, Menu, MessageCircle, Play, ShieldCheck, Sparkles, X, Zap } from 'lucide-react';
-
+import { ArrowRight, ArrowUpRight, Bot, ChevronDown, Code2, Database, FileText, Globe2, Headphones, Menu, MessageCircle, Play, ShieldCheck, Sparkles, X, Zap } from 'lucide-react';
+import { AnimatedBeamMultipleOutputDemo } from '@/components/ui/animated-beam-multiple-inputs';
+import Subscription from './(dashboard)/pricing/page';
+ 
 const navItems = ['Product', 'Solutions', 'Resources', 'Pricing'];
 const features = [
-  ['Everything knows its place', 'Import your docs, site, help centre, PDFs and product data. Superbot keeps every answer grounded in the sources you trust.', Database],
+  ['Everything knows its place', 'Import your docs, site, help centre, PDFs and product data. Nexora keeps every answer grounded in the sources you trust.', Database],
   ['A voice that sounds like you', 'Set tone, guardrails and escalation rules in one visual workspace. Your agent stays useful, on-brand and on task.', Sparkles],
   ['One line. Every page.', 'Publish a beautifully native chat experience with one lightweight script. No engineering queue required.', Code2],
 ];
@@ -25,8 +27,7 @@ export default function Home() {
     const ctx = gsap.context(() => {
       gsap.fromTo('.hero-reveal', { y: 38, opacity: 0 }, { y: 0, opacity: 1, duration: .9, stagger: .12, ease: 'power3.out', delay: .15 });
       gsap.fromTo('.float-card', { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .8, stagger: .14, ease: 'power3.out', delay: .65 });
-      gsap.to('.orb-one', { x: 32, y: -22, duration: 5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-      gsap.to('.orb-two', { x: -38, y: 20, duration: 6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+      
     }, root);
     return () => ctx.revert();
   }, []);
@@ -36,7 +37,7 @@ export default function Home() {
     <div className="grain" />
 
 
-    <nav className="nav-wrap fixed! w-[80%]  top-6 rounded-full bg-[#00000012] left-1/2 -translate-x-1/2 ">
+    <nav className="nav-wrap fixed! w-[80%] !z-[100] top-6 rounded-full bg-[#00000012] left-1/2 -translate-x-1/2 ">
       <Link href="/" className="brand">
         <span>✦</span> Nexora
       </Link>
@@ -86,7 +87,7 @@ export default function Home() {
     <section className="hero mt-[70px]! section-pad"> 
       <div className="hero-copy">
         
-        <h1 className="hero-reveal font-light! ">
+        <h1 className="hero-reveal font-light! [text-shadow:_-3px_2px_1px_#0000004d] ">
          <span className='log text-[#17221d]!'> Your website</span> 
           <br />
         <span className='log text-[#17221d]! '>  has a new</span>  <em className=' '>expert.</em>
@@ -114,81 +115,9 @@ export default function Home() {
           <b>luma</b>
         </div>
       </div>
-      <div className="hero-visual" id="demo">
-        <div className="browser float-card">
-          <div className="browser-bar">
-            <div>
-              <i />
-              <i />
-              <i />
-            </div>
-            <span>northstar.io</span>
-            <span>↗</span>
-          </div>
-          <div className="site-preview">
-            <div className="preview-nav">
-              <b>NORTHSTAR</b>
-              <span>Product　Solutions　Customers　Pricing</span>
-            </div>
-            <div className="preview-content">
-              <span className="mini-label">WORK SMARTER</span>
-              <h3>
-                The operating system
-                <br />
-                for ambitious teams.
-              </h3>
-              <button>Start for free</button>
-            </div>
-          </div>
-          <div className="chat-window">
-            <div className="chat-head">
-              <span className="bot-mark">✦</span>
-              <div>
-                <b>Northstar assistant</b>
-                <small>Typically replies instantly</small>
-              </div>
-              <span className="online" />
-            </div>
-            <div className="bubble bubble-ai">
-              Hi Maya! Looking for the right plan for your growing team?
-            </div>
-            <div className="bubble bubble-user">
-              Yes — we have about 45 people.
-            </div>
-            <div className="bubble bubble-ai">
-              Great fit for Scale. It includes unlimited projects and priority
-              support. Want a quick comparison?
-            </div>
-            <div className="chat-input">
-              Ask anything... <ArrowUpRight size={16} />
-            </div>
-          </div>
-        </div>
-        <div className="metric-card float-card">
-          <div className="metric-icon">
-            <BarChart3 size={18} />
-          </div>
-          <span>Resolution rate</span>
-          <strong>84.6%</strong>
-          <div className="chart">
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-          </div>
-          <small>↑ 12.4% this month</small>
-        </div>
-        <div className="source-card float-card">
-          <FileText size={16} />
-          <div>
-            <b>Product handbook.pdf</b>
-            <small>Synced 2 mins ago</small>
-          </div>
-          <Check size={16} />
-        </div>
+      
+      <div className='  ]'>
+      <AnimatedBeamMultipleOutputDemo />
       </div>
     </section>
 
@@ -205,15 +134,16 @@ export default function Home() {
     </section>
 
     <section className="story-section section-pad" id="platform">
+      
       <div className="section-intro">
         <span className="eyebrow">BUILT FOR CLARITY</span>
-        <h2>
+        <h2 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d] '>
           More than a chatbot.
           <br />
           <em>Your best teammate.</em>
         </h2>
         <p>
-          Superbot gives every customer an expert guide, while giving your team
+          Nexora gives every customer an expert guide, while giving your team
           the space to do their best work.
         </p>
       </div>
@@ -249,7 +179,7 @@ export default function Home() {
     <section className="workflow section-pad" id="how">
       <div className="section-intro centered">
       
-        <h2>
+        <h2 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>
           Built in an afternoon.
           <br />
           <em>Useful from the first hello.</em>
@@ -336,7 +266,7 @@ export default function Home() {
 
     <section className="testimonial section-pad">
       <div className="quote-mark">“</div>
-      <blockquote>
+      <blockquote className=' text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d] '>
         Nexora feels like we hired our most patient, most knowledgeable
         teammate — and put them on every page of our website.
       </blockquote>
@@ -346,7 +276,7 @@ export default function Home() {
     <section className="faq section-pad">
       <div>
         
-        <h2>
+        <h2 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>
           Let’s make it
           <br />
           <em>easy.</em>
@@ -363,7 +293,7 @@ export default function Home() {
             "Most teams publish their first agent in under two minutes. Add your sources, customize its behavior, and paste the script onto your site.",
           ],
           [
-            "Does Superbot work with my existing stack?",
+            "Does Nexora work with my existing stack?",
             "Yes. Start with websites and documents, then connect your product, help desk and internal tools as your needs grow.",
           ],
           [
@@ -398,10 +328,12 @@ export default function Home() {
       </div>
     </section>
 
-    <section className="final-cta" id="pricing">
+    <Subscription />
+
+    <section className="final-cta"  >
       {/* <div className="cta-glow" /> */}
       <span className="eyebrow">YOUR TEAM IS READY</span>
-      <h2>
+      <h2 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>
         Make every visit
         <br />
         <em>feel personal.</em>
@@ -418,15 +350,14 @@ export default function Home() {
       <Link href="/" className="brand">
         <span>✦</span> Nexora
       </Link>
-      <p>AI agents for teams that care about the details.</p>
-      <div>
+       <div>
         <a href="#platform">Product</a>
         <a href="#how">Resources</a>
         <a href="#pricing">Pricing</a>
         <a href="/sign-in">Log in</a>
       </div>
       <small>
-        © {new Date().getFullYear()} Superbot, Inc. Crafted for better
+        © 2026 Nexora, Inc. Crafted for better
         conversations.
       </small>
     </footer>

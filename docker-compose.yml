@@ -1,4 +1,4 @@
-name: Superbot
+name: Nexora
 
 services:
   rag_model:

@@ -65,7 +65,7 @@ const MyChatBot = () => {
 
         <section className="dash-hero -mt-">
           <div className="dash-reveal">
-            <h1>My Agents</h1>
+            <h1 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>My Agents</h1>
            </div>
         </section>
 

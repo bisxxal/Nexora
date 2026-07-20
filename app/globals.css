@@ -104,20 +104,27 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 9px 20px #17221d20;
+  /* transform: translateY(2px); */
+  scale: 0.97;
+  @apply transition-all duration-500!;
+  box-shadow: 0 0px 0.5px #17221d00;
 }
 .button-dark {
   background: var(--ink);
   color: white;
-}
-.button-coral {
-  background: var(--coral);
-  color: #18231e;
+   box-shadow: -3px 3px 1px #608e79;
+  }
+  .button-coral {
+    background: var(--coral);
+    color: #18231e;
+    box-shadow: -3px 3px 1px #b95645;
+  
 }
 .button-light {
   background: var(--lime);
   color: var(--ink);
+    box-shadow: -3px 3px 1px #97b246;
+
 }
 .menu-button,
 .mobile-menu {
@@ -130,8 +137,7 @@ body {
   align-items: center;
   gap: 35px;
   position: relative;
-  background: radial-gradient(circle at 51% 43%, #e5f7a8aa, transparent 27%);
-}
+ }
 .hero-copy {
   position: relative;
   z-index: 2;
@@ -1859,9 +1865,7 @@ footer small {
 }
 .chatbot-send-btn:disabled { opacity: .45; cursor: not-allowed; }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
+/*  FOOTER*/
 
 .chatbot-footer {
   text-align: center;

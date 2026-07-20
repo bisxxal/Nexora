@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div className=" w-full relative min-h-screen bg-[#E1E5F0] text-[#111827]  ">
       <nav className=" !h-[60px] top-0 left-0 backdrop-blur-2xl z-[30] fixed flex w-full justify-between px-5 items-center border-b bordercolor ">
-        <Link className=" textbg text-3xl font-bold" href="/"> Superbot X </Link>
+        <Link className=" textbg text-3xl font-bold" href="/"> Nexora </Link>
         {data?.user ? <Link className="buttonbg px-4 py-2 rounded-full text-white shadow-xl" href="/dashboard">
           Go to Dashboard
         </Link> : <Link className="buttonbg px-4 py-2 rounded-full text-white shadow-xl" href="/sign-in">
@@ -28,10 +28,10 @@ export default function Home() {
       <footer className="bg-gray-900 text-gray-300 py-10 px-6">
         <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-10">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-3">Superbot X</h2>
+            <h2 className="text-2xl font-bold text-white mb-3">Nexora</h2>
             <p className="text-gray-400 text-sm mb-4">
               AI that empowers your business.
-              Build smarter, faster, and more human with Superbot X.
+              Build smarter, faster, and more human with Nexora.
             </p>
           </div>
 
@@ -69,7 +69,7 @@ export default function Home() {
 
         <div className="border-t border-gray-800 mt-10 pt-6 text-center text-sm text-gray-500">
           <p>
-            © {new Date().getFullYear()} Superbot X. All rights reserved.
+            © {new Date().getFullYear()} Nexora. All rights reserved.
           </p>
         </div>
       </footer>
@@ -109,47 +109,4 @@ const AiBot = () => {
 
   )
 }
-
-const NotebookLLm = () => {
-  return (
-    <div className=" mt-20 center flex-col" >
-
-      <div className=" h-[50vh]">
-
-        <h1 className=" text-center font-bold text-5xl md:text-7xl  tracking-tighter mt-1 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500  to-purple-500 pb-2 font-space-mono ">
-          Understand Anything </h1>
-        <p className="text-gray-500 mt-[50px] text-center ">Your research and thinking partner, grounded in the information you trust </p>
-        <div className="center">
-          <Link href={`/notedashboard`} className=" buttonbg mt-20 text-2xl  mx-auto  px-5 py-3 text-white rounded-2xl">Try Superbot X </Link>
-        </div>
-      </div>
-      <div className=" gap-5">
-        <h2 className=" text-4xl text-center my-10 "> Your AI-Powered Research Partner </h2>
-
-        <div className=" flex justify-between  items-center">
-          <div className=" w-[30%] h-[500px] ">
-            <h3 className=" text-xl font-medium ">Upload your sources</h3>
-            <p className=" text-gray-400">Upload PDFs, websites, YouTube videos, audio files, Google Docs, Google Slides and more, and NotebookLM will summarize them and make interesting connections between topics, all powered by the latest version of Gemini’s multimodal understanding capabilities.</p>
-          </div>
-
-          <div className="w-1/2  image ">
-            <video className=" w-full rounded-3xl " autoPlay loop muted src="/upload.mp4"></video>
-          </div>
-        </div>
-      </div>
-
-      <div className=" flex justify-between  items-center">
-        <div className=" w-[30%] ">
-          <h3 className=" text-xl font-medium ">See the source, not just the answer</h3>
-          <p className=" text-gray-400">
-            Gain confidence in every response because NotebookLM provides clear citations for its work, showing you the exact quotes from your sources.</p>
-        </div>
-
-        <div className="w-1/2  image ">
-          <video className=" w-full h-[500px] rounded-3xl " autoPlay loop muted src="/source.mp4"></video>
-        </div>
-      </div>
-
-    </div>
-  )
-}
+ 

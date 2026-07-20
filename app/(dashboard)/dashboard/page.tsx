@@ -9,12 +9,13 @@ import gsap from 'gsap';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { ArrowRight, Check,  Code2, FileText, Globe2, LoaderCircle, MessageCircle, Plus, Sparkles, Youtube } from 'lucide-react';
+import { ArrowRight, Check,  Code2, FileText, Github, Globe2, LoaderCircle, MessageCircle, Plus, Sparkles, Youtube } from 'lucide-react';
 
 const sources = [
   { name: 'Website', field: 'website', description: 'Crawl pages, docs and your help centre.', placeholder: 'https://yourcompany.com', icon: Globe2, color: 'mint' },
   { name: 'YouTube', field: 'youtube', description: 'Turn videos into searchable expertise.', placeholder: 'https://youtube.com/watch?v=...', icon: Youtube, color: 'peach' },
   { name: 'Text note', field: 'textData', description: 'Add FAQs, launch notes or private context.', placeholder: 'Paste a useful piece of context...', icon: FileText, color: 'sky' },
+  { name: 'github', field: 'github', description: 'Train your agent on product docs, READMEs and code.', placeholder: 'https://github.com/user/repo', icon: Github, color: 'sky' },
 ] as const;
 
 export default function DashBoardPage() {
@@ -84,7 +85,7 @@ async function submitSource(formData: FormData) {
     textData: value,
     type,
     collectionName: `${
-      data?.user?.name || "superbot"
+      data?.user?.name || "Nexora"
     }_${type}_collection${Date.now()}`,
   });
 }
@@ -95,13 +96,13 @@ async function submitSource(formData: FormData) {
     <section className="dash-hero">
       <div className="dash-reveal">
        
-        <h1>
+        <h1 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>
           Hello
           {data?.user?.name ? ` , ${data.user.name.split(" ")[0]}` : ""}.<br />
           <em>What should it learn today?</em>
         </h1>
         <p>
-          Give your Superbot the context it needs to have helpful, accurate
+          Give your Nexora the context it needs to have helpful, accurate
           conversations — then publish it anywhere.
         </p>
       </div>
@@ -145,9 +146,7 @@ async function submitSource(formData: FormData) {
               Feed your agent <em>the good stuff.</em>
             </h2>
           </div>
-          <span className="source-count">
-            <Sparkles size={14} /> 0 sources
-          </span>
+          
         </div>
         <div className="source-switcher dash-card">
           <button
@@ -222,7 +221,7 @@ async function submitSource(formData: FormData) {
             )
           )}
         </AnimatePresence>
-        <div className="github-row dash-card">
+        {/* <div className="github-row dash-card">
           <Code2 size={19} />
           <div>
             <b>Bring a GitHub repository</b>
@@ -234,7 +233,7 @@ async function submitSource(formData: FormData) {
               <ArrowRight size={16} />
             </button>
           </form>
-        </div>
+        </div> */}
       </div>
 
       <aside className="dash-sidebar">

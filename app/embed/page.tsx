@@ -11,7 +11,7 @@ function EmbedContent() {
   const sessionId     = search.get("sessionId") || "";
 
   const welcomeMessage    = search.get("welcomeMessage")    || "Hello! How can I assist you today?";
-  const headerTitle       = search.get("headerTitle")       || "SuperBot AI";
+  const headerTitle       = search.get("headerTitle")       || "Nexora AI";
   const primaryColor      = search.get("primaryColor")      || "#bed96d";
   const buttonColor       = search.get("buttonColor")       || "#bed96d";
   const buttonTextColor   = search.get("buttonTextColor")   || "#ffffff";

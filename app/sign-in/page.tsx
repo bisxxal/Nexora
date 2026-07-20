@@ -43,7 +43,7 @@ const SignInPage = () => {
               </Link>
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Welcome Back!</h1>
-            <p className="text-red-400">Sign in to your Superbot X account</p>
+            <p className="text-red-400">Sign in to your Nexora account</p>
           </div>
 
           {/* Sign In Card */}

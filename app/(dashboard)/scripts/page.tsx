@@ -33,7 +33,7 @@ const defaultConfig: WidgetConfig = {
   windowWidth: 400,
   windowHeight: 500,
   welcomeMessage: 'Hello! How can I assist you today?',
-  headerTitle: 'SuperBot AI',
+  headerTitle: 'Nexora AI',
   primaryColor: '#bed96d',
   theme: 'light',
 };
@@ -61,7 +61,7 @@ const ScriptsPage = () => {
   const buildScript = () => {
     if (!selectedChatbot) return;
     const script = `<script
-  id="superbot-widget"
+  id="Nexora-widget"
   src="https://super-bot-x.vercel.app/widget.js"
   data-site-id="${selectedChatbot.collection_name}"
   data-unique-id="${selectedChatbot.id}"
@@ -140,7 +140,7 @@ const ScriptsPage = () => {
       {/* Header */}
       <section className="dash-hero -mt-">
         <div className="dash-reveal">
-          <h1>Widget Customizer</h1>
+          <h1 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>Widget Customizer</h1>
           <p>Customize your AI chatbot widget, preview it live, then copy the embed script.</p>
         </div>
       </section>
@@ -460,7 +460,7 @@ const ScriptsPage = () => {
 
                     {/* Powered by */}
                     <div style={{ textAlign: 'center', padding: '4px', fontSize: '8px', color: subTextColor }}>
-                      Powered by <span style={{ color: config.primaryColor, fontWeight: 700 }}>SuperBot X AI</span>
+                      Powered by <span style={{ color: config.primaryColor, fontWeight: 700 }}>Nexora AI</span>
                     </div>
                   </div>
                 )}
