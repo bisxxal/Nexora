@@ -33,58 +33,65 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
     }
 
     if (type === 'github') {
+        try {
+            if (!process.env.GITHUB_TOKEN) {
+                throw new Error('GITHUB_TOKEN is not set in environment variables. Add it to your .env file.');
+            }
 
-        if(!process.env.GITHUB_TOKEN){
+            const loader = new GithubRepoLoader(url, {
+                branch: 'main',
+                recursive: true,
+                maxConcurrency: 5,
+                unknown: 'warn',
+                accessToken: process.env.GITHUB_TOKEN,
+            });
 
-            console.log("GitHub token is not set in environment variables");
-        }
- 
-        const loader = new GithubRepoLoader(
-                url, {
-            branch: "main",
-            recursive: true,
-            maxConcurrency: 5,
-            unknown: "warn",
-            accessToken: process.env.GITHUB_TOKEN,
-        });
+            let docs = await loader.load();
 
-        let docs = await loader.load();
+            // custom ignore patterns
+            const ignorePatterns = [
+                /\.md$/,
+                /node_modules/,
+                /dist/,
+                /build/,
+                /tests?/,
+                /\.github/,
+                /\.vscode/,
+                /yarn\.lock/,
+                /package-lock\.json/,
+            ];
 
-        // custom ignore patterns
-        const ignorePatterns = [
-            /\.md$/,
-            /node_modules/,
-            /dist/,
-            /build/,
-            /tests?/,
-            /\.github/,
-            /\.vscode/,
-            /yarn\.lock/,
-            /package-lock\.json/,
-        ];
+            docs = docs.filter((doc) =>
+                !ignorePatterns.some((p) => p.test(doc.metadata.source))
+            );
 
-        docs = docs.filter((doc) =>
-            !ignorePatterns.some((p) => p.test(doc.metadata.source))
-        );
+            const splitter = new RecursiveCharacterTextSplitter({
+                chunkSize: 1200,
+                chunkOverlap: 200,
+            });
 
+            const splitDocs = await splitter.splitDocuments(docs);
 
-        const splitter = new RecursiveCharacterTextSplitter({
-            chunkSize: 1200,
-            chunkOverlap: 200,
-        });
-
-        const splitDocs = await splitter.splitDocuments(docs);
-
-        const vectorStore = await QdrantVectorStore.fromDocuments(
-            splitDocs,
-            emmbeddings,
-            {
+            await QdrantVectorStore.fromDocuments(splitDocs, emmbeddings, {
                 client: qclient,
                 collectionName: collecttion,
+            });
+
+            const res = createModelsInPrisma(collecttion, type, mode, `github${userId}//`, userId);
+            return JSON.parse(JSON.stringify(res));
+
+        } catch (error: any) {
+            // Detect GitHub 401 bad credentials specifically
+            const msg: string = error?.message ?? '';
+            if (msg.includes('401') || msg.toLowerCase().includes('bad credentials') || msg.toLowerCase().includes('bad credentials')) {
+                throw new Error(
+                    'GitHub authentication failed (401). Your GITHUB_TOKEN in .env is likely expired or has insufficient permissions. ' +
+                    'Generate a new token at https://github.com/settings/tokens with repo scope and update GITHUB_TOKEN in .env.'
+                );
             }
-        );
-        const res = createModelsInPrisma(collecttion, type, mode, `github${userId}//`, userId);
-        return JSON.parse(JSON.stringify(res));
+            // Re-throw everything else with context
+            throw new Error(`Failed to process GitHub repository: ${msg}`);
+        }
     }
 
     if (type === 'yt') {

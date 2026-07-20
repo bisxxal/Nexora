@@ -1,26 +1,90 @@
 'use client'
 import Loading from '@/components/ui/loading'
 import { useGetModels } from '@/hooks/useModel'
-import { Bot, BotIcon, DotIcon, RefreshCcw } from 'lucide-react'
+import { Bot, BotIcon, DotIcon, RefreshCcw, BarChart2, PieChart as PieIcon, LayoutGrid, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
- import gsap from 'gsap';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import gsap from 'gsap';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+  Area,
+  AreaChart,
+} from 'recharts';
+
+// ─── Palette for pie slices ─────────────────────────────────────────────────
+const SLICE_COLORS = [
+  '#cff45f', '#64716a', '#a8c26c', '#4e9a6f',
+  '#82ca9d', '#b2d8b2', '#6fa87a', '#3a7c54',
+];
+
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload?.length) {
+    return (
+      <div className="bg-[#1a1f1b] border border-[#cff45f]/30 rounded-xl px-4 py-2 shadow-xl text-sm">
+        <p className="font-semibold text-[#cff45f]">{label || payload[0].name}</p>
+        <p className="text-white mt-0.5">
+          Conversations: <span className="font-bold">{payload[0].value}</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+// ─── Custom tooltip for bar chart ──────────────────────────────────────────
+const BarTooltip = ({ active, payload, label }: any) => {
+  if (active && payload?.length) {
+    return (
+      <div className="bg-[#1a1f1b] border border-[#cff45f]/30 rounded-xl px-4 py-2 shadow-xl text-sm">
+        <p className="font-semibold text-[#cff45f]">{label}</p>
+        <p className="text-white mt-0.5">
+          Conversations: <span className="font-bold">{payload[0].value}</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// ─── Custom tooltip for pie chart ──────────────────────────────────────────
+const PieTooltip = ({ active, payload }: any) => {
+  if (active && payload?.length) {
+    return (
+      <div className="bg-[#1a1f1b] border border-[#cff45f]/30 rounded-xl px-4 py-2 shadow-xl text-sm">
+        <p className="font-semibold text-[#cff45f]">{payload[0].name}</p>
+        <p className="text-white mt-0.5">
+          Conversations: <span className="font-bold">{payload[0].value}</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
 const MyChatBot = () => {
   const { data, isLoading, refetch } = useGetModels()
   const [toallConversations, setTotalConversations] = useState<any>({});
   const root = useRef<HTMLDivElement>(null);
+    const [viewMode, setViewMode] = useState<'cards' | 'monitoring'>('monitoring');
+  
 
   useEffect(() => {
-
     const s = data?.res?.reduce(
       (acc: any, curr: any) => {
-         acc.totalTimes += curr.times || 0;
-
-         if (!acc.uniqueSources.has(curr.source)) {
+        acc.totalTimes += curr.times || 0;
+        if (!acc.uniqueSources.has(curr.source)) {
           acc.uniqueSources.add(curr.source);
         }
-
         return acc;
       },
       { totalTimes: 0, uniqueSources: new Set() }
@@ -35,49 +99,101 @@ const MyChatBot = () => {
     setTotalConversations(result || {});
   }, [data])
 
+  // ─── Chart data derived from models ────────────────────────────────────
+  const barData = useMemo(() => {
+    if (!data?.res) return [];
+    return data.res
+      .map((m: any) => ({
+        name: (m.name || 'Unnamed').toUpperCase(),
+        conversations: m.times || 0,
+      }))
+      .sort((a: any, b: any) => b.conversations - a.conversations);
+  }, [data]);
+
+  const pieData = useMemo(() => {
+    if (!data?.res) return [];
+    const grouped: Record<string, number> = {};
+    data.res.forEach((m: any) => {
+      const src = (m.source || 'Unknown').toUpperCase();
+      grouped[src] = (grouped[src] || 0) + (m.times || 0);
+    });
+    return Object.entries(grouped).map(([name, value]) => ({ name, value }));
+  }, [data]);
+
+  const topModel = useMemo(() => {
+    if (!pieData.length) return null;
+    return [...pieData].sort((a, b) => b.value - a.value)[0];
+  }, [pieData]);
+
   useLayoutEffect(() => {
-  const ctx = gsap.context(() => {
-    gsap.fromTo(
-      ".dash-reveal",
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.65, stagger: 0.1, ease: "power3.out" }
-    );
-    gsap.fromTo(
-      ".abot",
-      { opacity: 0, y: 16 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.55,
-        stagger: 0.08,
-        delay: 0.28,
-        ease: "power2.out",
-      }
-    );
-  }, root);
-  return () => ctx.revert();
-}, []);
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".dash-reveal",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.65, stagger: 0.1, ease: "power3.out" }
+      );
+      gsap.fromTo(
+        ".abot",
+        { opacity: 0, y: 16 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          stagger: 0.08,
+          delay: 0.28,
+          ease: "power2.out",
+        }
+      );
+      gsap.fromTo(
+        ".chart-reveal",
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.15,
+          delay: 0.45,
+          ease: "power3.out",
+        }
+      );
+    }, root);
+    return () => ctx.revert();
+  }, []);
 
   return (
     <div ref={root} className=' max-w-[1400px] mx-auto min-h-screen pb-20'>
 
+      {/* ─── Header ──────────────────────────────────────────────────────── */}
       <div className=' flex justify-between px-5 '>
-
         <section className="dash-hero -mt-">
           <div className="dash-reveal">
             <h1 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>My Agents</h1>
-           </div>
+          </div>
         </section>
 
-         <button className='w-fit h-[40px] button-light bg px-4 py-0 !rounded-full center gap-3'
+          <div className='flex gap-3'>
+          <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2 border ${viewMode === 'monitoring' ? 'bg-[#cff45f] text-[#17221d]' : 'bg-transparent'}`}
+            onClick={() => setViewMode('monitoring')}>
+            <TrendingUp size={18} /> Analytics
+          </button>
+          <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2 border ${viewMode === 'cards' ? 'bg-[#cff45f] text-[#17221d]' : 'bg-transparent'}`}
+            onClick={() => setViewMode('cards')}>
+            <LayoutGrid size={18} /> Agents
+          </button>
+          <button className='w-fit h-[40px] button-light bg px-4 py-0 !rounded-full flex items-center gap-2'
+            onClick={() => refetch()}>Refetch <RefreshCcw size={20} />
+          </button>
+        </div>
+
+        {/* <button className='w-fit h-[40px] button-light bg px-4 py-0 !rounded-full center gap-3'
           onClick={() => refetch()}>Refetch <RefreshCcw size={20} />
-        </button>
+        </button> */}
       </div>
 
+      {/* ─── Stats cards ─────────────────────────────────────────────────── */}
       <div className=' flex items-center justify-evenly mb-10'>
-
         <div className=' dash-reveal w-[30%] shadow-xl shadow-[#64716a3b] h-[100px] bg-[#d9ddd4] border border-[#c9d0c5] center rounded-3xl flex-col'>
-          <p className='texth1 text-xl '>    Total chatbots </p>
+          <p className='texth1 text-xl '>    Total chatbots </p>
           <p className=' text-3xl text-[#64716a] font-bold'>{data?.res?.length}</p>
         </div>
 
@@ -85,13 +201,133 @@ const MyChatBot = () => {
           <p className='texth1 text-xl '>Total Conversations</p>
           <p className=' text-3xl text-[#64716a] font-bold'>{toallConversations?.totalTimes} / 100</p>
         </div>
+
         <div className='dash-reveal w-[30%] shadow-xl shadow-[#64716a3b] h-[100px] bg-[#d9ddd4] border border-[#c9d0c5] center rounded-3xl flex-col'>
           <p className='texth1 text-xl '>Context Sources</p>
           <p className=' text-3xl text-[#64716a] font-bold'>{toallConversations?.totalSources}</p>
         </div>
-
       </div>
-      {
+
+      {/* ─── Analytics Charts — only in Monitoring view ───────────────── */}
+      {viewMode === 'monitoring' && !isLoading && data?.res && data.res.length > 0 && (
+        <div className='px-5 mb-12 grid grid-cols-1 lg:grid-cols-3 gap-6'>
+
+          {/* Bar Chart — Conversations per chatbot */}
+          <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6 shadow-xl shadow-[#64716a3b]'>
+            <div className='flex items-center gap-2 mb-5'>
+              <div className='bg-[#cff45f] p-2 rounded-xl'>
+                <BarChart2 size={18} className='text-[#17221d]' />
+              </div>
+              <div>
+                <h2 className='font-bold text-[#17221d] text-base leading-tight'>Conversations per Chatbot</h2>
+                <p className='text-xs text-[#64716a]'>Total usage by agent</p>
+              </div>
+            </div>
+
+           <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={barData} margin={{ top: 4, right: 10, left: -10, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#c9d0c5" vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: '#64716a', fontSize: 11, fontWeight: 600 }}
+                  tickLine={false}
+                  axisLine={false}
+                  angle={-35}
+                  textAnchor="end"
+                  interval={0}
+                />
+                <YAxis
+                  tick={{ fill: '#64716a', fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={false}
+                  allowDecimals={false}
+                />
+                <Tooltip content={<BarTooltip />} cursor={{ fill: '#64716a18' }} />
+                <Bar dataKey="conversations" radius={[8, 8, 0, 0]}>
+                  {barData.map((_: any, index: number) => (
+                    <Cell
+                      key={`bar-${index}`}
+                      fill={index === 0 ? '#64716a' : '#cff45f'}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            {barData[0] && (
+              <p className='text-center text-xs text-[#64716a] mt-1 font-medium'>
+                🏆 Most active: <span className='text-[#17221d] font-bold'>{barData[0].name}</span> ({barData[0].conversations} chats)
+              </p>
+            )}
+          </div>
+
+           <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6'>
+               <h3 className='font-bold mb-4'>Conversation Distribution</h3>
+               <ResponsiveContainer width="100%" height={300}>
+                 <AreaChart data={barData}>
+                   <defs><linearGradient id="colorC" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#cff45f" stopOpacity={0.8}/><stop offset="95%" stopColor="#cff45f" stopOpacity={0}/></linearGradient></defs>
+                   <XAxis dataKey="name" />
+                   <YAxis />
+                   <Tooltip content={<CustomTooltip />} />
+                   <Area type="monotone" dataKey="conversations" stroke="#cff45f" fillOpacity={1} fill="url(#colorC)" />
+                 </AreaChart>
+               </ResponsiveContainer>
+            </div>
+
+          {/* Pie/Donut Chart — Conversations by AI model source */}
+          <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6 shadow-xl shadow-[#64716a3b]'>
+            <div className='flex items-center gap-2 mb-5'>
+              <div className='bg-[#64716a] p-2 rounded-xl'>
+                <PieIcon size={18} className='text-[#cff45f]' />
+              </div>
+              <div>
+                <h2 className='font-bold text-[#17221d] text-base leading-tight'>AI Model Usage</h2>
+                <p className='text-xs text-[#64716a]'>Which model drives the most conversations</p>
+              </div>
+            </div>
+            {pieData.length > 0 ? (
+              <>
+                <ResponsiveContainer width="100%" height={230}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={95}
+                      paddingAngle={3}
+                      dataKey="value"
+                    >
+                      {pieData.map((_: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={SLICE_COLORS[index % SLICE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<PieTooltip />} />
+                    <Legend
+                      iconType="circle"
+                      iconSize={8}
+                      formatter={(value) => (
+                        <span style={{ color: '#64716a', fontSize: 12, fontWeight: 600 }}>{value}</span>
+                      )}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                {topModel && (
+                  <p className='text-center text-xs text-[#64716a] mt-1 font-medium'>
+                    🤖 Top model: <span className='text-[#17221d] font-bold'>{topModel.name}</span> ({topModel.value} conversations)
+                  </p>
+                )}
+              </>
+            ) : (
+              <div className='h-[230px] flex items-center justify-center text-[#64716a] text-sm'>
+                No conversation data yet
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ─── Agent Cards — only in Cards view ───────────────────────────── */}
+      {viewMode === 'cards' && (
         isLoading ? (
           <Loading boxes={3} child={' h-[300px]  w-[500px] rounded-2xl '} parent={' !flex-row !flex-warp h-[400px] w-full '} />
         ) : (
@@ -100,49 +336,46 @@ const MyChatBot = () => {
               data?.status === 200 ? (
                 <ul>
                   {
-                   data.res && data.res.length === 0 ? (
+                    data.res && data.res.length === 0 ? (
                       <div className=' center flex-col gap-3 '>
                         <p>No ChatBot found</p>
                         <Link href={`/dashboard`} className=' center gap-3 flex-col'>
                           <BotIcon className=' bg-amber-200 p-3 rounded-2xl' size={48} />
-                          <p className=' mt-3 '>Create your first chatbot by uploading documents or adding text in the  Dashboard  section.</p>
+                          <p className=' mt-3 '>Create your first chatbot by uploading documents or adding text in the Dashboard section.</p>
                         </Link>
                       </div>
                     ) : (
                       <div className=' flex gap-2.5 flex-wrap '>
                         {data.res && data.res.map((model: any) => (
-                          <Link href={`embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`} className='border block abot border-[#c9d0c5]  card-0 rounded-2xl p-3 px-4 w-[460px] ' key={model.id}>
-
+                          <Link href={`embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`} className='border block abot border-[#c9d0c5] card-0 rounded-2xl p-3 px-4 w-[460px]' key={model.id}>
                             <div className=' flex items-center justify-between px-5 gap-2'>
-                              <div className=' bg-[#cff45f] mb-3 p-2 w-fit rounded-xl'><Bot className=' text-[#64716a]' /> </div>
+                              <div className=' bg-[#cff45f] mb-3 p-2 w-fit rounded-xl'><Bot className=' text-[#64716a]' /></div>
                               <div className=' flex items-end gap-2 flex-col'>
-                                <div className=' bg-green-500/50 text-green-600 pr-2 rounded-full center w-fit'> <DotIcon className=' animate-pulse text-xl' color='green' size={28} /> Active</div>                                <p>Contex from : {model?.source?.toUpperCase()}</p>
+                                <div className=' bg-green-500/50 text-green-600 pr-2 rounded-full center w-fit'><DotIcon className=' animate-pulse text-xl' color='green' size={28} /> Active</div>
+                                <p>Context from : {model?.source?.toUpperCase()}</p>
                                 <p>Conversations : {model?.times}</p>
                               </div>
                             </div>
                             <p className='mt-5'>Name : {model?.name?.toUpperCase()}</p>
                             <p className=' mt-3 text-zinc-600 text-sm'>Site Id : {model.collection_name}</p>
                             <p className=' mt-3 text-zinc-600 text-sm'>Model id : {model.id}</p>
-                            <p className=' mt-3 text-zinc-600 text-sm'>Last active at : {model.updated_at.toLocaleString("en-US")}</p>
-                            <p className=' mt-3 text-zinc-600 text-sm'>Created at : {model.created_at.toLocaleString("en-US")}</p>
+                            <p className=' mt-3 text-zinc-600 text-sm'>Last active at : {model.updated_at.toLocaleString('en-US')}</p>
+                            <p className=' mt-3 text-zinc-600 text-sm'>Created at : {model.created_at.toLocaleString('en-US')}</p>
                           </Link>
                         ))}
                       </div>
                     )
                   }
                 </ul>
+              ) : (
+                <div className=' center gap-3 '>
+                  <p>no data found</p>
+                </div>
               )
-                : (
-                  <div className=' center gap-3 '>
-                    <p>no data found</p>
-
-                  </div>
-                )
             }
           </div>
         )
-      }
-      {/* <Loading boxes={2} child={' h-[220px]  w-[500px] rounded-2xl '} parent={' !flex-row !flex-wrap !justify-start h-[400px] w-full '} /> */}
+      )}
     </div>
   )
 }

@@ -195,7 +195,7 @@ const Circle = React.forwardRef<
     <div
         ref={ref}
         className={cn(
-            "z-10 flex size-15 items-center justify-center rounded-full border-2 border-[#0000007b] bg-white p-1.5 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
+            "z-10 flex size-15 items-center justify-center rounded-full border-2 border-[#0000003d] bg-[#64716a98] backdrop-blur-3xl p-2 shadow-[-5px_1px_10px_2px_#00000030]",
             className
         )}
     >
@@ -228,7 +228,7 @@ export function AnimatedBeamMultipleOutputDemo({
         >
             {/* Left column — source nodes */}
             <div className="flex flex-col justify-center gap-6">
-                <Circle className="p-2.5" ref={div1Ref}> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1920px-PDF_file_icon.svg.png" alt="" /> </Circle>
+                <Circle className="p-3" ref={div1Ref}> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1920px-PDF_file_icon.svg.png" alt="" /> </Circle>
                 <Circle ref={div2Ref}> <img src="https://static.vecteezy.com/system/resources/thumbnails/022/692/016/small/3d-file-format-data-icon-illustration-png.png" alt="" /> </Circle>
                 <Circle ref={div3Ref}><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/1280px-YouTube_full-color_icon_%282017%29.svg.png" alt="" /></Circle>
                 <Circle ref={div4Ref}><img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="" /></Circle>
@@ -237,12 +237,12 @@ export function AnimatedBeamMultipleOutputDemo({
 
             {/* Centre — Nexora node */}
             <div className="flex flex-col items-center justify-center mx-16">
-                <Circle ref={div6Ref} className="size-16">
-                    ✦
+                <Circle ref={div6Ref} className="size-16  ">
+                            <img className=' w-10 h-15  ' src="/logo2.png" alt="" /> 
                 </Circle>
-                <span className="mt-2 text-xs font-semibold text-muted-foreground">
+                {/* <span className="mt-2 text-xs font-semibold text-muted-foreground">
                     Nexora
-                </span>
+                </span> */}
             </div>
 
             {/* Right — output node */}

@@ -38,8 +38,9 @@ export default function Home() {
 
 
     <nav className="nav-wrap fixed! w-[80%] !z-[100] top-6 rounded-full bg-[#00000012] left-1/2 -translate-x-1/2 ">
-      <Link href="/" className="brand">
-        <span>✦</span> Nexora
+       <Link href="/" className="brand flex center  rounded-4xl px-10 py-0">
+         <img className=' w-20 h-25 drop-shadow-[#00000064] drop-shadow-xl ' src="/logo2.png" alt="" />
+         <h1 className='text-[#17221d]! text-[30px]! font-medium!   '>Nexora</h1>
       </Link>
       <div className="nav-links">
         {navItems.map((item, i) => (
@@ -135,26 +136,29 @@ export default function Home() {
 
     <section className="story-section section-pad" id="platform">
       
-      <div className="section-intro">
-        <span className="eyebrow">BUILT FOR CLARITY</span>
+      <div className="section-intro items-start! flex! flex-col!"> 
         <h2 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d] '>
           More than a chatbot.
           <br />
           <em>Your best teammate.</em>
         </h2>
-        <p>
+
+        <h3  >
           Nexora gives every customer an expert guide, while giving your team
           the space to do their best work.
-        </p>
+        </h3>
+        
       </div>
       <div className="feature-grid">
         {features.map(([title, text, Icon], i) => (
           <motion.article
             whileHover={{ y: -8 }}
             transition={{ type: "spring", stiffness: 220, damping: 18 }}
-            className={"feature-card card-" + i}
+            className={" relative feature-card card-" + i}
             key={String(title)}
           >
+            <div className="pointer-events-none absolute inset-x-4 inset-y-16 mix-blend-darken" aria-hidden="true"><svg className="pointer-events-none absolute inset-0 text-neutral-300/50" width="100%" height="100%"><defs><pattern id="dots-_R_2i5fksivb_" x="-1" y="-1" width="12" height="12" patternUnits="userSpaceOnUse"><rect x="1" y="1" width="2" height="2" fill="currentColor"></rect></pattern></defs><rect fill="url(#dots-_R_2i5fksivb_)" width="100%" height="100%"></rect></svg></div>
+
             <div className="feature-icon">
               <Icon size={23} />
             </div>
@@ -216,8 +220,9 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="code-panel">
-        <div className="code-copy">
+      <div className=" relative code-panel">
+
+         <div className="code-copy">
           <span className="eyebrow">ONE LINE, INFINITE HELP</span>
           <h3>It’s really that simple.</h3>
           <p>
@@ -239,7 +244,15 @@ export default function Home() {
       </div>
     </section>
 
-    <section className="impact">
+    <section className="impact relative ">
+
+      <div className="absolute left-1/2 -translate-x-1/2 -translate-y-px top-0 z-0 flex h-16 w-full max-w-[min(700px,calc(100vw-2rem))] items-start justify-center">
+        <svg viewBox="0 0 85 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto shrink-0 translate-x-px translate-y-px overflow-visible"><rect x="0" y="0" width="85" height="1" fill="currentColor" transform="translate(0, -1)"></rect><path d="M50 45C57.3095 56.6952 71.2084 63.9997 85 64V0H0C13.7915 0 26.6905 7.30481 34 19L50 45Z" fill="currentColor"></path></svg>
+        <div className="border-t-1 relative z-10 h-[calc(100%+1px)] min-w-0 grow border-current bg-current"></div>
+        <svg viewBox="0 0 85 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto shrink-0 -translate-x-px translate-y-px -scale-x-100 overflow-visible"><rect x="0" y="0" width="85" height="1" fill="currentColor" transform="translate(0, -1)"></rect><path d="M50 45C57.3095 56.6952 71.2084 63.9997 85 64V0H0C13.7915 0 26.6905 7.30481 34 19L50 45Z" fill="currentColor"></path>
+        </svg>
+      </div>
+
       <div className="impact-copy">
         <span className="eyebrow light">THE COMPOUND EFFECT</span>
         <h2>
@@ -273,8 +286,11 @@ export default function Home() {
     
     </section>
 
-    <section className="faq section-pad">
+    <section className="faq relative section-pad">
+
+      <div className="pointer-events-none absolute inset-x-4 inset-y-16 mix-blend-darken" aria-hidden="true"><svg className="pointer-events-none absolute inset-0 text-neutral-200/80" width="100%" height="100%"><defs><pattern id="dots-_R_2i5fksivb_" x="-1" y="-1" width="12" height="12" patternUnits="userSpaceOnUse"><rect x="1" y="1" width="2" height="2" fill="currentColor"></rect></pattern></defs><rect fill="url(#dots-_R_2i5fksivb_)" width="100%" height="100%"></rect></svg></div>
       <div>
+
         
         <h2 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>
           Let’s make it
@@ -347,8 +363,8 @@ export default function Home() {
       </Link>
     </section>
     <footer>
-      <Link href="/" className="brand">
-        <span>✦</span> Nexora
+      <Link href="/" className="brand flex items-center gap-3">
+         <img className=' w-20 h-25 drop-shadow-[#00000090] drop-shadow-xl ' src="/logo2.png" alt="" /> Nexora
       </Link>
        <div>
         <a href="#platform">Product</a>
