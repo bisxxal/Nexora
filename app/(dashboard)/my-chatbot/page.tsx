@@ -21,7 +21,6 @@ import {
   AreaChart,
 } from 'recharts';
 
-// ─── Palette for pie slices ─────────────────────────────────────────────────
 const SLICE_COLORS = [
   '#cff45f', '#64716a', '#a8c26c', '#4e9a6f',
   '#82ca9d', '#b2d8b2', '#6fa87a', '#3a7c54',
@@ -41,7 +40,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   }
   return null;
 };
-// ─── Custom tooltip for bar chart ──────────────────────────────────────────
+//   Custom tooltip for bar chart  
 const BarTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
     return (
@@ -75,8 +74,8 @@ const MyChatBot = () => {
   const { data, isLoading, refetch } = useGetModels()
   const [toallConversations, setTotalConversations] = useState<any>({});
   const root = useRef<HTMLDivElement>(null);
-    const [viewMode, setViewMode] = useState<'cards' | 'monitoring'>('monitoring');
-  
+  const [viewMode, setViewMode] = useState<'cards' | 'monitoring'>('monitoring');
+
 
   useEffect(() => {
     const s = data?.res?.reduce(
@@ -99,7 +98,7 @@ const MyChatBot = () => {
     setTotalConversations(result || {});
   }, [data])
 
-  // ─── Chart data derived from models ────────────────────────────────────
+
   const barData = useMemo(() => {
     if (!data?.res) return [];
     return data.res
@@ -163,34 +162,35 @@ const MyChatBot = () => {
   return (
     <div ref={root} className=' max-w-[1400px] mx-auto min-h-screen pb-20'>
 
-      {/* ─── Header ──────────────────────────────────────────────────────── */}
+
       <div className=' flex justify-between px-5 '>
         <section className="dash-hero -mt-">
           <div className="dash-reveal">
-            <h1 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>My Agents</h1>
+            <h1 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'> {viewMode === 'cards' ? " My Agents " : 'Monitoring'}</h1>
           </div>
         </section>
 
-          <div className='flex gap-3'>
-          <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2 border ${viewMode === 'monitoring' ? 'bg-[#cff45f] text-[#17221d]' : 'bg-transparent'}`}
-            onClick={() => setViewMode('monitoring')}>
-            <TrendingUp size={18} /> Analytics
-          </button>
-          <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2 border ${viewMode === 'cards' ? 'bg-[#cff45f] text-[#17221d]' : 'bg-transparent'}`}
-            onClick={() => setViewMode('cards')}>
-            <LayoutGrid size={18} /> Agents
-          </button>
+        <div className='flex items-center gap-3'>
+
+          <div className='flex gap-3 w-fit h-fit p-1 rounded-full border border-[#959795] '>
+
+            <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2   ${viewMode === 'monitoring' ? 'bg-[#cff45f] text-[#17221d]' : 'text-[#959795]'}`}
+              onClick={() => setViewMode('monitoring')}>
+              <TrendingUp size={18} /> Analytics
+            </button>
+            <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2   ${viewMode === 'cards' ? 'bg-[#cff45f] text-[#17221d]' : ' text-[#959795] '}`}
+              onClick={() => setViewMode('cards')}>
+              <LayoutGrid size={18} /> Agents
+            </button>
+          </div>
+
           <button className='w-fit h-[40px] button-light bg px-4 py-0 !rounded-full flex items-center gap-2'
             onClick={() => refetch()}>Refetch <RefreshCcw size={20} />
           </button>
         </div>
 
-        {/* <button className='w-fit h-[40px] button-light bg px-4 py-0 !rounded-full center gap-3'
-          onClick={() => refetch()}>Refetch <RefreshCcw size={20} />
-        </button> */}
       </div>
 
-      {/* ─── Stats cards ─────────────────────────────────────────────────── */}
       <div className=' flex items-center justify-evenly mb-10'>
         <div className=' dash-reveal w-[30%] shadow-xl shadow-[#64716a3b] h-[100px] bg-[#d9ddd4] border border-[#c9d0c5] center rounded-3xl flex-col'>
           <p className='texth1 text-xl '>    Total chatbots </p>
@@ -208,125 +208,132 @@ const MyChatBot = () => {
         </div>
       </div>
 
-      {/* ─── Analytics Charts — only in Monitoring view ───────────────── */}
+      {/* Analytics Charts &&   Monitoring view   */}
       {viewMode === 'monitoring' && !isLoading && data?.res && data.res.length > 0 && (
-        <div className='px-5 mb-12 grid grid-cols-1 lg:grid-cols-3 gap-6'>
+        <>
 
-          {/* Bar Chart — Conversations per chatbot */}
-          <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6 shadow-xl shadow-[#64716a3b]'>
-            <div className='flex items-center gap-2 mb-5'>
-              <div className='bg-[#cff45f] p-2 rounded-xl'>
-                <BarChart2 size={18} className='text-[#17221d]' />
+          <div className='px-5 mb-12  flex lg:grid-cols-3 gap-6'>
+
+            {/* Bar Chart   */}
+            <div className='chart-reveal flex-1 bg-[#d9ddd4] flex-1 border border-[#c9d0c5] rounded-3xl p-6 shadow-xl shadow-[#64716a3b]'>
+              <div className='flex items-center gap-2 mb-5'>
+                <div className='bg-[#cff45f] p-2 rounded-xl'>
+                  <BarChart2 size={18} className='text-[#17221d]' />
+                </div>
+                <div>
+                  <h2 className='font-bold text-[#17221d] text-base leading-tight'>Conversations per Chatbot</h2>
+                  <p className='text-xs text-[#64716a]'>Total usage by agent</p>
+                </div>
               </div>
-              <div>
-                <h2 className='font-bold text-[#17221d] text-base leading-tight'>Conversations per Chatbot</h2>
-                <p className='text-xs text-[#64716a]'>Total usage by agent</p>
-              </div>
+
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={barData} margin={{ top: 4, right: 10, left: -10, bottom: 40 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#c9d0c5" vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: '#64716a', fontSize: 11, fontWeight: 600 }}
+                    tickLine={false}
+                    axisLine={false}
+                      
+                    interval={0}
+                  />
+                  <YAxis
+                    tick={{ fill: '#64716a', fontSize: 11 }}
+                    tickLine={false}
+                    axisLine={false}
+                    allowDecimals={false}
+                  />
+                  <Tooltip content={<BarTooltip />} cursor={{ fill: '#64716a18' }} />
+                  <Bar dataKey="conversations" radius={[8, 8, 0, 0]}>
+                    {barData.map((_: any, index: number) => (
+                      <Cell
+                        key={`bar-${index}`}
+                        fill={index === 0 ? '#64716a' : '#cff45f'}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              {barData[0] && (
+                <p className='text-center text-xs text-[#64716a] mt-1 font-medium'>
+                  🏆 Most active: <span className='text-[#17221d] font-bold'>{barData[0].name}</span> ({barData[0].conversations} chats)
+                </p>
+              )}
+
             </div>
+ 
+            {/* Pie/Donut Chart — Conversations by AI model source */}
+            <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6 shadow-xl shadow-[#64716a3b]'>
+              <div className='flex items-center gap-2 mb-5'>
+                <div className='bg-[#64716a] p-2 rounded-xl'>
+                  <PieIcon size={18} className='text-[#cff45f]' />
+                </div>
+                <div>
+                  <h2 className='font-bold text-[#17221d] text-base leading-tight'>AI Model Usage</h2>
+                  <p className='text-xs text-[#64716a]'>Which model drives the most conversations</p>
+                </div>
+              </div>
+              {pieData.length > 0 ? (
+                <>
+                  <ResponsiveContainer width="100%" height={230}>
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={95}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {pieData.map((_: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={SLICE_COLORS[index % SLICE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<PieTooltip />} />
+                      <Legend
+                        iconType="circle"
+                        iconSize={8}
+                        formatter={(value) => (
+                          <span style={{ color: '#64716a', fontSize: 12, fontWeight: 600 }}>{value}</span>
+                        )}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {topModel && (
+                    <p className='text-center text-xs text-[#64716a] mt-1 font-medium'>
+                      🤖 Top model: <span className='text-[#17221d] font-bold'>{topModel.name}</span> ({topModel.value} conversations)
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className='h-[230px] flex items-center justify-center text-[#64716a] text-sm'>
+                  No conversation data yet
+                </div>
+              )}
+            </div>
+          </div>
 
-           <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={barData} margin={{ top: 4, right: 10, left: -10, bottom: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#c9d0c5" vertical={false} />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: '#64716a', fontSize: 11, fontWeight: 600 }}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-35}
-                  textAnchor="end"
-                  interval={0}
-                />
-                <YAxis
-                  tick={{ fill: '#64716a', fontSize: 11 }}
-                  tickLine={false}
-                  axisLine={false}
-                  allowDecimals={false}
-                />
-                <Tooltip content={<BarTooltip />} cursor={{ fill: '#64716a18' }} />
-                <Bar dataKey="conversations" radius={[8, 8, 0, 0]}>
-                  {barData.map((_: any, index: number) => (
-                    <Cell
-                      key={`bar-${index}`}
-                      fill={index === 0 ? '#64716a' : '#cff45f'}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
+          <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6'>
+            <h3 className='font-bold mb-4'>Conversation Distribution</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={barData}>
+                <defs>
+                  <linearGradient id="colorC" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#cff45f" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#5f6df4" stopOpacity={0} />
+                </linearGradient></defs>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Area type="monotone" dataKey="conversations" stroke="#cff45f" fillOpacity={1} fill="url(#colorC)" />
+              </AreaChart>
             </ResponsiveContainer>
-            {barData[0] && (
-              <p className='text-center text-xs text-[#64716a] mt-1 font-medium'>
-                🏆 Most active: <span className='text-[#17221d] font-bold'>{barData[0].name}</span> ({barData[0].conversations} chats)
-              </p>
-            )}
           </div>
+        </>
 
-           <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6'>
-               <h3 className='font-bold mb-4'>Conversation Distribution</h3>
-               <ResponsiveContainer width="100%" height={300}>
-                 <AreaChart data={barData}>
-                   <defs><linearGradient id="colorC" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#cff45f" stopOpacity={0.8}/><stop offset="95%" stopColor="#cff45f" stopOpacity={0}/></linearGradient></defs>
-                   <XAxis dataKey="name" />
-                   <YAxis />
-                   <Tooltip content={<CustomTooltip />} />
-                   <Area type="monotone" dataKey="conversations" stroke="#cff45f" fillOpacity={1} fill="url(#colorC)" />
-                 </AreaChart>
-               </ResponsiveContainer>
-            </div>
-
-          {/* Pie/Donut Chart — Conversations by AI model source */}
-          <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6 shadow-xl shadow-[#64716a3b]'>
-            <div className='flex items-center gap-2 mb-5'>
-              <div className='bg-[#64716a] p-2 rounded-xl'>
-                <PieIcon size={18} className='text-[#cff45f]' />
-              </div>
-              <div>
-                <h2 className='font-bold text-[#17221d] text-base leading-tight'>AI Model Usage</h2>
-                <p className='text-xs text-[#64716a]'>Which model drives the most conversations</p>
-              </div>
-            </div>
-            {pieData.length > 0 ? (
-              <>
-                <ResponsiveContainer width="100%" height={230}>
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={95}
-                      paddingAngle={3}
-                      dataKey="value"
-                    >
-                      {pieData.map((_: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={SLICE_COLORS[index % SLICE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<PieTooltip />} />
-                    <Legend
-                      iconType="circle"
-                      iconSize={8}
-                      formatter={(value) => (
-                        <span style={{ color: '#64716a', fontSize: 12, fontWeight: 600 }}>{value}</span>
-                      )}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-                {topModel && (
-                  <p className='text-center text-xs text-[#64716a] mt-1 font-medium'>
-                    🤖 Top model: <span className='text-[#17221d] font-bold'>{topModel.name}</span> ({topModel.value} conversations)
-                  </p>
-                )}
-              </>
-            ) : (
-              <div className='h-[230px] flex items-center justify-center text-[#64716a] text-sm'>
-                No conversation data yet
-              </div>
-            )}
-          </div>
-        </div>
       )}
 
-      {/* ─── Agent Cards — only in Cards view ───────────────────────────── */}
+      {/*   Agent Cards    */}
       {viewMode === 'cards' && (
         isLoading ? (
           <Loading boxes={3} child={' h-[300px]  w-[500px] rounded-2xl '} parent={' !flex-row !flex-warp h-[400px] w-full '} />

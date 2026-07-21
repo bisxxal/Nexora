@@ -9,13 +9,8 @@ import { ArrowRight, ArrowUpRight, Bot, ChevronDown, Code2, Database, FileText, 
 import { AnimatedBeamMultipleOutputDemo } from '@/components/ui/animated-beam-multiple-inputs';
 import Subscription from './(dashboard)/pricing/page';
  
-const navItems = ['Product', 'Solutions', 'Resources', 'Pricing'];
-const features = [
-  ['Everything knows its place', 'Import your docs, site, help centre, PDFs and product data. Nexora keeps every answer grounded in the sources you trust.', Database],
-  ['A voice that sounds like you', 'Set tone, guardrails and escalation rules in one visual workspace. Your agent stays useful, on-brand and on task.', Sparkles],
-  ['One line. Every page.', 'Publish a beautifully native chat experience with one lightweight script. No engineering queue required.', Code2],
-];
-const stats = [['47%', 'fewer repetitive tickets'], ['3.2×', 'faster time to resolution'], ['24/7', 'always-on customer help'], ['< 2 min', 'to launch your first agent']];
+import {navItems, stats,} from '@/lib/util'
+import { features } from 'process';
 
 export default function Home() {
   const { data } = useSession();
@@ -37,10 +32,10 @@ export default function Home() {
     <div className="grain" />
 
 
-    <nav className="nav-wrap fixed! w-[80%] !z-[100] top-6 rounded-full bg-[#00000012] left-1/2 -translate-x-1/2 ">
-       <Link href="/" className="brand flex center  rounded-4xl px-10 py-0">
-         <img className=' w-20 h-25 drop-shadow-[#00000064] drop-shadow-xl ' src="/logo2.png" alt="" />
-         <h1 className='text-[#17221d]! text-[30px]! font-medium!   '>Nexora</h1>
+    <nav className="nav-wrap fixed! w-[80%] !z-[100] top-6 rounded-full bg-linear-180 to-[#00000012] from-[#0000008f] shadow left-1/2 -translate-x-1/2 ">
+       <Link href="/" className="brand flex center  rounded-4xl   py-0">
+         <img className=' w-20 h-25  drop-shadow-[-3px_2px_0px_#28362e66   ' src="/logo2.png" alt="" />
+         <h1 className='text-[#f6f5ef]! text-[30px]! font-medium!   '>Nexora</h1>
       </Link>
       <div className="nav-links">
         {navItems.map((item, i) => (
@@ -143,14 +138,14 @@ export default function Home() {
           <em>Your best teammate.</em>
         </h2>
 
-        <h3  >
+        <h3 >
           Nexora gives every customer an expert guide, while giving your team
           the space to do their best work.
         </h3>
         
       </div>
       <div className="feature-grid">
-        {features.map(([title, text, Icon], i) => (
+        {features?.map(([title, text, Icon], i) => (
           <motion.article
             whileHover={{ y: -8 }}
             transition={{ type: "spring", stiffness: 220, damping: 18 }}

@@ -1,8 +1,11 @@
+
+import {   Code2, Database,   Sparkles } from 'lucide-react';
+
 export const formatedText = (res: string) => {
 
 let formattedResponse = res ;
 
-// ✅ Handle code blocks ```...```
+ 
 formattedResponse = formattedResponse.replace(/```([\s\S]*?)```/g, (match, code) => {
   return `
     <pre class="bg-gray-900 text-gray-100 p-3 rounded-md overflow-x-auto text-sm mt-2 mb-2">
@@ -11,7 +14,7 @@ formattedResponse = formattedResponse.replace(/```([\s\S]*?)```/g, (match, code)
   `
 })
 
-// ✅ Handle inline bold text
+ 
 formattedResponse = formattedResponse
   .split("**")
   .map((text, index) =>
@@ -24,12 +27,7 @@ formattedResponse = formattedResponse
 // ✅ Replace * with line breaks
 formattedResponse = formattedResponse.split("*").join("<br/>")
 
-// ✅ Replace `link` or `inline code`
-// formattedResponse = formattedResponse.replace(/`(https?:\/\/[^\s`]+|https?:)`/g, (match, url) => {
-//   return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline hover:text-blue-500">${url}</a>`
-// })
-
-// First replace the inline URL markdown
+  
 formattedResponse = formattedResponse.replace(
   /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
   (match, text, url) => {
@@ -57,3 +55,12 @@ formattedResponse = formattedResponse.replace(/`([^`]+)`/g, (match, code) => {
 
 return formattedResponse;
 }
+
+
+export const navItems = ['Product', 'Solutions', 'Resources', 'Pricing'];
+export const features = [
+  ['Everything knows its place', 'Import your docs, site, help centre, PDFs and product data. Nexora keeps every answer grounded in the sources you trust.', Database],
+  ['A voice that sounds like you', 'Set tone, guardrails and escalation rules in one visual workspace. Your agent stays useful, on-brand and on task.', Sparkles],
+  ['One line. Every page.', 'Publish a beautifully native chat experience with one lightweight script. No engineering queue required.', Code2],
+];
+export const stats = [['47%', 'fewer repetitive tickets'], ['3.2×', 'faster time to resolution'], ['24/7', 'always-on customer help'], ['< 2 min', 'to launch your first agent']];

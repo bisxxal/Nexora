@@ -17,14 +17,7 @@ const SignInPage = () => {
 
   return (
     <div className="min-h-screen flex text-[#111827]"  >
-
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {/* Floating Orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-amber-500/20 to-red-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-gradient-to-r from-indigo-500/20 to-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-
-      </div>
-
+ 
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
           {/* Back Button */}
@@ -37,21 +30,31 @@ const SignInPage = () => {
 
           {/* Logo and Title */}
           <div className="text-center mb-8 appeartext ">
-            <div className="flex items-center justify-center mb-6">
-              <Link href={'/'} className=" w-16 h-16 buttonbg text-4xl rounded-2xl flex items-center justify-center transform rotate-3 hover:rotate-6 transition-transform duration-300">
-                🤖
+            <div className="flex items-center justify-center ">
+              <Link href={'/'} className="  buttonbg  flex items-center justify-center  ">
+                <img className=' w-40 h-45  drop-shadow-[-3px_2px_0px_#28362e66] ' src="/logo2.png" alt="" />
+
               </Link>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back!</h1>
-            <p className="text-red-400">Sign in to your Nexora account</p>
+             
+                <h1 className='text-[#17221d]! text-6xl [text-shadow:-3px_2px_1px_#0000004d] whitespace-nowrap'> Welcome back</h1>
+            <p className="text-gray-400 mt-2">Sign in to your Nexora account</p>
           </div>
 
           {/* Sign In Card */}
-          <div className="  bg-gradient-to-r from-amber-500/20 to-red-500/20  rounded-2xl border border-amber-500 p-8 shadow-2xl">
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-semibold text-amber-500 mb-2">Sign in with Google</h2>
-              <p className="text-gray-400 text-sm">Access your dashboard securely</p>
-            </div>
+          <div className="  bg-[#E2F4A4] rounded-3xl  relative shadow-[-3px_2px_1px_#0000005e] p-8 ">
+
+  <div className="absolute left-1/2 -translate-x-1/2 -translate-y-px top-0 z-0 flex h-12 w-full max-w-[min(267px,calc(100vw-2rem))] items-start justify-center">
+        <svg viewBox="0 0 85 64" fill="#F6F5EF" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto shrink-0 translate-x-px translate-y-px overflow-visible"><rect x="0" y="0" width="85" height="1" fill="#F6F5EF" transform="translate(0, -1)"></rect><path d="M50 45C57.3095 56.6952 71.2084 63.9997 85 64V0H0C13.7915 0 26.6905 7.30481 34 19L50 45Z" fill="#F6F5EF"></path></svg>
+        <div className=" relative z-10 h-[calc(100%+1px)] min-w-0 grow   bg-[#F6F5EF]"></div>
+        <svg viewBox="0 0 85 64" fill="#F6F5EF" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto shrink-0 -translate-x-px translate-y-px -scale-x-100 overflow-visible"><rect x="0" y="0" width="85" height="1" fill="#F6F5EF" transform="translate(0, -1)"></rect><path d="M50 45C57.3095 56.6952 71.2084 63.9997 85 64V0H0C13.7915 0 26.6905 7.30481 34 19L50 45Z" fill="#F6F5EF"></path>
+        </svg>
+      </div>
+
+
+            <div className="text-center mt-10 mb-6">
+              <h1 className="text-xl font-semibold text-[#28362E]! mb-2"><em>Sign in with Google</em></h1>
+             </div>
 
             {/* Google Sign In Button */}
             <button
@@ -85,12 +88,12 @@ const SignInPage = () => {
             </button>
 
             {/* Security Note */}
-            <div className="mt-6 p-4 bg-gradient-to-r from-amber-500   to-red-500  bg-opacity-10 border border-purple-500 border-opacity-30 rounded-xl">
+            <div className="mt-6 p-4 border bg-[#28362E]  backdrop-blur-3xl  rounded-xl">
               <div className="flex items-start">
-                <Shield className="w-5 h-5 text-red-400 mr-3 mt-0.5 flex-shrink-0" />
+                <Shield className="w-5 h-5 text-[#48f291] mr-3 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm text-red-100 font-medium mb-1">Secure Authentication</p>
-                  <p className="text-xs text-gray-200">We use Google OAuth 2.0 for secure access. Your Google password is never shared with us.</p>
+                  <p className="text-sm text-[#9bceb1] font-medium mb-1">Secure Authentication</p>
+                  <p className="text-xs text-[#909391]">We use Google OAuth 2.0 for secure access. Your Google password is never shared with us.</p>
                 </div>
               </div>
             </div>
