@@ -179,14 +179,16 @@ export default function ChatbotPage({
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Stable session ID per browser tab
+  // Stable session ID — persisted in localStorage so memory survives page reloads
+  // and iframe resets. propSessionId comes from the embed URL (set by widget.js).
   const [sessionId] = useState(() => {
     if (propSessionId) return propSessionId;
     if (typeof window !== "undefined") {
-      let sid = sessionStorage.getItem("chat_session_id");
+      const KEY = "nexora_chat_session_id";
+      let sid = localStorage.getItem(KEY);
       if (!sid) {
         sid = crypto.randomUUID();
-        sessionStorage.setItem("chat_session_id", sid);
+        localStorage.setItem(KEY, sid);
       }
       return sid;
     }
@@ -208,7 +210,12 @@ export default function ChatbotPage({
     setIsLoading(true);
 
     try {
-      const res = await chatAIAction(input, collections, id, sessionId);
+      // Build history from all messages except the first welcome message
+      const history = messages.slice(1).map((m) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      }));
+      const res = await chatAIAction(input, collections, id, sessionId, history, headerTitle);
       setMessages([...updated, { role: "assistant", content: res ?? "" }]);
     } catch {
       setMessages((m) => [
@@ -254,7 +261,7 @@ export default function ChatbotPage({
             {headerTitle}
           </p>
           <p className="text-[11px] opacity-70 mt-0.5" style={{ color: btnTextColor }}>
-            Online · ready to help
+            ·    Online
           </p>
         </div>
       </div>
@@ -307,7 +314,7 @@ export default function ChatbotPage({
               className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs font-bold shadow-sm"
               style={{ backgroundColor: accentColor, color: btnTextColor }}
             >
-              ✦
+            <img src="/logo2.png " className="w-full h-full object-cover p-1" alt="" />
             </div>
             <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
               <TypingDots color={accentColor} />
