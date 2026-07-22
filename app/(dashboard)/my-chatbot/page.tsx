@@ -1,7 +1,7 @@
 'use client'
 import Loading from '@/components/ui/loading'
 import { useGetModels } from '@/hooks/useModel'
-import { Bot, BotIcon, DotIcon, RefreshCcw, BarChart2, PieChart as PieIcon, LayoutGrid, TrendingUp } from 'lucide-react'
+import { Bot, BotIcon, DotIcon, RefreshCcw, BarChart2, PieChart as PieIcon, LayoutGrid, TrendingUp, LoaderCircle } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap';
@@ -22,10 +22,19 @@ import {
 } from 'recharts';
 
 const SLICE_COLORS = [
-  '#cff45f', '#64716a', '#a8c26c', '#4e9a6f',
-  '#82ca9d', '#b2d8b2', '#6fa87a', '#3a7c54',
+  '#2563EB', // Blue
+  '#7C3AED', // Purple
+  '#EC4899', // Pink
+  '#F43F5E', // Rose
+  '#F97316', // Orange
+  '#EAB308', // Yellow
+  '#22C55E', // Green
+  '#14B8A6', // Teal
+  '#06B6D4', // Sky
+  '#0EA5E9', // Light Blue
+  '#6366F1', // Indigo
+  '#A3E635', // Lime
 ];
-
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
@@ -55,7 +64,7 @@ const BarTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-// ─── Custom tooltip for pie chart ──────────────────────────────────────────
+//   Custom tooltip for pie chart  
 const PieTooltip = ({ active, payload }: any) => {
   if (active && payload?.length) {
     return (
@@ -174,11 +183,11 @@ const MyChatBot = () => {
 
           <div className='flex gap-3 w-fit h-fit p-1 rounded-full border border-[#959795] '>
 
-            <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2   ${viewMode === 'monitoring' ? 'bg-[#cff45f] text-[#17221d]' : 'text-[#959795]'}`}
+            <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2   ${viewMode === 'monitoring' ? 'text-[#cff45f] bg-[#17221d]' : 'text-[#959795]'}`}
               onClick={() => setViewMode('monitoring')}>
               <TrendingUp size={18} /> Analytics
             </button>
-            <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2   ${viewMode === 'cards' ? 'bg-[#cff45f] text-[#17221d]' : ' text-[#959795] '}`}
+            <button className={`w-fit h-[40px] px-4 py-0 rounded-full flex items-center gap-2   ${viewMode === 'cards' ? 'text-[#cff45f] bg-[#17221d]' : ' text-[#959795] '}`}
               onClick={() => setViewMode('cards')}>
               <LayoutGrid size={18} /> Agents
             </button>
@@ -191,31 +200,38 @@ const MyChatBot = () => {
 
       </div>
 
-      <div className=' flex items-center justify-evenly mb-10'>
-        <div className=' dash-reveal w-[30%] shadow-xl shadow-[#64716a3b] h-[100px] bg-[#d9ddd4] border border-[#c9d0c5] center rounded-3xl flex-col'>
+      <div className=' gap-5 flex items-center justify-evenly mb-10'>
+        <div className=' dash-reveal w-[30%]   h-[100px] bg-[#f7f9f5] flex-1 border border-[#c9d0c5]  p-6  shadow-[-3px_2px_1px_#0000005e] center rounded-3xl flex-col'>
           <p className='texth1 text-xl '>    Total chatbots </p>
           <p className=' text-3xl text-[#64716a] font-bold'>{data?.res?.length}</p>
         </div>
 
-        <div className=' dash-reveal w-[30%] shadow-xl shadow-[#64716a3b] h-[100px] bg-[#d9ddd4] border border-[#c9d0c5] center rounded-3xl flex-col'>
+        <div className=' dash-reveal w-[30%]   h-[100px] bg-[#f7f9f5] flex-1 border border-[#c9d0c5] p-6  shadow-[-3px_2px_1px_#0000005e] center rounded-3xl flex-col'>
           <p className='texth1 text-xl '>Total Conversations</p>
           <p className=' text-3xl text-[#64716a] font-bold'>{toallConversations?.totalTimes} / 100</p>
         </div>
 
-        <div className='dash-reveal w-[30%] shadow-xl shadow-[#64716a3b] h-[100px] bg-[#d9ddd4] border border-[#c9d0c5] center rounded-3xl flex-col'>
+        <div className='dash-reveal w-[30%]   h-[100px] bg-[#f7f9f5] flex-1 border border-[#c9d0c5]  p-6  shadow-[-3px_2px_1px_#0000005e] center rounded-3xl flex-col'>
           <p className='texth1 text-xl '>Context Sources</p>
           <p className=' text-3xl text-[#64716a] font-bold'>{toallConversations?.totalSources}</p>
         </div>
       </div>
 
-      {/* Analytics Charts &&   Monitoring view   */}
-      {viewMode === 'monitoring' && !isLoading && data?.res && data.res.length > 0 && (
+      {/*   Monitoring view   */}
+      {viewMode === 'monitoring' &&  (
+
+        isLoading ? (
+          <>
+            <Loading boxes={2} child={' h-full  w-full rounded-3xl '} parent={' !px-5 !flex-col !flex-warp h-[740px] w-full '} />
+
+          </>
+        ) :
         <>
 
           <div className='px-5 mb-12  flex lg:grid-cols-3 gap-6'>
 
             {/* Bar Chart   */}
-            <div className='chart-reveal flex-1 bg-[#d9ddd4] flex-1 border border-[#c9d0c5] rounded-3xl p-6 shadow-xl shadow-[#64716a3b]'>
+            <div className='chart-reveal bg-[#f7f9f5] flex-1 border border-[#c9d0c5] rounded-3xl p-6  shadow-[-3px_2px_1px_#0000005e]'>
               <div className='flex items-center gap-2 mb-5'>
                 <div className='bg-[#cff45f] p-2 rounded-xl'>
                   <BarChart2 size={18} className='text-[#17221d]' />
@@ -234,7 +250,7 @@ const MyChatBot = () => {
                     tick={{ fill: '#64716a', fontSize: 11, fontWeight: 600 }}
                     tickLine={false}
                     axisLine={false}
-                      
+
                     interval={0}
                   />
                   <YAxis
@@ -246,10 +262,7 @@ const MyChatBot = () => {
                   <Tooltip content={<BarTooltip />} cursor={{ fill: '#64716a18' }} />
                   <Bar dataKey="conversations" radius={[8, 8, 0, 0]}>
                     {barData.map((_: any, index: number) => (
-                      <Cell
-                        key={`bar-${index}`}
-                        fill={index === 0 ? '#64716a' : '#cff45f'}
-                      />
+                      <Cell key={`cell-${index}`} fill={SLICE_COLORS[index % SLICE_COLORS.length]} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -261,9 +274,9 @@ const MyChatBot = () => {
               )}
 
             </div>
- 
+
             {/* Pie/Donut Chart — Conversations by AI model source */}
-            <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6 shadow-xl shadow-[#64716a3b]'>
+            <div className='chart-reveal bg-[#f7f9f5]  border border-[#c9d0c5] rounded-3xl p-6  shadow-[-3px_2px_1px_#0000005e]'>
               <div className='flex items-center gap-2 mb-5'>
                 <div className='bg-[#64716a] p-2 rounded-xl'>
                   <PieIcon size={18} className='text-[#cff45f]' />
@@ -314,19 +327,44 @@ const MyChatBot = () => {
             </div>
           </div>
 
-          <div className='chart-reveal bg-[#d9ddd4] border border-[#c9d0c5] rounded-3xl p-6'>
+          <div className='chart-reveal bg-[#f7f9f5] flex-1 border border-[#c9d0c5] rounded-3xl p-6  shadow-[-3px_2px_1px_#0000005e] p-'>
             <h3 className='font-bold mb-4'>Conversation Distribution</h3>
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={barData}>
                 <defs>
-                  <linearGradient id="colorC" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#cff45f" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="#5f6df4" stopOpacity={0} />
-                </linearGradient></defs>
+                  <linearGradient id="colorConversations" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.9} />
+                    <stop offset="50%" stopColor="#6366F1" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#6366F1" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="conversations" stroke="#cff45f" fillOpacity={1} fill="url(#colorC)" />
+
+                <Area
+                  type="monotone"
+                  dataKey="conversations"
+                  stroke="#3B82F6"
+                  strokeWidth={3}
+                  fill="url(#colorConversations)"
+                  fillOpacity={1}
+                  dot={{
+                    r: 4,
+                    fill: "#3B82F6",
+                    stroke: "#fff",
+                    strokeWidth: 2,
+                  }}
+                  activeDot={{
+                    r: 7,
+                    fill: "#2563EB",
+                    stroke: "#fff",
+                    strokeWidth: 3,
+                  }}
+                />
               </AreaChart>
+
             </ResponsiveContainer>
           </div>
         </>
@@ -354,11 +392,17 @@ const MyChatBot = () => {
                     ) : (
                       <div className=' flex gap-2.5 flex-wrap '>
                         {data.res && data.res.map((model: any) => (
-                          <Link href={`embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`} className='border block abot border-[#c9d0c5] card-0 rounded-2xl p-3 px-4 w-[460px]' key={model.id}>
+                          <div className={`border block abot border-[#c9d0c5] bg-[#f7f9f5] rounded-2xl  shadow-[-3px_2px_1px_#0000005e] p-3 px-4 w-[460px] ${model.status === 'PENDING' ? 'opacity-70 cursor-not-allowed' : ''}`} key={model.id}>
                             <div className=' flex items-center justify-between px-5 gap-2'>
                               <div className=' bg-[#cff45f] mb-3 p-2 w-fit rounded-xl'><Bot className=' text-[#64716a]' /></div>
                               <div className=' flex items-end gap-2 flex-col'>
-                                <div className=' bg-green-500/50 text-green-600 pr-2 rounded-full center w-fit'><DotIcon className=' animate-pulse text-xl' color='green' size={28} /> Active</div>
+                                {model?.status === 'PENDING' ? (
+                                  <div className=' bg-yellow-500/50 text-yellow-700 px-3 py-1 rounded-full center w-fit text-sm font-medium'><LoaderCircle className='animate-spin mr-1' size={14} /> Processing</div>
+                                ) : model?.status === 'FAILED' ? (
+                                  <div className=' bg-red-500/50 text-red-700 px-3 py-1 rounded-full center w-fit text-sm font-medium'>Failed</div>
+                                ) : (
+                                  <div className=' bg-green-500/50 text-green-600 pr-2 rounded-full center w-fit'><DotIcon className=' animate-pulse text-xl' color='green' size={28} /> Active</div>
+                                )}
                                 <p>Context from : {model?.source?.toUpperCase()}</p>
                                 <p>Conversations : {model?.times}</p>
                               </div>
@@ -368,7 +412,10 @@ const MyChatBot = () => {
                             <p className=' mt-3 text-zinc-600 text-sm'>Model id : {model.id}</p>
                             <p className=' mt-3 text-zinc-600 text-sm'>Last active at : {model.updated_at.toLocaleString('en-US')}</p>
                             <p className=' mt-3 text-zinc-600 text-sm'>Created at : {model.created_at.toLocaleString('en-US')}</p>
-                          </Link>
+
+                            <Link href={model.status === 'PENDING' || model.status === 'FAILED' ? '#' : `embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`}  
+                            className='flex center  button-light w-full p-2 rounded-full mt-5 mb-1 '>Test agent </Link>
+                          </div>
                         ))}
                       </div>
                     )

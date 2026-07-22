@@ -1,5 +1,5 @@
 'use client';
-import { LoadPdfEmbedingsFromBuffer } from '@/ai-utils/embeding';
+import { LoadPdfEmbedingsFromBuffer } from '@/ai/embeding';
 import { toastSuccess } from '@/lib/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, FileText, LoaderCircle, Upload, X } from 'lucide-react';

@@ -6,3 +6,23 @@ services:
     container_name: rag_model
     ports:
       - "6333:6333"
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  redisinsight:
+
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+
+    restart: unless-stopped
+
+    ports:
+      - "5540:5540"
+
+    depends_on:
+      redis:
+        condition: service_healthy

@@ -26,7 +26,7 @@ type WidgetConfig = {
 
 const defaultConfig: WidgetConfig = {
   buttonLabel: 'Ask AI 💬',
-  buttonColor: '#bed96d',
+  buttonColor: '#476100',
   buttonTextColor: '#ffffff',
   buttonPosition: 'right',
   buttonBorderRadius: 14,
@@ -34,7 +34,7 @@ const defaultConfig: WidgetConfig = {
   windowHeight: 500,
   welcomeMessage: 'Hello! How can I assist you today?',
   headerTitle: 'Nexora AI',
-  primaryColor: '#bed96d',
+  primaryColor: '#476100',
   theme: 'light',
 };
 
@@ -62,7 +62,8 @@ const ScriptsPage = () => {
     if (!selectedChatbot) return;
     const script = `<script
   id="Nexora-widget"
-  src="https://super-bot-x.vercel.app/widget.js"
+  src="https://nexora.bishal.online/widget.js"
+  data-server-url="https://nexora.bishal.online"
   data-site-id="${selectedChatbot.collection_name}"
   data-unique-id="${selectedChatbot.id}"
   data-welcome-message="${config.welcomeMessage}"
@@ -394,14 +395,14 @@ const ScriptsPage = () => {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div
+                        <div className=' '
                           style={{
                             width: '28px', height: '28px', borderRadius: '50%',
                             background: 'rgba(255,255,255,0.25)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: '14px',
                           }}
-                        >🤖</div>
+                        > <img src="/logo2.png" className=" w-full h-full object-cover" alt="" />  </div>
                         <div>
                           <p style={{ color: '#fff', fontWeight: 700, fontSize: '12px', margin: 0 }}>{config.headerTitle}</p>
                           <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '9px', margin: 0 }}>● Online</p>

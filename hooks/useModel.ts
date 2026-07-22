@@ -11,6 +11,8 @@ export const useGetModels = () => {
         },
     });
 
+    console.log(data)
+
     return {
         data, isLoading, refetch,
     };

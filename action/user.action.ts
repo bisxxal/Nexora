@@ -28,9 +28,11 @@ export const userModels = async () => {
         };
 
     } catch (error) {
+        console.log(error)
         return {
             status: 500,
             message: 'failed to load models',
+            
         };
     }
 }

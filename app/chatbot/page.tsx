@@ -235,7 +235,7 @@ export default function ChatbotPage({
 
   return (
     /* Full-height flex column — messages scroll, input stays at bottom */
-    <div className="flex flex-col h-full w-full bg-white overflow-hidden font-sans">
+    <div className="flex flex-col flex-1 w-full bg-white overflow-hidden font-sans">
 
       {/*  Header  */}
       <div
@@ -247,7 +247,7 @@ export default function ChatbotPage({
           className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow"
           style={{ backgroundColor: "rgba(255,255,255,0.25)", color: btnTextColor }}
         >
-          ✦
+          <img src="/logo2.png " className="w-full h-full object-cover p-1" alt="" />
         </div>
         <div>
           <p className="font-semibold text-sm leading-none" style={{ color: btnTextColor }}>
@@ -271,10 +271,10 @@ export default function ChatbotPage({
             {/* Avatar */}
             {msg.role === "assistant" && (
               <div
-                className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs font-bold shadow-sm"
+                className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs font-bold shadow-sm p-0.5 "
                 style={{ backgroundColor: accentColor, color: btnTextColor }}
               >
-                ✦
+                <img src="/logo2.png " className="w-full h-full object-cover" alt="" />
               </div>
             )}
 

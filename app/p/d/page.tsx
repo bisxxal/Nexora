@@ -1,11 +1,10 @@
 "use client"
-import { generateEmbeddings } from "@/ai-utils/embeding"
+import { generateEmbeddings } from "@/ai/embeding"
 import PdfUploader from "@/components/pdfupload"
 import { toastSuccess } from "@/lib/toast"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { LoaderCircle } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
 
 function DashBoardPage() {
     const { data } = useSession();

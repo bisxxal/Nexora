@@ -18,17 +18,19 @@ function EmbedContent() {
   const theme             = (search.get("theme") || "light") as "light" | "dark";
 
   return (
-    <ChatbotPage
-      collections={col}
-      welcomeMessage={welcomeMessage}
-      id={id}
-      sessionId={sessionId}
-      headerTitle={headerTitle}
-      primaryColor={primaryColor}
-      buttonColor={buttonColor}
-      buttonTextColor={buttonTextColor}
-      theme={theme}
-    />
+    <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <ChatbotPage
+        collections={col}
+        welcomeMessage={welcomeMessage}
+        id={id}
+        sessionId={sessionId}
+        headerTitle={headerTitle}
+        primaryColor={primaryColor}
+        buttonColor={buttonColor}
+        buttonTextColor={buttonTextColor}
+        theme={theme}
+      />
+    </div>
   );
 }
 

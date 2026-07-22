@@ -5,12 +5,11 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { AnimatePresence, motion } from 'motion/react';
 import gsap from 'gsap';
-import { ArrowRight, ArrowUpRight, Bot, ChevronDown, Code2, Database, FileText, Globe2, Headphones, Menu, MessageCircle, Play, ShieldCheck, Sparkles, X, Zap } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Bot, ChevronDown, Code2, Globe2, Menu, Play, ShieldCheck, X } from 'lucide-react';
 import { AnimatedBeamMultipleOutputDemo } from '@/components/ui/animated-beam-multiple-inputs';
 import Subscription from './(dashboard)/pricing/page';
  
-import {navItems, stats,} from '@/lib/util'
-import { features } from 'process';
+import {navItems,features, stats} from '@/lib/util'
 
 export default function Home() {
   const { data } = useSession();
@@ -20,8 +19,12 @@ export default function Home() {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo('.hero-reveal', { y: 38, opacity: 0 }, { y: 0, opacity: 1, duration: .9, stagger: .12, ease: 'power3.out', delay: .15 });
-      gsap.fromTo('.float-card', { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: .8, stagger: .14, ease: 'power3.out', delay: .65 });
+      gsap.fromTo('.hero-reveal',
+         { y: 38, opacity: 0 },
+          { y: 0, opacity: 1, duration: .9, stagger: .12, ease: 'power3.out', delay: .15 });
+      gsap.fromTo('.float-card',
+         { y: 16, opacity: 0 },
+          { y: 0, opacity: 1, duration: .8, stagger: .14, ease: 'power3.out', delay: .65 });
       
     }, root);
     return () => ctx.revert();
