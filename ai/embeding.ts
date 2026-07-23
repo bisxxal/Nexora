@@ -55,12 +55,7 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
     }
 }
 
-/**
- * Called from a Server Action. Accepts a base64-encoded PDF string
- * (the only JSON-serialisable way to pass binary data through a Server Action boundary),
- * decodes it locally, generates embeddings, and saves to Qdrant + Prisma.
- * No remote upload to ImageKit or any third-party storage is performed.
- */
+ 
 export const LoadPdfEmbedingsFromBuffer = async (
     base64Pdf: string,
     fileName: string,

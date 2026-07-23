@@ -1,6 +1,6 @@
 "use client"
 import { chatAIAction } from "@/action/chat.ai";
-import { formatedText } from "@/lib/util";
+import { formatedText } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { useState, useRef, useEffect } from "react"
 

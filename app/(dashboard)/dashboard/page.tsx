@@ -9,14 +9,9 @@ import gsap from 'gsap';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { ArrowRight, Check, FileText, Github, Globe2, LoaderCircle, MessageCircle, Plus, Sparkles, Youtube } from 'lucide-react';
-
-const sources = [
-  { name: 'Website', field: 'website', description: 'Crawl pages, docs and your help centre.', placeholder: 'https://yourcompany.com', icon: Globe2, color: 'mint' },
-  { name: 'YouTube', field: 'youtube', description: 'Turn videos into searchable expertise.', placeholder: 'https://youtube.com/watch?v=...', icon: Youtube, color: 'peach' },
-  { name: 'Text note', field: 'textData', description: 'Add FAQs, launch notes or private context.', placeholder: 'Paste a useful piece of context...', icon: FileText, color: 'sky' },
-  { name: 'github', field: 'github', description: 'Train your agent on product docs, READMEs and code.', placeholder: 'https://github.com/user/repo', icon: Github, color: 'sky' },
-] as const;
+import { ArrowRight, Check, FileText, LoaderCircle, MessageCircle, Plus } from 'lucide-react';
+import { sources } from '@/lib/utils';
+ 
 
 export default function DashBoardPage() {
   const { data } = useSession();
@@ -59,11 +54,7 @@ export default function DashBoardPage() {
       collectionName: string;
     }) => generateEmbeddings(textData, type, collectionName, "bot"),
     onSuccess: (result) => {
-      toastSuccess(
-        result
-          ? "Knowledge source added successfully!"
-          : "We could not add that source."
-      );
+      toastSuccess(result ? "Knowledge source added Queue!": "We could not add that source.");
       client.invalidateQueries({ queryKey: ["modelsinfo"] });
     },
   });

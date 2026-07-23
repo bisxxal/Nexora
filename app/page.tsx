@@ -8,8 +8,7 @@ import gsap from 'gsap';
 import { ArrowRight, ArrowUpRight, Bot, ChevronDown, Code2, Globe2, Menu, Play, ShieldCheck, X } from 'lucide-react';
 import { AnimatedBeamMultipleOutputDemo } from '@/components/ui/animated-beam-multiple-inputs';
 import Subscription from './(dashboard)/pricing/page';
- 
-import {navItems,features, stats} from '@/lib/util'
+import {navItems,features, stats} from '@/lib/utils'
 
 export default function Home() {
   const { data } = useSession();

@@ -20,22 +20,9 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
+import { SLICE_COLORS } from '@/lib/utils'
 
-const SLICE_COLORS = [
-  '#2563EB', // Blue
-  '#7C3AED', // Purple
-  '#EC4899', // Pink
-  '#F43F5E', // Rose
-  '#F97316', // Orange
-  '#EAB308', // Yellow
-  '#22C55E', // Green
-  '#14B8A6', // Teal
-  '#06B6D4', // Sky
-  '#0EA5E9', // Light Blue
-  '#6366F1', // Indigo
-  '#A3E635', // Lime
-];
-
+ 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
     return (

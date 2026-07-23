@@ -150,7 +150,7 @@ const ScriptsPage = () => {
       {/* 3-column layout */}
       <div className="flex  gap-5 min-h-[680px]" style={{ alignItems: 'flex-start' }}>
 
-        {/* ─── LEFT: Configuration Panel ─── */}
+        {/* LEFT: Configuration Panel  */}
         <div
           className="flex bg-[#EFF8D2]! dash-reveal rounded-3xl!  dash-card flex-col gap-4 shrink-0"
           style={{ width: '280px', minWidth: '260px' }}
@@ -179,6 +179,7 @@ const ScriptsPage = () => {
               <span className="text-xs text-gray-500 mb-1 block">Label</span>
               <input
                 type="text"
+                maxLength={20}
                 value={config.buttonLabel}
                 onChange={(e) => set('buttonLabel', e.target.value)}
                 className="w-full border-2 bordercolor outline-none px-3 py-2 rounded-xl text-sm bg-transparent"
@@ -253,6 +254,7 @@ const ScriptsPage = () => {
                 type="text"
                 value={config.headerTitle}
                 onChange={(e) => set('headerTitle', e.target.value)}
+                maxLength={20}
                 className="w-full border-2 bordercolor outline-none px-3 py-2 rounded-xl text-sm bg-transparent"
               />
             </label>
@@ -459,14 +461,14 @@ const ScriptsPage = () => {
                       >➤</div>
                     </div>
 
-                    {/* Powered by */}
+                     
                     <div style={{ textAlign: 'center', padding: '4px', fontSize: '8px', color: subTextColor }}>
                       Powered by <span style={{ color: config.primaryColor, fontWeight: 700 }}>Nexora AI</span>
                     </div>
                   </div>
                 )}
 
-                {/* ── Floating Button (preview) ── */}
+                {/* floating Button (preview)  */}
                 <div
                   onClick={() => setIsChatOpen((v) => !v)}
                   style={{
@@ -500,7 +502,7 @@ const ScriptsPage = () => {
           </div>
         </div>
 
-        {/* ─── RIGHT: Generated Script ─── */}
+        {/*  Generated Script   */}
         <div className="flex dash-reveal flex-col gap-4 shrink-0" style={{ width: '320px', minWidth: '280px' }}>
           <div className="card rounded-2xl p-4 h-full min-h-[660px] flex flex-col">
             <div className="flex justify-between items-center mb-4">
@@ -530,7 +532,6 @@ const ScriptsPage = () => {
                   className="flex-1 rounded-xl p-4 overflow-auto font-mono text-xs leading-relaxed"
                   style={{ background: '#0d1117', color: '#c9d1d9', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
                 >
-                  {/* Syntax-highlighted script */}
                   {generatedScript.split('\n').map((line, i) => {
                     if (line.trim().startsWith('<script') || line.trim() === '></script>') {
                       return (

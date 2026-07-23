@@ -1,6 +1,5 @@
-import { NotebookModels, userModels } from "@/action/user.action";
+import { userModels } from "@/action/user.action";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 
 export const useGetModels = () => {
 
@@ -9,9 +8,7 @@ export const useGetModels = () => {
         queryFn: async () => {
             return await userModels();  
         },
-    });
-
-    console.log(data)
+    }); 
 
     return {
         data, isLoading, refetch,
