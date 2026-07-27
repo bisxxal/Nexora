@@ -239,15 +239,12 @@ export function AnimatedBeamMultipleOutputDemo({
             <div className="flex flex-col items-center justify-center mx-16">
                 <Circle ref={div6Ref} className="size-16  ">
                             <img className=' w-10 h-15  ' src="/logo2.png" alt="" /> 
-                </Circle>
-                {/* <span className="mt-2 text-xs font-semibold text-muted-foreground">
-                    Nexora
-                </span> */}
+                </Circle> 
             </div>
 
             {/* Right — output node */}
             <div className="flex flex-col justify-center">
-                <Circle ref={div7Ref}>💡</Circle>
+                <Circle ref={div7Ref}><h2 className=" whitespace-nowrap ">Ask Ai </h2></Circle>
             </div>
 
             {/* Beams from sources → Nexora */}

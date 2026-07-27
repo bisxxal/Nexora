@@ -1,15 +1,14 @@
 import { Worker, Job } from 'bullmq';
-import { YoutubeLoader } from "@langchain/community/document_loaders/web/youtube";
-import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
-import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { Document } from "@langchain/core/documents";
-import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github";
 import { PrismaClient } from '@prisma/client';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
+import * as cheerio from 'cheerio';
+import pdfParse from 'pdf-parse';
+import { YoutubeTranscript } from 'youtube-transcript';
 
 dotenv.config({ path: '.env' });
 
@@ -32,65 +31,81 @@ const connection = {
     tls: {}
 };
 
+async function loadGithubRepo(url: string, token: string): Promise<Document[]> {
+    const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+    if (!match) throw new Error("Invalid GitHub URL");
+    const [_, owner, repo] = match;
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`;
+    const res = await fetch(apiUrl, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error("Failed to fetch repo tree");
+    const data = await res.json();
+    
+    const docs: Document[] = [];
+    const ignorePatterns = [/\.md$/, /node_modules/, /dist/, /build/, /tests?/, /\.github/, /\.vscode/, /yarn\.lock/, /package-lock\.json/, /\.(png|jpe?g|gif|svg|ico|webp)$/i];
+    
+    for (const file of data.tree) {
+        if (file.type === "blob") {
+            if (ignorePatterns.some((p) => p.test(file.path))) continue;
+            // For a production app we might fetch in batches, but this is simple:
+            const fileRes = await fetch(file.url, { headers: { Authorization: `Bearer ${token}` } });
+            if (!fileRes.ok) continue;
+            const fileData = await fileRes.json();
+            if (fileData.encoding === "base64") {
+                const content = Buffer.from(fileData.content, "base64").toString("utf-8");
+                docs.push(new Document({ pageContent: content, metadata: { source: file.path } }));
+            }
+        }
+    }
+    return docs;
+}
+
 const worker = new Worker('embedding-queue', async (job: Job) => {
     const { url, type, collectionName, mode, userId, base64Pdf, fileName, modelId } = job.data;
-    let docs;
+    let docs: Document[] = [];
 
     console.log(`Processing job ${job.id} for model ${modelId} of type ${type}`);
 
     try {
         if (type === 'github') {
-            if (!process.env.GITHUB_TOKEN) {
-                throw new Error('GITHUB_TOKEN is not set');
-            }
-            const loader = new GithubRepoLoader(url, {
-                branch: 'main',
-                recursive: true,
-                maxConcurrency: 5,
-                unknown: 'warn',
-                accessToken: process.env.GITHUB_TOKEN,
-            });
-            docs = await loader.load();
-            const ignorePatterns = [/\.md$/, /node_modules/, /dist/, /build/, /tests?/, /\.github/, /\.vscode/, /yarn\.lock/, /package-lock\.json/];
-            docs = docs.filter((doc: any) => !ignorePatterns.some((p) => p.test(doc.metadata.source)));
-
+            if (!process.env.GITHUB_TOKEN) throw new Error('GITHUB_TOKEN is not set');
+            docs = await loadGithubRepo(url, process.env.GITHUB_TOKEN);
             const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1200, chunkOverlap: 200 });
             const splitDocs = await splitter.splitDocuments(docs);
             await QdrantVectorStore.fromDocuments(splitDocs, emmbeddings, { client: qclient, collectionName: collectionName });
 
         } else if (type === 'yt') {
-            const loader = YoutubeLoader.createFromUrl(url, { language: "en", addVideoInfo: true });
-            docs = await loader.load();
+            const transcript = await YoutubeTranscript.fetchTranscript(url);
+            if (!transcript || transcript.length === 0) throw new Error("No transcript found");
+            const text = transcript.map(t => t.text).join(' ');
+            
+            docs = [new Document({ pageContent: text, metadata: { source: url, title: `YouTube Video` } })];
             const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 200 });
             const splitDocs = await splitter.splitDocuments(docs);
-            const enrichedDocs = splitDocs.map((doc) => ({
-                ...doc,
-                metadata: { ...doc.metadata, video_url: url, source: "youtube" },
-            }));
-            await QdrantVectorStore.fromDocuments(enrichedDocs, emmbeddings, { client: qclient, collectionName: collectionName });
+            await QdrantVectorStore.fromDocuments(splitDocs, emmbeddings, { client: qclient, collectionName: collectionName });
 
         } else if (type === 'web') {
-            const loader = new CheerioWebBaseLoader(url);
-            docs = await loader.load();
+            const res = await fetch(url);
+            const html = await res.text();
+            const $ = cheerio.load(html);
+            const text = $('body').text().replace(/\s+/g, ' ').trim();
+            docs = [new Document({ pageContent: text, metadata: { source_url: url, source_type: "web" } })];
+            
             const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 200 });
             const splitDocs = await splitter.splitDocuments(docs);
-            const enrichedDocs = splitDocs.map((doc) => ({
-                ...doc,
-                metadata: { ...doc.metadata, source_url: url, source_type: "web" },
-            }));
-            await QdrantVectorStore.fromDocuments(enrichedDocs, emmbeddings, { client: qclient, collectionName: collectionName });
+            await QdrantVectorStore.fromDocuments(splitDocs, emmbeddings, { client: qclient, collectionName: collectionName });
 
         } else if (type === 'text') {
-            const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 200 });
             const rawDoc = new Document({ pageContent: url, metadata: { source_type: "text" } });
-            const splitDocs = await splitter.splitDocuments([rawDoc]);
+            docs = [rawDoc];
+            const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 200 });
+            const splitDocs = await splitter.splitDocuments(docs);
             await QdrantVectorStore.fromDocuments(splitDocs, emmbeddings, { client: qclient, collectionName: collectionName });
 
         } else if (type === 'pdf') {
             const pdfBuffer = Buffer.from(base64Pdf, 'base64');
-            const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
-            const loader = new WebPDFLoader(pdfBlob);
-            docs = await loader.load();
+            const data = await pdfParse(pdfBuffer);
+            docs = [new Document({ pageContent: data.text, metadata: { source: "pdf", source_type: "pdf" } })];
+            
             const splitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 200 });
             const splitDocs = await splitter.splitDocuments(docs);
             await QdrantVectorStore.fromDocuments(splitDocs, emmbeddings, { client: qclient, collectionName: collectionName });
@@ -103,7 +118,6 @@ const worker = new Worker('embedding-queue', async (job: Job) => {
         });
 
         console.log(res)
-
         console.log(`Successfully processed job ${job.id} for model ${modelId}`);
 
     } catch (error: any) {

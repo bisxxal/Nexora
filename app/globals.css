@@ -1887,3 +1887,56 @@ footer small {
    font-family: 'new';
    font-style: italic;
 }
+
+.button-red {
+    background: #0a84ffd9;
+    backdrop-filter: blur(20px);
+    background: linear-gradient(325deg, #f93250, #ff0a4bd9);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 10, 47, 0.6);
+    box-shadow:
+      0 4px 16px rgba(255, 10, 83, 0.28),
+      inset 0 1px 0 rgba(255,255,255,0.25);
+    transition: all 0.2s ease;
+    color: white;
+}
+
+
+.button-primary {
+  @apply rounded-full ;
+  background: #0a84ffd9;
+  backdrop-filter: blur(20px);
+  background: linear-gradient(325deg, #3235f9, #0a84ffd9);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(10, 132, 255, 0.6);
+  box-shadow:
+    0 4px 16px rgba(10, 132, 255, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+  color: white;
+}
+.button-green {
+  @apply rounded-full ;
+  background: #16ff0ad9;
+  backdrop-filter: blur(20px);
+  background: linear-gradient(325deg, #50f932, #0aff0ed9);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(10, 255, 34, 0.6);
+  box-shadow:
+    0 4px 16px rgba(30, 255, 10, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+  color: rgb(32, 93, 19);
+}
+.button-green:hover {
+  background: rgba(18, 255, 10, 0.95);
+  background: linear-gradient(325deg, #46f932, #6dfc46d9);
+  box-shadow: 0 6px 24px rgba(10, 255, 26, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.button-primary:hover {
+  background: rgba(10, 132, 255, 0.95);
+  background: linear-gradient(325deg, #3235f9, #46a1fcd9);
+  box-shadow: 0 6px 24px rgba(10, 132, 255, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}

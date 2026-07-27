@@ -27,26 +27,7 @@ export default function RootLayout({
           </div>
           <BotennicaChatbot />
         </QuaryClient>
-
-
-        <script
-          id="Nexora-widget"
-          src="https://nexora.bishal.online/widget.js"
-          data-server-url="https://nexora.bishal.online"
-          data-site-id="Vishal B_web_collection1784816685483"
-          data-unique-id="cmrxlrstw0001jj04poq79zer"
-          data-welcome-message="Hello! How can I assist you today?"
-          data-header-title="Nexora AI"
-          data-button-label="Ask Nexora"
-          data-button-color="#00612f"
-          data-button-text-color="#ffffff"
-          data-button-position="right"
-          data-button-border-radius="30"
-          data-window-width="400"
-          data-window-height="500"
-          data-primary-color="#00612f"
-          data-theme="light"
-        ></script>
+ 
       </body>
     </html>
   );

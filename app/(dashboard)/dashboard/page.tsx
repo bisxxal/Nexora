@@ -9,7 +9,7 @@ import gsap from 'gsap';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { ArrowRight, Check, FileText, LoaderCircle, MessageCircle, Plus } from 'lucide-react';
+import { ArrowRight, Check, FileText, LoaderCircle, Plus } from 'lucide-react';
 import { sources } from '@/lib/utils';
  
 
@@ -131,7 +131,6 @@ export default function DashBoardPage() {
         <div className="knowledge-area">
           <div className="dash-section-heading dash-reveal">
             <div>
-              <span className="dash-kicker">KNOWLEDGE BASE</span>
               <h2>
                 Feed your agent <em>the good stuff.</em>
               </h2>
@@ -211,49 +210,11 @@ export default function DashBoardPage() {
               )
             )}
           </AnimatePresence>
-          {/* <div className="github-row dash-card">
-          <Code2 size={19} />
-          <div>
-            <b>Bring a GitHub repository</b>
-            <span>Train your agent on product docs, READMEs and code.</span>
-          </div>
-          <form action={submitSource}>
-            <input name="github" placeholder="github.com/your-org/repo" />
-            <button aria-label="Add GitHub source">
-              <ArrowRight size={16} />
-            </button>
-          </form>
-        </div> */}
+           
         </div>
 
         <aside className="dash-sidebar">
-          <div className="activity-card dash-card">
-            <div className="side-head">
-              <div>
-                <span className="dash-kicker">AT A GLANCE</span>
-                <h3>Today’s pulse</h3>
-              </div>
-              <span className="live-dot">LIVE</span>
-            </div>
-            <div className="mini-metrics">
-              <div>
-                <b>0</b>
-                <span>Conversations</span>
-              </div>
-              <div>
-                <b>—</b>
-                <span>Avg. response</span>
-              </div>
-            </div>
-            <div className="empty-activity">
-              <MessageCircle size={19} />
-              <p>Your agent is waiting for its first conversation.</p>
-            </div>
-            <Link href="/my-chatbot">
-              View agents <ArrowRight size={15} />
-            </Link>
-          </div>
-
+           
           <div className="publish-card dash-card">
             <span className="dash-kicker">WHEN YOU’RE READY</span>
             <h3>

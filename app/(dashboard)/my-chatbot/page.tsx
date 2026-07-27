@@ -230,24 +230,23 @@ const MyChatBot = () => {
               </div>
 
               <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={barData} margin={{ top: 4, right: 10, left: -10, bottom: 40 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#c9d0c5" vertical={false} />
+                <BarChart data={barData} barSize={25} margin={{ top: 4, right: 10, left: -10, bottom: 10 }}>
+                  <CartesianGrid strokeDasharray="1 1" stroke="#c9d0c5" vertical={false} />
                   <XAxis
                     dataKey="name"
-                    tick={{ fill: '#64716a', fontSize: 11, fontWeight: 600 }}
+                    tick={{ fill: '#64716a', fontSize: 10, fontWeight: 600 }}
                     tickLine={false}
                     axisLine={false}
-
                     interval={0}
                   />
                   <YAxis
-                    tick={{ fill: '#64716a', fontSize: 11 }}
+                    tick={{ fill: '#64716a', fontSize: 10 }}
                     tickLine={false}
                     axisLine={false}
                     allowDecimals={false}
                   />
                   <Tooltip content={<BarTooltip />} cursor={{ fill: '#64716a18' }} />
-                  <Bar dataKey="conversations" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="conversations"  radius={[4, 4, 0, 0]}>
                     {barData.map((_: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={SLICE_COLORS[index % SLICE_COLORS.length]} />
                     ))}
@@ -379,7 +378,7 @@ const MyChatBot = () => {
                     ) : (
                       <div className=' flex gap-2.5 flex-wrap '>
                         {data.res && data.res.map((model: any) => (
-                          <div className={`border block abot border-[#c9d0c5] bg-[#f7f9f5] rounded-2xl  shadow-[-3px_2px_1px_#0000005e] p-3 px-4 w-[460px] ${model.status === 'PENDING' ? 'opacity-70 cursor-not-allowed' : ''}`} key={model.id}>
+                          <div className={`border block abot border-[#c9d0c5] bg-[#f7f9f5] rounded-3xl  shadow-[-3px_2px_1px_#0000005e] p-3 px-4 w-[460px] ${model.status === 'PENDING' ? 'opacity-70 cursor-not-allowed' : ''}`} key={model.id}>
                             <div className=' flex items-center justify-between px-5 gap-2'>
                               <div className=' bg-[#cff45f] mb-3 p-2 w-fit rounded-xl'><Bot className=' text-[#64716a]' /></div>
                               <div className=' flex items-end gap-2 flex-col'>
@@ -388,7 +387,7 @@ const MyChatBot = () => {
                                 ) : model?.status === 'FAILED' ? (
                                   <div className=' bg-red-500/50 text-red-700 px-3 py-1 rounded-full center w-fit text-sm font-medium'>Failed</div>
                                 ) : (
-                                  <div className=' bg-green-500/50 text-green-600 pr-2 rounded-full center w-fit'><DotIcon className=' animate-pulse text-xl' color='green' size={28} /> Active</div>
+                                  <div className=' bg-linear-to-tl from-green-600 to-emerald-30 button-green text-white green-600 pr-2 rounded-full center w-fit'><DotIcon className=' animate-pulse text-xl' color='green' size={28} /> Active</div>
                                 )}
                                 <p>Context from : {model?.source?.toUpperCase()}</p>
                                 <p>Conversations : {model?.times}</p>
@@ -397,11 +396,11 @@ const MyChatBot = () => {
                             <p className='mt-5'>Name : {model?.name?.toUpperCase()}</p>
                             <p className=' mt-3 text-zinc-600 text-sm'>Site Id : {model.collection_name}</p>
                             <p className=' mt-3 text-zinc-600 text-sm'>Model id : {model.id}</p>
-                            <p className=' mt-3 text-zinc-600 text-sm'>Last active at : {model.updated_at.toLocaleString('en-US')}</p>
+                            <p className=' mt-3 text-red-600  text-sm '>Last active at : {model.updated_at.toLocaleString('en-US')}</p>
                             <p className=' mt-3 text-zinc-600 text-sm'>Created at : {model.created_at.toLocaleString('en-US')}</p>
 
-                            <Link href={model.status === 'PENDING' || model.status === 'FAILED' ? '#' : `embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`}  
-                            className='flex center  button-light w-full p-2 rounded-full mt-5 mb-1 '>Test agent </Link>
+                           {  model.status !== 'FAILED' && <Link href={model.status === 'PENDING' || model.status === 'FAILED' ? '#' : `embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`}  
+                            className='flex center  button-light w-full p-2 rounded-full mt-5 mb-1 '>Test agent </Link>}
                           </div>
                         ))}
                       </div>
