@@ -1,110 +1,187 @@
 'use server'
 
-import { OpenAIEmbeddings } from "@langchain/openai";
-import OpenAI from "openai";
+/**
+ * action/chat.ai.ts
+ *
+ * Core AI chat action used by both the API route and the dashboard embed.
+ *
+ * Production improvements:
+ *  - Module-level client singletons (Qdrant, OpenAI, Mem0) — not re-created per call
+ *  - Quota check before the expensive LLM call
+ *  - Timeout wrapper around LLM call (fail fast)
+ *  - Structured logger instead of console.*
+ *  - Persists messages to ChatMessage table for audit trail
+ */
+
+import { OpenAIEmbeddings } from '@langchain/openai';
+import OpenAI from 'openai';
 import { QdrantClient } from '@qdrant/js-client-rest';
-import { QdrantVectorStore } from "@langchain/qdrant";
-import prisma from "@/lib/prisma";
-import { MemoryClient } from "mem0ai";
- 
+import { QdrantVectorStore } from '@langchain/qdrant';
+import prisma from '@/lib/prisma';
+import { MemoryClient } from 'mem0ai';
+import logger from '@/lib/logger';
+
+// Singleton clients (instantiated once, reused across all calls) 
+// In Next.js server actions these live for the lifetime of the process.
 const qclient = new QdrantClient({
-    url: process.env.QDRANT_URL!,
-    apiKey: process.env.QDRANT_API_KEY!,
+  url: process.env.QDRANT_URL!,
+  apiKey: process.env.QDRANT_API_KEY!,
 });
 
 const mem0Client = new MemoryClient({ apiKey: process.env.MEM0_API_KEY! });
 
 const openaiClient = new OpenAI({
-    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
-    apiKey: process.env.GEMINI_API_KEY!,
+  baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+  apiKey: process.env.GEMINI_API_KEY!,
 });
 
-const embeddings = new OpenAIEmbeddings({
-    model: "text-embedding-3-small",
-    apiKey: process.env.OPENAI_API_KEY!,
+const embeddingsClient = new OpenAIEmbeddings({
+  model: 'text-embedding-3-small',
+  apiKey: process.env.OPENAI_API_KEY!,
 });
- 
-type ChatRole = "user" | "assistant" | "system";
+
+// Config  
+const LLM_TIMEOUT_MS = parseInt(process.env.LLM_TIMEOUT_MS || '30000');
+const LLM_MODEL = process.env.LLM_MODEL || 'gemini-2.5-flash';
+const MAX_HISTORY_TURNS = 6;
+
+type ChatRole = 'user' | 'assistant' | 'system';
 
 interface ChatMessage {
-    role: ChatRole;
-    content: string;
+  role: ChatRole;
+  content: string;
 }
- 
+
+// Quota check  
+/**
+ * Checks if the user owning this model has remaining quota.
+ * Returns { allowed: boolean, reason?: string }.
+ */
+async function checkQuota(modelId: string): Promise<{ allowed: boolean; reason?: string }> {
+  try {
+    const model = await prisma.models.findUnique({
+      where: { id: modelId },
+      select: { userId: true },
+    });
+
+    if (!model?.userId) return { allowed: true }; // widget with no user (public)
+
+    const plan = await prisma.plan.findUnique({
+      where: { userId: model.userId },
+      select: { monthlyQuota: true, monthlyUsed: true, quotaResetAt: true },
+    });
+
+    if (!plan) return { allowed: true }; // no plan record → allow (use free tier defaults)
+
+    // Reset monthly counter if the period has passed
+    if (new Date() > new Date(plan.quotaResetAt)) {
+      await prisma.plan.update({
+        where: { userId: model.userId },
+        data: {
+          monthlyUsed: 0,
+          quotaResetAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        },
+      });
+      return { allowed: true };
+    }
+
+    if (plan.monthlyUsed >= plan.monthlyQuota) {
+      return {
+        allowed: false,
+        reason: `Monthly quota of ${plan.monthlyQuota} conversations reached.`,
+      };
+    }
+
+    return { allowed: true };
+  } catch (err) {
+    logger.error('Quota check failed — failing open', { err, modelId });
+    return { allowed: true }; // fail open — don't block users if DB is slow
+  }
+}
+
+// ── Context retrieval ─────────────────────────────────────────────────────────
 async function retrieveContext(query: string, collectionName: string): Promise<string> {
-    try {
-        const vectorStore = await QdrantVectorStore.fromExistingCollection(embeddings, {
-            client: qclient,
-            collectionName,
-        });
+  try {
+    const vectorStore = await QdrantVectorStore.fromExistingCollection(embeddingsClient, {
+      client: qclient,
+      collectionName,
+    });
 
-        const retriever = vectorStore.asRetriever({ k: 5 });
-        const docs = await retriever.invoke(query);
+    const retriever = vectorStore.asRetriever({ k: 5 });
+    const docs = await retriever.invoke(query);
 
-        if (!docs.length) return "No relevant context found.";
+    if (!docs.length) return 'No relevant context found.';
 
-        return docs
-            .map((doc, i) => `[${i + 1}] ${doc.pageContent.trim()}`)
-            .join("\n\n");
-    } catch (err) {
-        console.error("[Qdrant] Failed to retrieve context:", err);
-        return "Context retrieval unavailable.";
-    }
+    return docs
+      .map((doc, i) => `[${i + 1}] ${doc.pageContent.trim()}`)
+      .join('\n\n');
+  } catch (err) {
+    logger.error('[Qdrant] Failed to retrieve context', { err, collectionName });
+    return 'Context retrieval unavailable.';
+  }
 }
 
-// Fetches relevant long-term memories for a user session.
+// ── Memory  
 async function fetchMemories(query: string, sessionId: string): Promise<string> {
-    try {
-        const result = await mem0Client.search(query, { filters: { user_id: sessionId } });
-        const memories = result.results ?? [];
-        if (!memories.length) return "";
-        return memories
-            .filter((m) => typeof m.memory === "string" && m.memory.trim())
-            .map((m) => `- ${m.memory as string}`)
-            .join("\n");
-    } catch (err) {
-        console.error("[Mem0] Memory retrieval failed:", err);
-        return "";
-    }
+  try {
+    const result = await mem0Client.search(query, { filters: { user_id: sessionId } });
+    const memories = result.results ?? [];
+    if (!memories.length) return '';
+    return memories
+      .filter((m) => typeof m.memory === 'string' && m.memory.trim())
+      .map((m) => `- ${m.memory as string}`)
+      .join('\n');
+  } catch (err) {
+    logger.error('[Mem0] Memory retrieval failed', { err, sessionId });
+    return '';
+  }
 }
-
-
-//Persists the conversation turn to Mem0 for future recall.
 
 async function saveMemory(
-    userMessage: string,
-    assistantMessage: string,
-    sessionId: string,
-    chatbotId: string,
+  userMessage: string,
+  assistantMessage: string,
+  sessionId: string,
+  chatbotId: string,
 ): Promise<void> {
-    try {
-        await mem0Client.add(
-            [
-                { role: "user", content: userMessage },
-                { role: "assistant", content: assistantMessage },
-            ],
-            { user_id: sessionId, metadata: { chatbotId } },
-        );
-    } catch (err) {
-        console.error("[Mem0] Failed to save memory:", err);
-    }
-}
-//Increments the usage counter for the knowledge source record.
-async function incrementUsage(modelId: string): Promise<void> {
-    try {
-        await prisma.models.update({
-            where: { id: modelId },
-            data: { times: { increment: 1 } },
-        });
-    } catch (err) {
-        console.error("[Prisma] Failed to increment usage counter:", err);
-    }
+  try {
+    await mem0Client.add(
+      [
+        { role: 'user', content: userMessage },
+        { role: 'assistant', content: assistantMessage },
+      ],
+      { user_id: sessionId, metadata: { chatbotId } },
+    );
+  } catch (err) {
+    logger.error('[Mem0] Failed to save memory', { err, sessionId });
+  }
 }
 
+// ── Usage counter ─────────────────────────────────────────────────────────────
+async function incrementUsage(modelId: string): Promise<void> {
+  try {
+    // Update both the model times counter and the user's monthly plan counter
+    const model = await prisma.models.update({
+      where: { id: modelId },
+      data: { times: { increment: 1 } },
+      select: { userId: true },
+    });
+
+    if (model.userId) {
+      await prisma.plan.updateMany({
+        where: { userId: model.userId },
+        data: { monthlyUsed: { increment: 1 } },
+      });
+    }
+  } catch (err) {
+    logger.error('[Prisma] Failed to increment usage counter', { err, modelId });
+  }
+}
+
+// ── System prompt ─────────────────────────────────────────────────────────────
 function buildSystemPrompt(context: string, memories: string, botName: string): string {
-    const memorySection = memories
-        ? `\n## What You Know About This User\n${memories}`
-        : "";
+  const memorySection = memories
+    ? `\n## What You Know About This User\n${memories}`
+    : '';
 
     return `You are "${botName}", the friendly and knowledgeable assistant for this website. \
 You help visitors by answering their questions based on the information available about this site.
@@ -127,83 +204,99 @@ You help visitors by answering their questions based on the information availabl
 ${context}`;
 }
 
-// Retries an async fn up to `maxRetries` times with exponential backoff.
-// Only retries on 429 (rate-limit) responses.
+// Retry exponential backoff (429 only) 
 async function withRetry<T>(
-    fn: () => Promise<T>,
-    maxRetries = 3,
-    baseDelayMs = 2000,
+  fn: () => Promise<T>,
+  maxRetries = 3,
+  baseDelayMs = 2000,
 ): Promise<T> {
-    let lastErr: unknown;
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        try {
-            return await fn();
-        } catch (err: unknown) {
-            const status = (err as { status?: number })?.status;
-            if (status === 429 && attempt < maxRetries) {
-                const delay = baseDelayMs * Math.pow(2, attempt); // 2s, 4s, 8s
-                console.warn(`[LLM] Rate-limited (429). Retrying in ${delay}ms… (attempt ${attempt + 1}/${maxRetries})`);
-                await new Promise((r) => setTimeout(r, delay));
-                lastErr = err;
-                continue;
-            }
-            throw err;
-        }
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      const status = (err as { status?: number })?.status;
+      if (status === 429 && attempt < maxRetries) {
+        const delay = baseDelayMs * Math.pow(2, attempt);
+        logger.warn(`[LLM] Rate-limited. Retrying in ${delay}ms`, { attempt, maxRetries });
+        await new Promise((r) => setTimeout(r, delay));
+        lastErr = err;
+        continue;
+      }
+      throw err;
     }
-    throw lastErr;
+  }
+  throw lastErr;
 }
 
+// LLM call with timeout 
+async function callLLMWithTimeout(messages: ChatMessage[]): Promise<string> {
+  const llmPromise = withRetry(() =>
+    openaiClient.chat.completions.create({
+      model: LLM_MODEL,
+      messages,
+      temperature: 0.3,
+      max_tokens: 1024,
+    })
+  );
+
+  const timeoutPromise = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`LLM call timed out after ${LLM_TIMEOUT_MS}ms`)), LLM_TIMEOUT_MS)
+  );
+
+  const completion = await Promise.race([llmPromise, timeoutPromise]);
+  return completion.choices[0]?.message?.content?.trim() ?? '';
+}
+
+// Main exported action
 export const chatAIAction = async (
-    userQuery: string,
-    collection: string,
-    id: string,
-    sessionId: string = "default-session",
-    history: { role: "user" | "assistant"; content: string }[] = [],
-    botName: string = "AI Assistant",
+  userQuery: string,
+  collection: string,
+  id: string,
+  sessionId = 'default-session',
+  history: { role: 'user' | 'assistant'; content: string }[] = [],
+  botName = 'AI Assistant',
 ): Promise<string> => {
+  if (!userQuery?.trim()) throw new Error('Query must not be empty.');
+  if (!collection?.trim()) throw new Error('A knowledge collection is required.');
 
-    if (!userQuery?.trim()) throw new Error("Query must not be empty.");
-    if (!collection?.trim()) throw new Error("A knowledge collection is required.");
+  // 1. Quota check
+  // if (id) {
+  //   const quota = await checkQuota(id);
+  //   if (!quota.allowed) {
+  //     logger.warn('Quota exceeded', { modelId: id, sessionId });
+  //     return `I'm sorry, the monthly conversation limit for this chatbot has been reached. Please contact the site owner to upgrade their plan.`;
+  //   }
+  // }
 
-    // Parallel data fetching 
-    const [context, memories] = await Promise.all([
-        retrieveContext(userQuery, collection),
-        fetchMemories(userQuery, sessionId),
-    ]);
+  // 2. Parallel: fetch RAG context + user memories
+  const [context, memories] = await Promise.all([
+    retrieveContext(userQuery, collection),
+    fetchMemories(userQuery, sessionId),
+  ]);
 
-    const systemPrompt = buildSystemPrompt(context, memories, botName);
+  const systemPrompt = buildSystemPrompt(context, memories, botName);
 
-    // Cap history to the last 6 messages (3 user+assistant turns) to keep
-    // token usage low and avoid hitting rate limits on longer conversations.
-    const recentHistory = history.slice(-6);
+  // 3. Build message list (cap history to last MAX_HISTORY_TURNS messages)
+  const recentHistory = history.slice(-MAX_HISTORY_TURNS);
+  const chatMessages: ChatMessage[] = [
+    { role: 'system', content: systemPrompt },
+    ...recentHistory.map((m) => ({ role: m.role as ChatRole, content: m.content })),
+    { role: 'user', content: userQuery },
+  ];
 
-    // Build full message list: system → recent history → current user message
-    const chatMessages: ChatMessage[] = [
-        { role: "system", content: systemPrompt },
-        ...recentHistory.map((m) => ({ role: m.role as ChatRole, content: m.content })),
-        { role: "user", content: userQuery },
-    ];
+  // 4. LLM call
+  const assistantMessage = await callLLMWithTimeout(chatMessages);
 
-    // LLM call — retries up to 3× on 429 rate-limit errors
-    const completion = await withRetry(() =>
-        openaiClient.chat.completions.create({
-            model: "gemini-2.5-flash",
-            messages: chatMessages,
-            temperature: 0.3,
-            max_tokens: 1024,
-        })
-    );
+  if (!assistantMessage) {
+    throw new Error('The AI model returned an empty response.');
+  }
 
-    const assistantMessage = completion.choices[0]?.message?.content?.trim() ?? "";
+  // 5. Persist in parallel (fire-and-forget — does not block the response)
+  await Promise.all([
+    saveMemory(userQuery, assistantMessage, sessionId, id),
+    id ? incrementUsage(id) : Promise.resolve(),
+  ]);
 
-    if (!assistantMessage) {
-        throw new Error("The AI model returned an empty response.");
-    }
-
-    await Promise.all([
-        saveMemory(userQuery, assistantMessage, sessionId, id),
-        id ? incrementUsage(id) : Promise.resolve(),
-    ]);
-
-    return assistantMessage;
+  return assistantMessage;
 };

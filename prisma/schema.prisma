@@ -13,29 +13,51 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
-  
-  models models[]
+  accounts     Account[]
+  sessions     Session[]
+  models       models[]
+  plan         Plan?
+
+  createdAt    DateTime  @default(now())
+
   @@index([id])
+  @@index([email])
 }
 
-model models{
-  id          String   @id @default(cuid())
-  collection_name  String?
-  source String?
-  times    Int? @default(0)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  type       String? @default("bot")
-  name   String?
-  status String? @default("PENDING")
-  userId String? 
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+ model models {
+  id              String   @id @default(cuid())
+  collection_name String?
+  source          String?
+  times           Int?     @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  type            String?  @default("bot")
+  name            String?
+  status          String?  @default("PENDING")
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
 
   @@index([id, userId])
+  @@index([userId, status])         
+  @@index([collection_name])         
 }
 
+ model Plan {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  tier               String   @default("free")    
+  monthlyQuota       Int      @default(100)        
+  monthlyUsed        Int      @default(0)          // conversations used this month
+  quotaResetAt       DateTime                      // when the monthly counter resets
+  maxBots            Int      @default(3)          // max simultaneous bots
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
 
 model Account {
   id                String  @id @default(cuid())
@@ -48,7 +70,7 @@ model Account {
   token_type        String?
   scope             String?
   id_token          String? @db.Text
-  session_state     String?
+  session_state     String? @map("session_state")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

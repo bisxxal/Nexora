@@ -1,0 +1,158 @@
+name: nexora-prod
+
+# ── Production Docker Compose ──────────────────────────────────────────────────
+# For a real 1M-user deployment you'd use Kubernetes instead.
+# This compose file is suitable for a single powerful server or a small cluster.
+#
+# Usage:
+#   docker-compose -f docker-compose.prod.yml up -d
+#
+# IMPORTANT: Set all environment variables via .env.prod or your secrets manager.
+# Never commit secrets to version control.
+
+services:
+  # ── Next.js Application (can run multiple replicas) ──────────────────────────
+  app:
+    image: nexora-app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      REDIS_TLS: ${REDIS_TLS:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      MEM0_API_KEY: ${MEM0_API_KEY}
+      AUTH_SECRET: ${AUTH_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-30000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    deploy:
+      replicas: 2                      # Run 2 app instances
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 512m
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ── Embedding Worker (scale independently) ───────────────────────────────────
+  worker:
+    image: nexora-worker:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    restart: always
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      REDIS_TLS: ${REDIS_TLS:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-5}
+      MAX_GITHUB_FILES: ${MAX_GITHUB_FILES:-300}
+      MAX_PDF_SIZE_MB: ${MAX_PDF_SIZE_MB:-20}
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    deploy:
+      replicas: 2                      # Scale workers independently from app
+      resources:
+        limits:
+          memory: 2g                   # Workers need more RAM for PDF/GitHub processing
+        reservations:
+          memory: 512m
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────────
+  # For production at scale, replace this with a managed Postgres service
+  # (AWS RDS, Supabase, Neon, PlanetScale) and remove this service.
+  # Always use a connection pooler (PgBouncer, RDS Proxy, Prisma Accelerate).
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-nexora}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-nexora}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ─────────────────────────────────────────────────────────────────────
+  # For production at scale, replace with managed Redis (Upstash, Redis Cloud, AWS ElastiCache).
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 600m
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Nginx Reverse Proxy (optional — use Cloudflare/ALB in cloud deployments) ─
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx_certs:/etc/ssl/certs
+    depends_on:
+      - app
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+volumes:
+  postgres_data:
+  redis_data:
+  nginx_certs:

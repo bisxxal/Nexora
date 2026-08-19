@@ -1,0 +1,38 @@
+# .dockerignore
+#
+# Files excluded from Docker build context.
+# Keeps images small and prevents secrets from leaking into images.
+
+# Dependencies (rebuilt inside container)
+node_modules
+npm-debug.log*
+
+# Next.js build output (rebuilt inside container)
+.next
+
+# Environment files (injected at runtime, NOT baked into image)
+.env
+.env.*
+!.env.example
+
+# Version control
+.git
+.gitignore
+
+# Development tools
+.eslintcache
+tsconfig.tsbuildinfo
+
+# Local dev files
+.DS_Store
+*.local
+temp/
+
+# IDE config
+.vscode
+.idea
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+__tests__/

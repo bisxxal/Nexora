@@ -1,0 +1,43 @@
+# Dockerfile.worker
+#
+# Separate image for the BullMQ embedding worker.
+# This allows independent scaling — you can run N worker containers
+# while running M app containers, scaled independently.
+
+FROM node:20-alpine AS deps
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+COPY prisma ./prisma
+
+RUN npm ci --ignore-scripts && npx prisma generate
+
+# ── Runtime ────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Add non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 worker
+
+# Copy everything needed for the worker
+COPY --from=deps /app/node_modules ./node_modules
+COPY workers ./workers
+COPY lib ./lib
+COPY prisma ./prisma
+COPY package.json ./
+COPY tsconfig.json ./
+COPY tsconfig.worker.json ./
+COPY .env* ./
+
+USER worker
+
+# Environment variable controls concurrency (default 5)
+ENV WORKER_CONCURRENCY=5
+
+# tsx runs TypeScript directly (installed in node_modules)
+CMD ["node_modules/.bin/tsx", "workers/embeddingWorker.ts"]
