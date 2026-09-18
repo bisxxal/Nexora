@@ -44,7 +44,7 @@ export const generateEmbeddings = async (
                 throw new Error("Target model not found or unauthorized");
             }
             // Use existing collection name if appending to existing agent
-            collecttion = existing.collection_name;
+            collecttion = existing.collection_name ?? collecttion;
 
             // Update status to PENDING
             model = await prisma.models.update({
@@ -102,7 +102,7 @@ export const LoadPdfEmbedingsFromBuffer = async (
         if (!existing || existing.userId !== userId) {
             throw new Error("Target model not found or unauthorized");
         }
-        collectionName = existing.collection_name;
+        collectionName = existing.collection_name ?? collectionName;
 
         model = await prisma.models.update({
             where: { id: targetModelId },
