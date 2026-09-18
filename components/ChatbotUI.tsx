@@ -1,6 +1,6 @@
 "use client";
 
-import { chatAIAction } from "@/action/chat.ai";
+
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -215,8 +215,26 @@ export function ChatbotUI({
         role: m.role as "user" | "assistant",
         content: m.content,
       }));
-      const res = await chatAIAction(input, collections, id, sessionId, history, headerTitle);
-      setMessages([...updated, { role: "assistant", content: res ?? "" }]);
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: input,
+          siteId: collections,
+          uniqueId: id,
+          sessionId,
+          history,
+          botName: headerTitle,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch response');
+      }
+
+      const data = await response.json();
+      setMessages([...updated, { role: "assistant", content: data.reply ?? "" }]);
     } catch {
       setMessages((m) => [
         ...m,

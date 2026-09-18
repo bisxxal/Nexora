@@ -49,14 +49,14 @@ export async function POST(req: NextRequest) {
     );
   }
  
-  let body: { message?: string; siteId?: string; uniqueId?: string; sessionId?: string; botName?: string };
+  let body: { message?: string; siteId?: string; uniqueId?: string; sessionId?: string; botName?: string; history?: { role: 'user' | 'assistant'; content: string }[] };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400, headers });
   }
 
-  const { message, siteId, uniqueId, sessionId, botName } = body;
+  const { message, siteId, uniqueId, sessionId, botName, history = [] } = body;
 
   if (!message?.trim()) {
     return NextResponse.json({ error: 'message is required.' }, { status: 400, headers });
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
       siteId,
       uniqueId,
       sessionId ?? 'widget-session',
-      [],
+      history,
       botName ?? 'AI Assistant'
     );
 
