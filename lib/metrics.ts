@@ -1,16 +1,4 @@
-/**
- * lib/metrics.ts
- *
- * Lightweight Redis-based metrics counters and latency tracking.
- * These are simple, zero-dependency gauges that can be read from a
- * /api/admin/metrics endpoint or exported to Prometheus/Datadog.
- *
- * Usage:
- *   await metrics.incrementCounter('chat.requests');
- *   await metrics.recordLatency('chat.llm_ms', 342);
- *   const stats = await metrics.getSnapshot();
- */
-
+ 
 import Redis from 'ioredis';
 import logger from './logger';
 
@@ -38,15 +26,8 @@ function getRedis(): Redis {
   return _redis;
 }
 
-// ── Key prefix ───────────────────────────────────────────────────────────────
-const PREFIX = 'metrics:';
-
-// ── Counter helpers ──────────────────────────────────────────────────────────
-
-/**
- * Increment a named counter by `by` (default 1).
- * Counters are stored as Redis strings and never expire.
- */
+ const PREFIX = 'metrics:';
+ 
 async function incrementCounter(name: string, by = 1): Promise<void> {
   try {
     await getRedis().incrby(`${PREFIX}counter:${name}`, by);
@@ -54,10 +35,7 @@ async function incrementCounter(name: string, by = 1): Promise<void> {
     logger.warn('metrics.incrementCounter failed', { name, err });
   }
 }
-
-/**
- * Get the current value of a named counter.
- */
+ 
 async function getCounter(name: string): Promise<number> {
   try {
     const val = await getRedis().get(`${PREFIX}counter:${name}`);
@@ -66,15 +44,10 @@ async function getCounter(name: string): Promise<number> {
     return 0;
   }
 }
-
-// ── Latency (rolling histogram approximation) ────────────────────────────────
-// We keep the last 1000 samples in a Redis list (LPUSH + LTRIM).
+ 
 const MAX_LATENCY_SAMPLES = 1000;
 
-/**
- * Record a latency sample in milliseconds.
- * Stores up to MAX_LATENCY_SAMPLES samples in a capped list.
- */
+ 
 async function recordLatency(name: string, ms: number): Promise<void> {
   try {
     const key = `${PREFIX}latency:${name}`;
@@ -85,10 +58,7 @@ async function recordLatency(name: string, ms: number): Promise<void> {
     logger.warn('metrics.recordLatency failed', { name, err });
   }
 }
-
-/**
- * Compute p50, p95, p99 from stored latency samples.
- */
+ 
 async function getLatencyStats(name: string): Promise<{ p50: number; p95: number; p99: number; count: number }> {
   try {
     const key = `${PREFIX}latency:${name}`;
@@ -104,13 +74,7 @@ async function getLatencyStats(name: string): Promise<{ p50: number; p95: number
     return { p50: 0, p95: 0, p99: 0, count: 0 };
   }
 }
-
-// ── Snapshot ─────────────────────────────────────────────────────────────────
-
-/**
- * Get all key metrics as a JSON snapshot.
- * Suitable for exposing from /api/admin/metrics.
- */
+ 
 async function getSnapshot(): Promise<Record<string, unknown>> {
   const [
     chatRequests,
@@ -149,8 +113,7 @@ async function getSnapshot(): Promise<Record<string, unknown>> {
   };
 }
 
-// ── Named counters (typed enum-style) ────────────────────────────────────────
-export const METRIC = {
+ export const METRIC = {
   CHAT_REQUEST:        'chat.requests',
   CHAT_ERROR:          'chat.errors',
   CHAT_RATE_LIMITED:   'chat.rate_limited',

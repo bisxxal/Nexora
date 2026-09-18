@@ -1,17 +1,4 @@
-/**
- * workers/embeddingWorker.ts
- *
- * BullMQ worker that processes embedding jobs.
- *
- * Production fixes applied:
- *  - Uses shared Prisma singleton (no new PrismaClient() per job)
- *  - Redis TLS only when REDIS_TLS=true
- *  - Concurrency: processes up to 5 jobs in parallel per worker process
- *  - GitHub repo guard: skips repos > MAX_GITHUB_FILES (prevents OOM)
- *  - All logging via structured logger
- *  - Metrics tracking (queued, completed, failed)
- */
-
+ 
 import { Worker, Job } from 'bullmq';
 import { QdrantClient } from '@qdrant/js-client-rest';
 import { OpenAIEmbeddings } from '@langchain/openai';
@@ -22,14 +9,11 @@ import * as dotenv from 'dotenv';
 import * as cheerio from 'cheerio';
 import pdfParse from 'pdf-parse';
 import { YoutubeTranscript } from 'youtube-transcript';
-
-// Load env before any other imports that might need them
+ 
 dotenv.config({ path: '.env' });
-
-// ── Shared singletons (NOT re-created per job) ───────────────────────────────
+ 
 import prisma from '../lib/prisma';
-
-// Inline logger for worker process (can't import Next.js modules)
+ 
 const isDev = process.env.NODE_ENV !== 'production';
 function log(level: string, msg: string, meta?: object) {
   const entry = { ts: new Date().toISOString(), level, msg, ...meta };
@@ -50,7 +34,6 @@ const qclient = new QdrantClient({
   apiKey: process.env.QDRANT_API_KEY!,
 });
 
-// ── Redis connection ──────────────────────────────────────────────────────────
 const useTls = process.env.REDIS_TLS === 'true';
 
 const connection = process.env.REDIS_URL
@@ -62,18 +45,15 @@ const connection = process.env.REDIS_URL
       tls: useTls ? {} : undefined,
     };
 
-// ── Limits ────────────────────────────────────────────────────────────────────
+
 const MAX_GITHUB_FILES = parseInt(process.env.MAX_GITHUB_FILES || '300');
 const MAX_PDF_SIZE_MB = parseInt(process.env.MAX_PDF_SIZE_MB || '20');
-
-// ── Source loaders ────────────────────────────────────────────────────────────
 
 async function loadGithubRepo(url: string, token: string): Promise<Document[]> {
   const match = url.match(/github\.com\/([^/]+)\/([^/]+)/);
   if (!match) throw new Error('Invalid GitHub URL');
   const [, owner, repo] = match;
-
-  // Try main branch, fall back to master
+ 
   let treeData: { tree: { type: string; path: string; url: string }[] } | null = null;
   for (const branch of ['main', 'master']) {
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/${branch}?recursive=1`;
@@ -87,7 +67,7 @@ async function loadGithubRepo(url: string, token: string): Promise<Document[]> {
 
   const blobs = treeData.tree.filter((f) => f.type === 'blob');
 
-  // OOM guard: reject repos that are too large
+  //  reject repos that are too large
   if (blobs.length > MAX_GITHUB_FILES) {
     throw new Error(
       `Repo has ${blobs.length} files which exceeds the limit of ${MAX_GITHUB_FILES}. ` +
@@ -147,7 +127,7 @@ async function loadWebpage(url: string): Promise<Document[]> {
     if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
     const html = await res.text();
     const $ = cheerio.load(html);
-    // Remove scripts, styles, nav, footer for cleaner content
+    // Remove scripts, styles, nav, footer 
     $('script, style, nav, footer, header, [role="navigation"]').remove();
     const text = $('body').text().replace(/\s+/g, ' ').trim();
     return [new Document({ pageContent: text, metadata: { source_url: url, source_type: 'web' } })];
@@ -162,9 +142,7 @@ async function splitAndEmbed(docs: Document[], collectionName: string, chunkSize
   if (!splitDocs.length) throw new Error('No content to embed after splitting');
   await QdrantVectorStore.fromDocuments(splitDocs, embeddings, { client: qclient, collectionName });
 }
-
-// ── Worker ────────────────────────────────────────────────────────────────────
-
+ 
 interface EmbeddingJobData {
   url: string;
   type: 'github' | 'yt' | 'web' | 'text' | 'pdf';
@@ -221,8 +199,7 @@ const worker = new Worker<EmbeddingJobData>(
       } else {
         throw new Error(`Unknown job type: ${type}`);
       }
-
-      // Mark as COMPLETED
+ 
       await prisma.models.update({
         where: { id: modelId },
         data: { status: 'COMPLETED' },
@@ -240,12 +217,12 @@ const worker = new Worker<EmbeddingJobData>(
         data: { status: 'FAILED' },
       });
 
-      throw error; // Re-throw so BullMQ retries the job
+      throw error;  
     }
   },
   {
     connection,
-    concurrency: parseInt(process.env.WORKER_CONCURRENCY || '5'), // process up to 5 jobs in parallel
+    concurrency: parseInt(process.env.WORKER_CONCURRENCY || '5'), // process   to 5 jobs in parallel
   }
 );
 

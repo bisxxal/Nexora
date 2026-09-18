@@ -1,10 +1,6 @@
 name: nexora-dev
 
-# ── Local Development Compose ──────────────────────────────────────────────────
-# Starts all infrastructure services needed for local development.
-# Run: docker-compose up -d
-# Then start the app separately with: npm run dev
-
+ 
 services:
   # ── PostgreSQL ───────────────────────────────────────────────────────────────
   postgres:

@@ -1,6 +1,6 @@
 'use client';
 import { useSearchParams } from "next/navigation";
-import ChatbotPage from "../chatbot/page";
+import { ChatbotUI } from "@/components/ChatbotUI";
 import { Suspense } from 'react';
 
 function EmbedContent() {
@@ -19,7 +19,7 @@ function EmbedContent() {
 
   return (
     <div style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      <ChatbotPage
+      <ChatbotUI
         collections={col}
         welcomeMessage={welcomeMessage}
         id={id}

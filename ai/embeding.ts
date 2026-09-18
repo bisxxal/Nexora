@@ -77,6 +77,9 @@ export const LoadPdfEmbedingsFromBuffer = async (
         },
     });
 
+
+    console.log(base64Pdf , fileName )
+
     await embeddingQueue.add('generate-pdf-embedding', {
         type: 'pdf',
         collectionName,

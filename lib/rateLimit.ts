@@ -1,20 +1,8 @@
-/**
- * lib/rateLimit.ts
- *
- * sliding window rate limiter.
- *
- * Usage:
- *   const result = await rateLimitByIP(ip, 20, 60);  // 20 req per 60s
- *   if (!result.allowed) return 429;
- *
- *   const result = await rateLimitBySiteId(siteId, 100, 86400); // 100/day
- */
-
+ 
 import Redis from 'ioredis';
 import logger from './logger';
 
- // Re-uses the same env vars as queue.ts. This is a separate lightweight client.
-const redisUrl = process.env.REDIS_URL;
+ const redisUrl = process.env.REDIS_URL;
 const useTls = process.env.REDIS_TLS === 'true';
 
 let _redis: Redis | null = null;
@@ -38,26 +26,15 @@ function getRedis(): Redis {
   return _redis;
 }
 
-// ── Sliding window algorithm  
+//   Sliding window algorithm  
 export interface RateLimitResult {
-  /** Whether the request is allowed to proceed */
   allowed: boolean;
-  /** Remaining requests in the current window */
   remaining: number;
-  /** Seconds until the window resets */
   resetInSeconds: number;
-  /** The limit that was applied */
   limit: number;
 }
 
-/**
- * Sliding window rate limiter using Redis sorted sets.
- * Each unique key tracks timestamps of requests within the window.
- *
- * @param key         Unique rate-limit key (e.g. "rl:ip:1.2.3.4")
- * @param limit       Maximum requests allowed in the window
- * @param windowSecs  Window size in seconds
- */
+ 
 export async function rateLimit(
   key: string,
   limit: number,
@@ -67,8 +44,7 @@ export async function rateLimit(
   const now = Date.now();
   const windowMs = windowSecs * 1000;
   const windowStart = now - windowMs;
-
-  // Use a pipeline for atomicity and fewer round-trips
+ 
   const pipeline = redis.pipeline();
   pipeline.zremrangebyscore(key, '-inf', windowStart); // remove old entries
   pipeline.zadd(key, now, `${now}-${Math.random()}`);  // record this request
@@ -79,8 +55,7 @@ export async function rateLimit(
   try {
     results = await pipeline.exec() as [Error | null, unknown][];
   } catch (err) {
-    // Redis failure → fail open (don't block users if Redis is down)
-    logger.warn('Rate limit Redis pipeline failed — failing open', { key, err });
+     logger.warn('Rate limit Redis pipeline failed — failing open', { key, err });
     return { allowed: true, remaining: limit, resetInSeconds: windowSecs, limit };
   }
 
@@ -93,13 +68,7 @@ export async function rateLimit(
 
   return { allowed, remaining, resetInSeconds, limit };
 }
-
-// ── Convenience helpers  
-
-/**
- * Rate limit by client IP address.
- * Default: 30 requests per minute.
- */
+ 
 export async function rateLimitByIP(
   ip: string,
   limit = 30,
@@ -107,11 +76,7 @@ export async function rateLimitByIP(
 ): Promise<RateLimitResult> {
   return rateLimit(`rl:ip:${ip}`, limit, windowSecs);
 }
-
-/**
- * Rate limit per siteId (chatbot widget).
- * Default: 500 requests per day.
- */
+ 
 export async function rateLimitBySiteId(
   siteId: string,
   limit = 500,
@@ -119,11 +84,7 @@ export async function rateLimitBySiteId(
 ): Promise<RateLimitResult> {
   return rateLimit(`rl:site:${siteId}`, limit, windowSecs);
 }
-
-/**
- * Rate limit per authenticated user.
- * Default: 200 requests per hour.
- */
+ 
 export async function rateLimitByUserId(
   userId: string,
   limit = 200,

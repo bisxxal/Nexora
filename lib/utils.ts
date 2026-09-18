@@ -77,7 +77,7 @@ export const features = [
   ['Everything knows its place', 'Import your docs, site, help centre, PDFs and product data. Nexora keeps every answer grounded in the sources you trust.', Database],
   ['A voice that sounds like you', 'Set tone, guardrails and escalation rules in one visual workspace. Your agent stays useful, on-brand and on task.', Sparkles],
   ['One line. Every page.', 'Publish a beautifully native chat experience with one lightweight script. No engineering queue required.', Code2],
-];
+] as [string, string, any][];
 export const stats = [['47%', 'fewer repetitive tickets'], ['3.2×', 'faster time to resolution'], ['24/7', 'always-on customer help'], ['< 2 min', 'to launch your first agent']];
 
 

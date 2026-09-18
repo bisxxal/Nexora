@@ -35,8 +35,8 @@ export default function Home() {
 
 
     <nav className="nav-wrap fixed! w-[80%] !z-[100] top-6 rounded-full bg-linear-180 to-[#00000012] from-[#0000008f] shadow left-1/2 -translate-x-1/2 ">
-       <Link href="/" className="brand flex center  rounded-4xl   py-0">
-         <img className=' w-20 h-25  drop-shadow-[-3px_2px_0px_#28362e66   ' src="/logo2.png" alt="" />
+       <Link href="/" className="brand flex center  rounded-4xl py-0">
+         <img className=' w-14 h-18  drop-shadow-[-3px_2px_0px_#28362e66   ' src="/logo2.png" alt="" />
          <h1 className='text-[#f6f5ef]! text-[30px]! font-medium!   '>Nexora</h1>
       </Link>
       <div className="nav-links">
@@ -51,7 +51,7 @@ export default function Home() {
        
         <Link
           href={data?.user ? "/dashboard" : "/sign-in"}
-          className="button rounded-4xl! button-dark"
+          className="button py-1.5! rounded-4xl! button-dark"
         >
           {data?.user ? "Dashboard" : "Get started"} <ArrowRight size={16} />
         </Link>
@@ -105,13 +105,7 @@ export default function Home() {
             See it in action
           </a>
         </div>
-        <div className="trusted hero-reveal">
-          <span>Trusted by ambitious teams at</span>
-          <b>northstar</b>
-          <b>AXIS</b>
-          <b>vanta</b>
-          <b>luma</b>
-        </div>
+        
       </div>
       
       <div className='  ]'>
@@ -119,17 +113,7 @@ export default function Home() {
       </div>
     </section>
 
-    <section className="logo-strip">
-      <span>POWERING HELPFUL CONVERSATIONS FOR</span>
-      <div>
-        <b>FRACTAL</b>
-        <b>modal</b>
-        <b>HARBOR</b>
-        <b>ΔTOMIC</b>
-        <b>captain</b>
-        <b>notionly</b>
-      </div>
-    </section>
+     
 
     <section className="story-section section-pad" id="platform">
       
@@ -344,8 +328,7 @@ export default function Home() {
     <Subscription />
 
     <section className="final-cta"  >
-      {/* <div className="cta-glow" /> */}
-      <span className="eyebrow">YOUR TEAM IS READY</span>
+       <span className="eyebrow">YOUR TEAM IS READY</span>
       <h2 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>
         Make every visit
         <br />

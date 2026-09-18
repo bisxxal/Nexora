@@ -42,11 +42,11 @@ body {
   padding: 120px max(6vw, 32px);
 }
 .nav-wrap {
-  height: 70px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 max(1vw, 28px);
+  padding: 0 max(1vw, 2px);
   z-index: 10;
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(12px);

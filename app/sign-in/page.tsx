@@ -1,11 +1,8 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import { GraduationCap, ArrowLeft, Shield, Users, Zap, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
-
 const SignInPage = () => {
   const { data, status } = useSession();
 
@@ -17,10 +14,10 @@ const SignInPage = () => {
 
   return (
     <div className="min-h-screen flex text-[#111827]"  >
- 
+
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
-          {/* Back Button */}
+
           <button
             className="flex absolute top-10 left-10   bg-[#ffffff1a] rounded-full p-2   group"
             onClick={() => window.history.back()}
@@ -28,7 +25,6 @@ const SignInPage = () => {
             <ArrowLeft fill='white' size={20} className=" group-hover:-translate-x-1 transition-transform duration-300" />
           </button>
 
-          {/* Logo and Title */}
           <div className="text-center mb-8 appeartext ">
             <div className="flex items-center justify-center ">
               <Link href={'/'} className="  buttonbg  flex items-center justify-center  ">
@@ -36,27 +32,26 @@ const SignInPage = () => {
 
               </Link>
             </div>
-             
-                <h1 className='text-[#17221d]! text-6xl [text-shadow:-3px_2px_1px_#0000004d] whitespace-nowrap'> Welcome back</h1>
+
+            <h1 className='text-[#17221d]! text-5xl [text-shadow:-3px_2px_1px_#0000004d] whitespace-nowrap'> Welcome back</h1>
             <p className="text-gray-400 mt-2">Sign in to your Nexora account</p>
           </div>
 
-          {/* Sign In Card */}
+
           <div className="  bg-[#E2F4A4] rounded-3xl  relative shadow-[-3px_2px_1px_#0000005e] p-8 ">
 
-  <div className="absolute left-1/2 -translate-x-1/2 -translate-y-px top-0 z-0 flex h-12 w-full max-w-[min(267px,calc(100vw-2rem))] items-start justify-center">
-        <svg viewBox="0 0 85 64" fill="#F6F5EF" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto shrink-0 translate-x-px translate-y-px overflow-visible"><rect x="0" y="0" width="85" height="1" fill="#F6F5EF" transform="translate(0, -1)"></rect><path d="M50 45C57.3095 56.6952 71.2084 63.9997 85 64V0H0C13.7915 0 26.6905 7.30481 34 19L50 45Z" fill="#F6F5EF"></path></svg>
-        <div className=" relative z-10 h-[calc(100%+1px)] min-w-0 grow   bg-[#F6F5EF]"></div>
-        <svg viewBox="0 0 85 64" fill="#F6F5EF" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto shrink-0 -translate-x-px translate-y-px -scale-x-100 overflow-visible"><rect x="0" y="0" width="85" height="1" fill="#F6F5EF" transform="translate(0, -1)"></rect><path d="M50 45C57.3095 56.6952 71.2084 63.9997 85 64V0H0C13.7915 0 26.6905 7.30481 34 19L50 45Z" fill="#F6F5EF"></path>
-        </svg>
-      </div>
+            <div className="absolute left-1/2 -translate-x-1/2 -translate-y-px top-0 z-0 flex h-12 w-full max-w-[min(267px,calc(100vw-2rem))] items-start justify-center">
+              <svg viewBox="0 0 85 64" fill="#F6F5EF" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto shrink-0 translate-x-px translate-y-px overflow-visible"><rect x="0" y="0" width="85" height="1" fill="#F6F5EF" transform="translate(0, -1)"></rect><path d="M50 45C57.3095 56.6952 71.2084 63.9997 85 64V0H0C13.7915 0 26.6905 7.30481 34 19L50 45Z" fill="#F6F5EF"></path></svg>
+              <div className=" relative z-10 h-[calc(100%+1px)] min-w-0 grow   bg-[#F6F5EF]"></div>
+              <svg viewBox="0 0 85 64" fill="#F6F5EF" xmlns="http://www.w3.org/2000/svg" className="h-full w-auto shrink-0 -translate-x-px translate-y-px -scale-x-100 overflow-visible"><rect x="0" y="0" width="85" height="1" fill="#F6F5EF" transform="translate(0, -1)"></rect><path d="M50 45C57.3095 56.6952 71.2084 63.9997 85 64V0H0C13.7915 0 26.6905 7.30481 34 19L50 45Z" fill="#F6F5EF"></path>
+              </svg>
+            </div>
 
 
             <div className="text-center mt-10 mb-6">
               <h1 className="text-xl font-semibold text-[#28362E]! mb-2"><em>Sign in with Google</em></h1>
-             </div>
-
-            {/* Google Sign In Button */}
+            </div>
+ 
             <button
               onClick={() => signIn('google')}
               className={`w-full flex items-center justify-center px-6 py-4 bg-white hover:bg-gray-50 text-gray-900 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg  
@@ -86,8 +81,7 @@ const SignInPage = () => {
               </>
 
             </button>
-
-            {/* Security Note */}
+ 
             <div className="mt-6 p-4 border bg-[#28362E]  backdrop-blur-3xl  rounded-xl">
               <div className="flex items-start">
                 <Shield className="w-5 h-5 text-[#48f291] mr-3 mt-0.5 flex-shrink-0" />

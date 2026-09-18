@@ -17,7 +17,7 @@ export default function DashBoardPage() {
   const { data } = useSession();
   const client = useQueryClient();
   const root = useRef<HTMLDivElement>(null);
-  const [activeSource, setActiveSource] = useState<'pdf' | 'website' | 'youtube' | 'textData'>('website');
+  const [activeSource, setActiveSource] = useState<'pdf' | 'website' | 'youtube' | 'textData' | 'github'>('website');
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -91,41 +91,12 @@ export default function DashBoardPage() {
             {data?.user?.name ? ` , ${data.user.name.split(" ")[0]}` : ""}.<br />
             <em>What should it learn today?</em>
           </h1>
-          <p>
-            Give your Nexora the context it needs to have helpful, accurate
-            conversations — then publish it anywhere.
-          </p>
+         
         </div>
 
       </section>
 
-      <section className="dash-progress dash-reveal">
-        <div className="progress-item complete">
-          <span>
-            <Check size={14} />
-          </span>
-          <div>
-            <b>Create your workspace</b>
-            <small>Ready to go</small>
-          </div>
-        </div>
-        <div className="progress-line active" />
-        <div className="progress-item active">
-          <span>2</span>
-          <div>
-            <b>Give it knowledge</b>
-            <small>In progress</small>
-          </div>
-        </div>
-        <div className="progress-line" />
-        <div className="progress-item">
-          <span>3</span>
-          <div>
-            <b>Test & publish</b>
-            <small>Up next</small>
-          </div>
-        </div>
-      </section>
+    
 
       <section className="dashboard-grid">
         <div className="knowledge-area">

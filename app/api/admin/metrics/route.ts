@@ -1,13 +1,4 @@
-/**
- * app/api/admin/metrics/route.ts
- *
- * Protected metrics endpoint — returns a snapshot of all Redis counters
- * and latency percentiles. Protect with ADMIN_SECRET env var.
- *
- * Usage:
- *   GET /api/admin/metrics
- *   Authorization: Bearer <ADMIN_SECRET>
- */
+ 
 
 import { NextRequest, NextResponse } from 'next/server';
 import metrics from '@/lib/metrics';

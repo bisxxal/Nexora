@@ -6,7 +6,7 @@ import { useGetModels } from '@/hooks/useModel';
 
 type Chatbot = {
   id: string;
-  collection_name: string;
+  collection_name: string | null;
   [key: string]: any;
 };
 
@@ -54,7 +54,7 @@ const ScriptsPage = () => {
    }, [config, selectedChatbot]);
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = chatbots?.res && chatbots?.res.find((c: Chatbot) => c.collection_name === e.target.value);
+    const selected = chatbots?.res && chatbots?.res.find((c: any) => c.collection_name === e.target.value);
     setSelectedChatbot(selected || null);
   };
 
@@ -147,16 +147,13 @@ const ScriptsPage = () => {
       </section>
 
 
-      {/* 3-column layout */}
-      <div className="flex  gap-5 min-h-[680px]" style={{ alignItems: 'flex-start' }}>
+       <div className="flex  gap-5 min-h-[680px]" style={{ alignItems: 'flex-start' }}>
 
-        {/* LEFT: Configuration Panel  */}
-        <div
+         <div
           className="flex bg-[#EFF8D2]! dash-reveal rounded-3xl!  dash-card flex-col gap-4 shrink-0"
           style={{ width: '280px', minWidth: '260px' }}
         >
-          {/* Chatbot Selection */}
-          <div className="card  rounded-2xl p-4">
+           <div className="card  rounded-2xl p-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Chatbot</p>
             <select
               onChange={handleSelectChange}
@@ -164,15 +161,14 @@ const ScriptsPage = () => {
             >
               <option value="">Select Chatbot</option>
               {chatbots?.res?.map((chatbot: Chatbot, index: number) => (
-                <option key={index} value={chatbot.collection_name}>
+                <option key={index} value={chatbot.collection_name || ""}>
                   {chatbot.name ? chatbot.name : chatbot.collection_name}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Button Appearance */}
-          <div className="card rounded-2xl p-4">
+           <div className="card rounded-2xl p-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Button</p>
 
             <label className="block mb-3">
@@ -244,8 +240,7 @@ const ScriptsPage = () => {
             </label>
           </div>
 
-          {/* Chat Window */}
-          <div className="card rounded-2xl p-4">
+           <div className="card rounded-2xl p-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">Chat Window</p>
 
             <label className="block mb-3">
@@ -324,8 +319,7 @@ const ScriptsPage = () => {
             </label>
           </div>
 
-          {/* Generate Button */}
-          <button
+           <button
             onClick={handleGenerate}
             disabled={!selectedChatbot}
             className="buttonbg px-4 py-3 rounded-2xl font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
@@ -334,18 +328,15 @@ const ScriptsPage = () => {
           </button>
         </div>
 
-        {/* ─── MIDDLE: Live Preview ─── */}
-        <div className="flex-1 min-w-0">
+         <div className="flex-1 min-w-0">
           <div className="card dash-reveal rounded-3xl p-5 pt-0 h-full min-h-[600px] relative overflow-hidden">
             <p className="text-xs text-center font-semibold uppercase tracking-widest text-gray-400 mb-2">Live Preview</p>
 
-            {/* Fake browser chrome */}
-            <div
+             <div
               className="rounded-3xl overflow-hidden shadow-2xl"
               style={{ background: '#f1f3f4', border: '1px solid #e0e0e0' }}
             >
-              {/* Browser top bar */}
-              <div className="flex items-center gap-2 px-4 py-3" style={{ background: '#e8eaed', borderBottom: '1px solid #d5d7da' }}>
+               <div className="flex items-center gap-2 px-4 py-3" style={{ background: '#e8eaed', borderBottom: '1px solid #d5d7da' }}>
                 <span className="w-3 h-3 rounded-full" style={{ background: '#ff5f56' }} />
                 <span className="w-3 h-3 rounded-full" style={{ background: '#febc2e' }} />
                 <span className="w-3 h-3 rounded-full" style={{ background: '#27c840' }} />
@@ -354,10 +345,8 @@ const ScriptsPage = () => {
                 </div>
               </div>
 
-              {/* Fake webpage content */}
-              <div className="relative" style={{ height: '540px', background: windowBg, overflow: 'hidden' }}>
-                {/* Fake page text blocks */}
-                <div className="p-8">
+               <div className="relative" style={{ height: '540px', background: windowBg, overflow: 'hidden' }}>
+                 <div className="p-8">
                   <div className="h-5 rounded-full mb-3 w-3/4" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
                   <div className="h-4 rounded-full mb-2 w-full" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
                   <div className="h-4 rounded-full mb-2 w-5/6" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
@@ -367,8 +356,7 @@ const ScriptsPage = () => {
                   <div className="h-4 rounded-full w-5/6" style={{ background: isDark ? '#2d3748' : '#e2e8f0' }} />
                 </div>
 
-                {/* ── Chat Window (preview) ── */}
-                {isChatOpen && (
+                 {isChatOpen && (
                   <div
                     style={{
                       position: 'absolute',
@@ -386,8 +374,7 @@ const ScriptsPage = () => {
                       transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
                     }}
                   >
-                    {/* Header */}
-                    <div
+                     <div
                       style={{
                         background: `linear-gradient(135deg, ${config.primaryColor}dd, ${config.primaryColor})`,
                         padding: '12px 14px',
@@ -416,8 +403,7 @@ const ScriptsPage = () => {
                       >✕</button>
                     </div>
 
-                    {/* Messages */}
-                    <div style={{ flex: 1, overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                     <div style={{ flex: 1, overflowY: 'auto', padding: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {previewMessages.map((msg, i) => (
                         <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
                           <div
@@ -437,8 +423,7 @@ const ScriptsPage = () => {
                       ))}
                     </div>
 
-                    {/* Input bar */}
-                    <div
+                     <div
                       style={{
                         padding: '8px 10px',
                         borderTop: isDark ? '1px solid #2d3748' : '1px solid #e5e7eb',
@@ -467,8 +452,7 @@ const ScriptsPage = () => {
                     </div>
                   </div>
                 )}
-
-                {/* floating Button (preview)  */}
+ 
                 <div
                   onClick={() => setIsChatOpen((v) => !v)}
                   style={{

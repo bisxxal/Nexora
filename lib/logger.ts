@@ -1,15 +1,4 @@
-/**
- * lib/logger.ts
- *
- * Structured JSON logger for production.
- * - In production: JSON lines (compatible with Datadog / CloudWatch / Loki)
- * - In development: human-readable coloured output
- *
- * Usage:
- *   import logger from '@/lib/logger';
- *   logger.info('Chat request received', { siteId, sessionId });
- *   logger.error('LLM call failed', { err, siteId });
- */
+ 
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -33,8 +22,7 @@ const LEVEL_PRIORITY: Record<LogLevel, number> = {
   warn: 2,
   error: 3,
 };
-
-// Minimum level: debug in dev, info in prod
+ 
 const MIN_LEVEL: LogLevel = isDev ? 'debug' : 'info';
 
 function shouldLog(level: LogLevel): boolean {
