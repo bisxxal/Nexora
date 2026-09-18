@@ -8,7 +8,7 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import { Copy, Check, Send } from "lucide-react";
 
- 
+
 function CodeBlock({
   children,
   className,
@@ -45,7 +45,7 @@ function CodeBlock({
       </pre>
     </div>
   );
-} 
+}
 function AssistantMessage({ content }: { content: string }) {
   return (
     <ReactMarkdown
@@ -136,31 +136,43 @@ function AssistantMessage({ content }: { content: string }) {
     </ReactMarkdown>
   );
 }
- 
-function TypingDots({ color }: { color: string }) {
+
+const loadingPhrases = [
+  "Thinking",
+  "Searching knowledge base",
+  "Analyzing context",
+  "Formulating response",
+];
+
+function InteractiveLoading({ color }: { color: string }) {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhraseIndex((prev) => (prev + 1) % loadingPhrases.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="flex items-center gap-1 px-1 py-0.5">
-      {[0, 150, 300].map((delay) => (
-        <span
-          key={delay}
-          style={{ backgroundColor: color, animationDelay: `${delay}ms` }}
-          className="block w-2 h-2 rounded-full animate-bounce"
-        />
-      ))}
+    <div className="flex flex-col mb-1  px-1   min-w-[140px]">
+
+      <span className="text-[11px] font-medium text-gray-400/80 italic animate-pulse transition-opacity duration-300">
+        {loadingPhrases[phraseIndex]}...
+      </span>
     </div>
   );
 }
- 
+
 export function ChatbotUI({
   collections,
   welcomeMessage = "Hello! How can I assist you today?",
   id,
   sessionId: propSessionId,
   headerTitle = "Nexora AI",
-  primaryColor = "#bed96d",
+  primaryColor = "#546032",
   buttonColor,
   buttonTextColor,
-  theme = "light",
 }: {
   collections: string;
   welcomeMessage: string;
@@ -178,9 +190,7 @@ export function ChatbotUI({
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
-
-  // Stable session ID — persisted in localStorage so memory survives page reloads
-  // and iframe resets. propSessionId comes from the embed URL (set by widget.js).
+ 
   const [sessionId] = useState(() => {
     if (propSessionId) return propSessionId;
     if (typeof window !== "undefined") {
@@ -244,9 +254,7 @@ export function ChatbotUI({
       setIsLoading(false);
     }
   };
-
-  // If buttonTextColor was explicitly passed (from embed), use it directly.
-  // Otherwise derive it from the primaryColor luminance.
+ 
   const isDark = (() => {
     const hex = (buttonColor || primaryColor).replace("#", "");
     const r = parseInt(hex.substring(0, 2), 16);
@@ -255,12 +263,12 @@ export function ChatbotUI({
     return (r * 299 + g * 587 + b * 114) / 1000 < 128;
   })();
   const btnTextColor = buttonTextColor || (isDark ? "#ffffff" : "#1a1a1a");
-  // Effective button / header color
-  const accentColor = buttonColor || primaryColor;
+   const accentColor = buttonColor || primaryColor;
+
+   const isDarkMode = theme === "dark";
 
   return (
-    /* Full-height flex column — messages scroll, input stays at bottom */
-    <div className="flex flex-col flex-1 w-full bg-white overflow-hidden font-sans">
+     <div className={`flex flex-col flex-1 w-full overflow-hidden font-sans ${isDarkMode ? "bg-gradient-to-br from-[#121212] via-[#0a0a0a] to-[#000000] text-gray-200" : "bg-white text-gray-800"}`}>
 
       {/*  Header  */}
       <div
@@ -284,14 +292,12 @@ export function ChatbotUI({
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
+       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scroll-smooth">
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex items-end gap-2 ${
-              msg.role === "user" ? "flex-row-reverse" : "flex-row"
-            }`}
+            className={`flex items-end gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"
+              }`}
           >
             {/* Avatar */}
             {msg.role === "assistant" && (
@@ -303,13 +309,13 @@ export function ChatbotUI({
               </div>
             )}
 
-            {/* Bubble */}
-            <div
-              className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm shadow-sm ${
-                msg.role === "user"
+             <div
+              className={`max-w-[78%] rounded-2xl px-3.5 py-2.5 text-sm shadow-sm ${msg.role === "user"
                   ? "rounded-br-sm text-sm"
-                  : "bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm"
-              }`}
+                  : isDarkMode 
+                    ? "bg-[#1e1e1e]/80 border border-[#2c2c2c] text-gray-200 rounded-bl-sm backdrop-blur-sm" 
+                    : "bg-gray-50 border border-gray-100 text-gray-800 rounded-bl-sm"
+                }`}
               style={
                 msg.role === "user"
                   ? { backgroundColor: accentColor, color: btnTextColor }
@@ -325,30 +331,30 @@ export function ChatbotUI({
           </div>
         ))}
 
-        {/* Typing indicator */}
-        {isLoading && (
+         {isLoading && (
           <div className="flex items-end gap-2">
             <div
               className="w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs font-bold shadow-sm"
               style={{ backgroundColor: accentColor, color: btnTextColor }}
             >
-            <img src="/logo2.png " className="w-full h-full object-cover p-1" alt="" />
+              <img src="/logo2.png " className="w-full h-full object-cover p-1" alt="" />
             </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-              <TypingDots color={accentColor} />
-            </div>
+            <InteractiveLoading color={accentColor} />
           </div>
         )}
 
         <div ref={chatEndRef} />
       </div>
 
-      {/*  Input bar — naturally at bottom of flex column  */}
-      <div className="shrink-0 px-4 py-3 border-t border-gray-100 bg-white">
-        <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 focus-within:border-gray-400 transition-colors">
+       <div className={`shrink-0 px-4 py-3 border-t ${isDarkMode ? "border-[#2c2c2c] bg-[#0a0a0a]/90 backdrop-blur-md" : "border-gray-100 bg-white"}`}>
+        <div className={`flex items-center gap-2 border rounded-full px-4 py-2 transition-colors ${
+          isDarkMode 
+            ? "bg-[#1a1a1a] border-[#333333] focus-within:border-gray-500" 
+            : "bg-gray-50 border-gray-200 focus-within:border-gray-400"
+        }`}>
           <input
             type="text"
-            className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400 font-sans"
+            className={`flex-1 bg-transparent outline-none text-sm font-sans ${isDarkMode ? "text-gray-200 placeholder-gray-500" : "text-gray-800 placeholder-gray-400"}`}
             placeholder="Ask me anything…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -366,8 +372,7 @@ export function ChatbotUI({
           </button>
         </div>
 
-        {/* Footer */}
-        <p className="text-center text-[10px] text-gray-400 mt-2">
+         <p className={`text-center text-[10px] mt-2 ${isDarkMode ? "text-gray-500" : "text-gray-400"}`}>
           Powered by{" "}
           <span className="font-semibold" style={{ color: accentColor }}>
             Nexora AI

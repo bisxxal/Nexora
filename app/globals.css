@@ -872,8 +872,7 @@ footer a {
   text-decoration: none;
 }
 footer small {
-  grid-column: 1/-1;
-  border-top: 1px solid #3b4a41;
+  grid-column: 1/-1; 
   padding-top: 23px;
   color: #89958c;
   font-size: 11px;
@@ -1197,7 +1196,7 @@ footer small {
 .dash-card {
   border: 1px solid #d8ded5;
   background: #fffefa;
-  border-radius: 10px;
+  border-radius: 20px;
 }
 .source-switcher {
   display: flex;
@@ -1215,7 +1214,7 @@ footer small {
   gap: 6px;
   align-items: center;
   padding: 10px 13px;
-  border-radius: 6px;
+  border-radius: 26px;
 }
 .source-switcher button.selected {
   color: #1f3027;

@@ -1,5 +1,5 @@
-import { userModels } from "@/action/user.action";
-import { useQuery } from "@tanstack/react-query";
+import { userModels, deleteModelAction } from "@/action/user.action";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 export const useGetModels = () => {
 
@@ -13,4 +13,16 @@ export const useGetModels = () => {
     return {
         data, isLoading, refetch,
     };
+};
+
+export const useDeleteModel = () => {
+    return useMutation({
+        mutationFn: async (modelId: string) => {
+            const res = await deleteModelAction(modelId);
+            if (res.status !== 200) {
+                throw new Error(res.message);
+            }
+            return res;
+        }
+    });
 };

@@ -543,9 +543,9 @@ const ScriptsPage = () => {
                   })}
                 </div>
 
-                <div className="mt-3 text-xs text-gray-400 flex items-start gap-2 p-3 rounded-xl" style={{ background: 'rgba(203,17,65,0.07)' }}>
-                  <span>💡</span>
-                  <span>Paste this <code className="text-[#bed96d] text-[#293A30] ">&lt;script&gt;</code> tag before the closing <code className="text-[#bed96d] text-[#293A30] ">&lt;/body&gt;</code> of your website.</span>
+                <div className="mt-3 text-xs text-gray-700 flex items-start gap-2 p-3 rounded-xl border border-[#313f08]"  >
+
+                  <span>Paste this <code className="text-[#313f08]   ">&lt;script&gt;</code> tag before the closing <code className="  text-[#313f08] ">&lt;/body&gt;</code> of your website.</span>
                 </div>
               </>
             )}

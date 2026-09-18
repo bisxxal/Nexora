@@ -86,7 +86,7 @@ export default function DashBoardPage() {
       <section className="dash-hero">
         <div className="dash-reveal">
 
-          <h1 className='text-[#17221d]! [text-shadow:_-3px_2px_1px_#0000004d]'>
+          <h1 className='text-[#17221d]! -mt-10! [text-shadow:_-3px_2px_1px_#0000004d]'>
             Hello
             {data?.user?.name ? ` , ${data.user.name.split(" ")[0]}` : ""}.<br />
             <em>What should it learn today?</em>
@@ -94,11 +94,8 @@ export default function DashBoardPage() {
          
         </div>
 
-      </section>
-
-    
-
-      <section className="dashboard-grid">
+      </section> 
+      <section className="dashboard-grid ">
         <div className="knowledge-area">
           <div className="dash-section-heading dash-reveal">
             <div>
@@ -108,7 +105,7 @@ export default function DashBoardPage() {
             </div>
 
           </div>
-          <div className="source-switcher dash-card">
+          <div className="source-switcher w-fit! rounded-full!  dash-card">
             <button
               onClick={() => setActiveSource("pdf")}
               className={activeSource === "pdf" ? "selected" : ""}

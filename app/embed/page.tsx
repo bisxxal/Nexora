@@ -13,7 +13,7 @@ function EmbedContent() {
   const welcomeMessage    = search.get("welcomeMessage")    || "Hello! How can I assist you today?";
   const headerTitle       = search.get("headerTitle")       || "Nexora AI";
   const primaryColor      = search.get("primaryColor")      || "#bed96d";
-  const buttonColor       = search.get("buttonColor")       || "#bed96d";
+  const buttonColor       = search.get("buttonColor")       || "#546032";
   const buttonTextColor   = search.get("buttonTextColor")   || "#ffffff";
   const theme             = (search.get("theme") || "light") as "light" | "dark";
 

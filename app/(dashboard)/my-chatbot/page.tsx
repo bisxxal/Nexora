@@ -1,7 +1,7 @@
 'use client'
 import Loading from '@/components/ui/loading'
-import { useGetModels } from '@/hooks/useModel'
-import { Bot, BotIcon, DotIcon, RefreshCcw, BarChart2, PieChart as PieIcon, LayoutGrid, TrendingUp, LoaderCircle } from 'lucide-react'
+import { useGetModels, useDeleteModel } from '@/hooks/useModel'
+import { Bot, BotIcon, DotIcon, RefreshCcw, BarChart2, PieChart as PieIcon, LayoutGrid, TrendingUp, LoaderCircle, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap';
@@ -68,9 +68,18 @@ const PieTooltip = ({ active, payload }: any) => {
 
 const MyChatBot = () => {
   const { data, isLoading, refetch } = useGetModels()
+  const { mutate: deleteModel, isPending: isDeleting } = useDeleteModel()
   const [toallConversations, setTotalConversations] = useState<any>({});
   const root = useRef<HTMLDivElement>(null);
   const [viewMode, setViewMode] = useState<'cards' | 'monitoring'>('monitoring');
+
+  const handleDelete = (id: string) => {
+    if (confirm('Are you sure you want to delete this chatbot?')) {
+      deleteModel(id, {
+        onSuccess: () => refetch()
+      });
+    }
+  };
 
 
   useEffect(() => {
@@ -399,8 +408,24 @@ const MyChatBot = () => {
                             <p className=' mt-3 text-red-600  text-sm '>Last active at : {model.updated_at.toLocaleString('en-US')}</p>
                             <p className=' mt-3 text-zinc-600 text-sm'>Created at : {model.created_at.toLocaleString('en-US')}</p>
 
-                           {  model.status !== 'FAILED' && <Link href={model.status === 'PENDING' || model.status === 'FAILED' ? '#' : `embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`}  
-                            className='flex center  button-light w-full p-2 rounded-full mt-5 mb-1 '>Test agent </Link>}
+                           <div className="flex items-center gap-2 mt-5 mb-1">
+                             {model.status !== 'FAILED' && (
+                               <Link
+                                 href={model.status === 'PENDING' ? '#' : `embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`}  
+                                 className='flex-1 flex center button-light p-2 rounded-full'
+                               >
+                                 Test agent
+                               </Link>
+                             )}
+                             <button
+                               onClick={() => handleDelete(model.id)}
+                               disabled={isDeleting}
+                               className='p-2.5 rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition-colors disabled:opacity-50'
+                               title="Delete chatbot"
+                             >
+                               {isDeleting ? <LoaderCircle className="animate-spin" size={20} /> : <Trash2 size={20} />}
+                             </button>
+                           </div>
                           </div>
                         ))}
                       </div>

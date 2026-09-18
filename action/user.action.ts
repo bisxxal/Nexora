@@ -39,4 +39,37 @@ export const userModels = async () => {
     }
 }
 
- 
+export const deleteModelAction = async (modelId: string) => {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return { status: 401, message: "Unauthorized" };
+        }
+        
+        // Ensure the model belongs to the user
+        const existing = await prisma.models.findUnique({
+            where: { id: modelId }
+        });
+        
+        if (!existing || existing.userId !== session.user.id) {
+            return { status: 404, message: "Model not found or unauthorized" };
+        }
+
+        await prisma.models.delete({
+            where: {
+                id: modelId,
+            }
+        });
+
+        return {
+            status: 200,
+            message: 'Model deleted successfully',
+        };
+
+    } catch (error) {
+        return {
+            status: 500,
+            message: 'Failed to delete model',
+        };
+    }
+}
