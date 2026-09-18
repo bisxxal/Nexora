@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/((?!api/chat).*)', 
+        source: '/((?!api/chat|embed).*)', 
         headers: [
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
            { key: 'X-Content-Type-Options', value: 'nosniff' },
