@@ -6,7 +6,13 @@ import { getServerSession } from "next-auth";
 
 import { embeddingQueue } from "@/lib/queue";
 
-export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web' | 'github', collecttion: string, mode: 'bot' | 'notebook') => {
+export const generateEmbeddings = async (
+    url: string,
+    type: 'yt' | 'text' | 'web' | 'github',
+    collecttion: string,
+    mode: 'bot' | 'notebook',
+    targetModelId?: string
+) => {
     const session = await getServerSession(authOptions);
     const userId = session?.user.id!;
     let name = "Untitled";
@@ -27,16 +33,37 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
     else if (type === 'text') name = `text_document`;
 
     try {
-        const model = await prisma.models.create({
-            data: {
-                collection_name: collecttion,
-                source: type,
-                userId,
-                type: mode,
-                name: name,
-                status: 'PENDING'
+        let model;
+
+        if (targetModelId) {
+            // Check if model exists and belongs to user
+            const existing = await prisma.models.findUnique({
+                where: { id: targetModelId }
+            });
+            if (!existing || existing.userId !== userId) {
+                throw new Error("Target model not found or unauthorized");
             }
-        });
+            // Use existing collection name if appending to existing agent
+            collecttion = existing.collection_name;
+
+            // Update status to PENDING
+            model = await prisma.models.update({
+                where: { id: targetModelId },
+                data: { status: 'PENDING' }
+            });
+        } else {
+            // Create new model
+            model = await prisma.models.create({
+                data: {
+                    collection_name: collecttion,
+                    source: type,
+                    userId,
+                    type: mode,
+                    name: name,
+                    status: 'PENDING'
+                }
+            });
+        }
 
         // Enqueue the job for the worker
         await embeddingQueue.add('generate-embedding', {
@@ -59,32 +86,48 @@ export const generateEmbeddings = async (url: string, type: 'yt' | 'text' | 'web
 export const LoadPdfEmbedingsFromBuffer = async (
     base64Pdf: string,
     fileName: string,
-    mode: 'bot' | 'notebook'
+    mode: 'bot' | 'notebook',
+    targetModelId?: string
 ) => {
     const session = await getServerSession(authOptions);
+    const userId = session?.user.id!;
 
-    const collectionName =
-        (session?.user.name ?? 'Nexora') + '_pdf_collection' + Date.now();
+    let collectionName = (session?.user.name ?? 'Nexora') + '_pdf_collection' + Date.now();
+    let model;
 
-    const model = await prisma.models.create({
-        data: {
-            collection_name: collectionName,
-            source: 'pdf',
-            userId: session?.user.id!,
-            type: mode,
-            name: fileName ? fileName.replace(/\.pdf$/i, '') : 'Untitled PDF',
-            status: 'PENDING'
-        },
-    });
+    if (targetModelId) {
+        const existing = await prisma.models.findUnique({
+            where: { id: targetModelId }
+        });
+        if (!existing || existing.userId !== userId) {
+            throw new Error("Target model not found or unauthorized");
+        }
+        collectionName = existing.collection_name;
 
+        model = await prisma.models.update({
+            where: { id: targetModelId },
+            data: { status: 'PENDING' }
+        });
+    } else {
+        model = await prisma.models.create({
+            data: {
+                collection_name: collectionName,
+                source: 'pdf',
+                userId,
+                type: mode,
+                name: fileName ? fileName.replace(/\.pdf$/i, '') : 'Untitled PDF',
+                status: 'PENDING'
+            },
+        });
+    }
 
-    console.log(base64Pdf , fileName )
+    console.log(base64Pdf, fileName);
 
     await embeddingQueue.add('generate-pdf-embedding', {
         type: 'pdf',
         collectionName,
         mode,
-        userId: session?.user.id,
+        userId,
         base64Pdf,
         fileName,
         modelId: model.id

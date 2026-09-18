@@ -1,10 +1,16 @@
 'use client'
 import Loading from '@/components/ui/loading'
 import { useGetModels, useDeleteModel } from '@/hooks/useModel'
-import { Bot, BotIcon, DotIcon, RefreshCcw, BarChart2, PieChart as PieIcon, LayoutGrid, TrendingUp, LoaderCircle, Trash2 } from 'lucide-react'
+import { Bot, BotIcon, DotIcon, RefreshCcw, BarChart2, PieChart as PieIcon, LayoutGrid, TrendingUp, LoaderCircle, Trash2, X, FileText, Globe, Youtube, FileCode, AlignLeft, Plus, BrainCircuit } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap';
+import { generateEmbeddings } from '@/ai/embeding'
+import PdfUploader from '@/components/pdfupload'
+import { sources } from '@/lib/utils'
+import { AnimatePresence, motion } from 'motion/react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toastSuccess } from '@/lib/toast'
 import {
   BarChart,
   Bar,
@@ -71,7 +77,7 @@ const MyChatBot = () => {
   const { mutate: deleteModel, isPending: isDeleting } = useDeleteModel()
   const [toallConversations, setTotalConversations] = useState<any>({});
   const root = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'monitoring'>('monitoring');
+  const [viewMode, setViewMode] = useState<'cards' | 'monitoring'>('cards');
 
   const handleDelete = (id: string) => {
     if (confirm('Are you sure you want to delete this chatbot?')) {
@@ -80,6 +86,30 @@ const MyChatBot = () => {
       });
     }
   };
+
+  const [trainingModel, setTrainingModel] = useState<any>(null);
+  const [activeSource, setActiveSource] = useState<'pdf' | 'website' | 'youtube' | 'textData' | 'github'>('website');
+  const client = useQueryClient();
+
+  const createCollections = useMutation({
+    mutationFn: async ({ textData, type, collectionName, targetModelId }: {
+      textData: string; type: 'web' | 'text' | 'yt' | 'github'; collectionName: string; targetModelId?: string;
+    }) => generateEmbeddings(textData, type, collectionName, 'bot', targetModelId),
+    onSuccess: (result) => {
+      toastSuccess(result ? 'Knowledge added to queue!' : 'Could not add that source.');
+      client.invalidateQueries({ queryKey: ['modelsinfo'] });
+    },
+  });
+
+  async function submitTrainSource(formData: FormData) {
+    if (!trainingModel) return;
+    const values = [['youtube', 'yt'], ['website', 'web'], ['textData', 'text'], ['github', 'github']] as const;
+    const found = values.find(([field]) => String(formData.get(field) || '').trim());
+    if (!found) return;
+    const [field, type] = found;
+    const value = String(formData.get(field)).trim();
+    createCollections.mutate({ textData: value, type, collectionName: trainingModel.collection_name, targetModelId: trainingModel.id });
+  }
 
 
   useEffect(() => {
@@ -410,12 +440,20 @@ const MyChatBot = () => {
 
                            <div className="flex items-center gap-2 mt-5 mb-1">
                              {model.status !== 'FAILED' && (
+                               <>
+                               <button
+                                 onClick={() => { setTrainingModel(model); setActiveSource('website'); }}
+                                 className='flex-1 flex center p-2 rounded-full border border-[#cff45f] text-sm font-medium text-[#3a4a20] hover:bg-[#cff45f]/20 transition-colors'
+                               >
+                                 <BrainCircuit size={14} className="mr-1.5" /> Train
+                               </button>
                                <Link
                                  href={model.status === 'PENDING' ? '#' : `embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`}  
-                                 className='flex-1 flex center button-light p-2 rounded-full'
+                                 className='flex-1 flex center button-light p-2 rounded-full text-sm'
                                >
                                  Test agent
                                </Link>
+                               </>
                              )}
                              <button
                                onClick={() => handleDelete(model.id)}
@@ -440,7 +478,131 @@ const MyChatBot = () => {
             }
           </div>
         )
-      )}
+      )}\n
+      {/* ─── Training Drawer ─── */}
+      <AnimatePresence>
+        {trainingModel && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setTrainingModel(null)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+            />
+            {/* Panel */}
+            <motion.div
+              key="panel"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+              className="fixed right-0 top-0 h-full w-full max-w-[520px] bg-[#f7f9f5] border-l border-[#c9d0c5] shadow-2xl z-50 flex flex-col overflow-y-auto"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-6 py-5 border-b border-[#c9d0c5] bg-[#fffefa]">
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <BrainCircuit size={18} className="text-[#546032]" />
+                    <h2 className="font-semibold text-[#17221d] text-base">Train Agent</h2>
+                  </div>
+                  <p className="text-xs text-gray-500 truncate max-w-[340px]">
+                    Adding context to: <span className="font-medium text-[#17221d]">{trainingModel.name?.toUpperCase()}</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => setTrainingModel(null)}
+                  className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Source Tabs */}
+              <div className="px-6 pt-5">
+                <div className="flex gap-2 flex-wrap mb-5">
+                  <button
+                    onClick={() => setActiveSource('pdf')}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${activeSource === 'pdf' ? 'bg-[#17221d] text-[#cff45f] border-[#17221d]' : 'border-[#c9d0c5] text-gray-500 hover:border-[#17221d]'}`}
+                  >
+                    <FileText size={13} /> PDF
+                  </button>
+                  {sources.map((src) => (
+                    <button
+                      key={src.field}
+                      onClick={() => setActiveSource(src.field)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${activeSource === src.field ? 'bg-[#17221d] text-[#cff45f] border-[#17221d]' : 'border-[#c9d0c5] text-gray-500 hover:border-[#17221d]'}`}
+                    >
+                      <src.icon size={13} /> {src.name}
+                    </button>
+                  ))}
+                </div>
+
+                <AnimatePresence mode="wait">
+                  {activeSource === 'pdf' ? (
+                    <motion.div key="pdf" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+                      <PdfUploader mode="bot" targetModelId={trainingModel.id} />
+                    </motion.div>
+                  ) : (
+                    (() => {
+                      const cur = sources.find(s => s.field === activeSource);
+                      if (!cur) return null;
+                      return (
+                        <motion.form
+                          key={cur.field}
+                          action={submitTrainSource}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          className="flex flex-col gap-4"
+                        >
+                          <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-[#c9d0c5]">
+                            <div className="p-2 rounded-xl bg-[#eef2e8]">
+                              <cur.icon size={20} className="text-[#546032]" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-[#17221d] text-sm">Add from {cur.name}</p>
+                              <p className="text-xs text-gray-400">{cur.description}</p>
+                            </div>
+                          </div>
+
+                          {cur.field === 'textData' ? (
+                            <textarea
+                              name="textData"
+                              placeholder={cur.placeholder}
+                              rows={7}
+                              className="w-full rounded-2xl border border-[#c9d0c5] bg-white px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#cff45f]/60 text-[#17221d] placeholder-gray-400"
+                            />
+                          ) : (
+                            <input
+                              name={cur.field}
+                              placeholder={cur.placeholder}
+                              className="w-full rounded-2xl border border-[#c9d0c5] bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#cff45f]/60 text-[#17221d] placeholder-gray-400"
+                            />
+                          )}
+
+                          <button
+                            disabled={createCollections.isPending}
+                            className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-[#17221d] text-[#cff45f] font-semibold text-sm hover:bg-[#253328] transition-colors disabled:opacity-50"
+                          >
+                            {createCollections.isPending ? (
+                              <><LoaderCircle className="animate-spin" size={16} /> Training…</>
+                            ) : (
+                              <><Plus size={16} /> Add to knowledge</>
+                            )}
+                          </button>
+                        </motion.form>
+                      );
+                    })()
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

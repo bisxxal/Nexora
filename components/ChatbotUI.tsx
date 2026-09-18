@@ -138,29 +138,40 @@ function AssistantMessage({ content }: { content: string }) {
 }
 
 const loadingPhrases = [
-  "Thinking",
-  "Searching knowledge base",
-  "Analyzing context",
-  "Formulating response",
+  "Thinking…",
+  "Searching knowledge base…",
+  "Analyzing context…",
+  "Formulating response…",
+  "Almost done…",
 ];
 
 function InteractiveLoading({ color }: { color: string }) {
   const [phraseIndex, setPhraseIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPhraseIndex((prev) => (prev + 1) % loadingPhrases.length);
-    }, 2000);
+    const cycle = () => {
+      setVisible(false);
+      setTimeout(() => {
+        setPhraseIndex((prev) => (prev + 1) % loadingPhrases.length);
+        setVisible(true);
+      }, 250);
+    };
+    const interval = setInterval(cycle, 2500);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="flex flex-col mb-1  px-1   min-w-[140px]">
-
-      <span className="text-[11px] font-medium text-gray-400/80 italic animate-pulse transition-opacity duration-300">
-        {loadingPhrases[phraseIndex]}...
-      </span>
-    </div>
+    <p
+      className="text-[13px] text-gray-400 italic px-1"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(3px)",
+        transition: "opacity 0.25s ease, transform 0.25s ease",
+      }}
+    >
+      {loadingPhrases[phraseIndex]}
+    </p>
   );
 }
 
@@ -173,6 +184,7 @@ export function ChatbotUI({
   primaryColor = "#546032",
   buttonColor,
   buttonTextColor,
+  theme,
 }: {
   collections: string;
   welcomeMessage: string;

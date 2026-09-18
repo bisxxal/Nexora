@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, FileText, LoaderCircle, Upload, X } from 'lucide-react';
 import React, { useState } from 'react';
 
-export default function PdfUploader({ mode }: { mode: 'bot' | 'notebook' }) {
+export default function PdfUploader({ mode, targetModelId }: { mode: 'bot' | 'notebook', targetModelId?: string }) {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploadStatus, setUploadStatus] = useState<string>('');
     const [isPending, setIsPending] = useState(false);
@@ -43,7 +43,7 @@ export default function PdfUploader({ mode }: { mode: 'bot' | 'notebook' }) {
 
             setUploadStatus('Generating embeddings…');
 
-            const res = await LoadPdfEmbedingsFromBuffer(base64, selectedFile.name, mode);
+            const res = await LoadPdfEmbedingsFromBuffer(base64, selectedFile.name, mode, targetModelId);
 
             if (res) {
                 setIsDone(true);

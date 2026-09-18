@@ -9,7 +9,7 @@ import gsap from 'gsap';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { ArrowRight, Check, FileText, LoaderCircle, Plus } from 'lucide-react';
+import { ArrowRight, FileText, LoaderCircle, Plus } from 'lucide-react';
 import { sources } from '@/lib/utils';
  
 
@@ -75,8 +75,7 @@ export default function DashBoardPage() {
     createCollections.mutate({
       textData: value,
       type,
-      collectionName: `${data?.user?.name || "Nexora"
-        }_${type}_collection${Date.now()}`,
+      collectionName: `${data?.user?.name || "Nexora"}_${type}_collection${Date.now()}`,
     });
   }
 
@@ -103,7 +102,6 @@ export default function DashBoardPage() {
                 Feed your agent <em>the good stuff.</em>
               </h2>
             </div>
-
           </div>
           <div className="source-switcher w-fit! rounded-full!  dash-card">
             <button
