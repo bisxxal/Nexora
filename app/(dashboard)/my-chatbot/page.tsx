@@ -402,83 +402,132 @@ const MyChatBot = () => {
           <Loading boxes={3} child={' h-[300px]  w-[500px] rounded-2xl '} parent={' !flex-row !flex-warp h-[400px] w-full '} />
         ) : (
           <div>
-            {
-              data?.status === 200 ? (
-                <ul>
-                  {
-                    data.res && data.res.length === 0 ? (
-                      <div className=' center flex-col gap-3 '>
-                        <p>No ChatBot found</p>
-                        <Link href={`/dashboard`} className=' center gap-3 flex-col'>
-                          <BotIcon className=' bg-amber-200 p-3 rounded-2xl' size={48} />
-                          <p className=' mt-3 '>Create your first chatbot by uploading documents or adding text in the Dashboard section.</p>
-                        </Link>
-                      </div>
-                    ) : (
-                      <div className=' flex gap-2.5 flex-wrap '>
-                        {data.res && data.res.map((model: any) => (
-                          <div className={`border block abot border-[#c9d0c5] bg-[#f7f9f5] rounded-3xl  shadow-[-3px_2px_1px_#0000005e] p-3 px-4 w-[460px] ${model.status === 'PENDING' ? 'opacity-70 cursor-not-allowed' : ''}`} key={model.id}>
-                            <div className=' flex items-center justify-between px-5 gap-2'>
-                              <div className=' bg-[#cff45f] mb-3 p-2 w-fit rounded-xl'><Bot className=' text-[#64716a]' /></div>
-                              <div className=' flex items-end gap-2 flex-col'>
-                                {model?.status === 'PENDING' ? (
-                                  <div className=' bg-yellow-500/50 text-yellow-700 px-3 py-1 rounded-full center w-fit text-sm font-medium'><LoaderCircle className='animate-spin mr-1' size={14} /> Processing</div>
-                                ) : model?.status === 'FAILED' ? (
-                                  <div className=' bg-red-500/50 text-red-700 px-3 py-1 rounded-full center w-fit text-sm font-medium'>Failed</div>
-                                ) : (
-                                  <div className=' bg-linear-to-tl from-green-600 to-emerald-30 button-green text-white green-600 pr-2 rounded-full center w-fit'><DotIcon className=' animate-pulse text-xl' color='green' size={28} /> Active</div>
-                                )}
-                                <p>Context from : {model?.source?.toUpperCase()}</p>
-                                <p>Conversations : {model?.times}</p>
-                              </div>
-                            </div>
-                            <p className='mt-5'>Name : {model?.name?.toUpperCase()}</p>
-                            <p className=' mt-3 text-zinc-600 text-sm'>Site Id : {model.collection_name}</p>
-                            <p className=' mt-3 text-zinc-600 text-sm'>Model id : {model.id}</p>
-                            <p className=' mt-3 text-red-600  text-sm '>Last active at : {model.updated_at.toLocaleString('en-US')}</p>
-                            <p className=' mt-3 text-zinc-600 text-sm'>Created at : {model.created_at.toLocaleString('en-US')}</p>
+            {data?.status === 200 ? (
+              <ul className="list-none p-0 m-0">
+                {data.res && data.res.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
+                    <div className="bg-amber-100 p-5 rounded-3xl">
+                      <BotIcon size={40} className="text-amber-500" />
+                    </div>
+                    <p className="text-lg font-semibold text-zinc-700">No agents yet</p>
+                    <p className="text-sm text-zinc-400 max-w-xs">
+                      Create your first agent by uploading documents or adding text in the Dashboard.
+                    </p>
+                    <Link
+                      href="/dashboard"
+                      className="inline-flex items-center gap-2 mt-2 px-5 py-2.5 bg-[#cff45f] text-[#17221d] text-sm font-bold rounded-full hover:bg-[#bde04f] transition-colors"
+                    >
+                      <Plus size={15} /> Go to Dashboard
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {data.res && data.res.map((model: any) => (
+                      <div
+                        key={model.id}
+                        className={`group relative flex flex-col bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ${model.status === 'PENDING' ? 'opacity-60 pointer-events-none' : ''}`}
+                      >
+                        {/* colour-coded top strip */}
+                        <div className={`h-1 w-full ${model.status === 'FAILED' ? 'bg-red-400' : model.status === 'PENDING' ? 'bg-amber-400' : 'bg-[#cff45f]'}`} />
 
-                           <div className="flex items-center gap-2 mt-5 mb-1">
-                             {model.status !== 'FAILED' && (
-                               <>
-                               <button
-                                 onClick={() => { setTrainingModel(model); setActiveSource('website'); }}
-                                 className='flex-1 flex center p-2 rounded-full border border-[#cff45f] text-sm font-medium text-[#3a4a20] hover:bg-[#cff45f]/20 transition-colors'
-                               >
-                                 <BrainCircuit size={14} className="mr-1.5" /> Train
-                               </button>
-                               <Link
-                                 href={model.status === 'PENDING' ? '#' : `embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`}  
-                                 className='flex-1 flex center button-light p-2 rounded-full text-sm'
-                               >
-                                 Test agent
-                               </Link>
-                               </>
-                             )}
-                             <button
-                               onClick={() => handleDelete(model.id)}
-                               disabled={isDeleting}
-                               className='p-2.5 rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition-colors disabled:opacity-50'
-                               title="Delete chatbot"
-                             >
-                               {isDeleting ? <LoaderCircle className="animate-spin" size={20} /> : <Trash2 size={20} />}
-                             </button>
-                           </div>
+                        {/* card body */}
+                        <div className="p-5 flex flex-col gap-4 flex-1">
+
+                          {/* header row */}
+                          <div className="flex items-start justify-between gap-3">
+                            {/* bot icon */}
+                            <div className="shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br from-[#cff45f] to-[#a8d432] flex items-center justify-center shadow-sm">
+                              <Bot size={20} className="text-[#2d3d1a]" />
+                            </div>
+
+                            {/* status badge */}
+                            {model.status === 'PENDING' ? (
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                <LoaderCircle size={11} className="animate-spin" /> Processing
+                              </span>
+                            ) : model.status === 'FAILED' ? (
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-red-50 text-red-600 border border-red-200">
+                                ✕ Failed
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active
+                              </span>
+                            )}
                           </div>
-                        ))}
+
+                          {/* agent name */}
+                          <div>
+                            <p className="text-base font-bold text-zinc-900 tracking-tight truncate">
+                              {model?.name?.toUpperCase()}
+                            </p>
+                            <p className="text-xs text-zinc-400 mt-0.5 truncate">{model.id}</p>
+                          </div>
+
+                          {/* metadata grid */}
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="bg-zinc-50 rounded-xl px-3 py-2.5">
+                              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Source</p>
+                              <p className="text-xs font-semibold text-zinc-700 truncate">{model?.source?.toUpperCase() || '—'}</p>
+                            </div>
+                            <div className="bg-zinc-50 rounded-xl px-3 py-2.5">
+                              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Conversations</p>
+                              <p className="text-xs font-bold text-[#3a5a20]">{model?.times ?? 0}</p>
+                            </div>
+                            <div className="col-span-2 bg-zinc-50 rounded-xl px-3 py-2.5">
+                              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-0.5">Site ID</p>
+                              <p className="text-xs font-mono text-zinc-600 truncate">{model.collection_name}</p>
+                            </div>
+                          </div>
+
+                          {/* timestamps */}
+                          <div className="flex flex-col gap-1 text-[11px] text-zinc-400 border-t border-zinc-100 pt-3">
+                            <span>Last active: <span className="text-zinc-600 font-medium">{model.updated_at.toLocaleString('en-US')}</span></span>
+                            <span>Created: <span className="text-zinc-500">{model.created_at.toLocaleString('en-US')}</span></span>
+                          </div>
+
+                          {/* action buttons */}
+                          <div className="flex items-center gap-2 pt-1">
+                            {model.status !== 'FAILED' && (
+                              <>
+                                <button
+                                  onClick={() => { setTrainingModel(model); setActiveSource('website'); }}
+                                  className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-[#cff45f] text-[#3a4a20] bg-[#cff45f]/10 hover:bg-[#cff45f]/30 transition-colors"
+                                >
+                                  <BrainCircuit size={13} /> Train
+                                </button>
+                                <Link
+                                  href={model.status === 'PENDING' ? '#' : `embed?siteId=${model.collection_name}&id=${model.id}&welcomeMessage=hi how can i assist you`}
+                                  className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-[#17221d] text-white hover:bg-[#2a3f33] transition-colors"
+                                >
+                                  Test agent
+                                </Link>
+                              </>
+                            )}
+                            <button
+                              onClick={() => handleDelete(model.id)}
+                              disabled={isDeleting}
+                              className="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 hover:bg-red-100 text-red-500 transition-colors disabled:opacity-40 shrink-0"
+                              title="Delete agent"
+                            >
+                              {isDeleting ? <LoaderCircle className="animate-spin" size={16} /> : <Trash2 size={16} />}
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    )
-                  }
-                </ul>
-              ) : (
-                <div className=' center gap-3 '>
-                  <p>no data found</p>
-                </div>
-              )
-            }
+                    ))}
+                  </div>
+                )}
+              </ul>
+            ) : (
+              <div className="flex items-center justify-center py-16 text-zinc-400 text-sm">
+                No data found
+              </div>
+            )}
           </div>
         )
-      )} 
+      )}
+
        <AnimatePresence>
         {trainingModel && (
           <>
