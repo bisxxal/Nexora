@@ -9,6 +9,43 @@ import { ArrowRight, ArrowUpRight, Bot, ChevronDown, Code2, Globe2, Menu, Play, 
 import { AnimatedBeamMultipleOutputDemo } from '@/components/ui/animated-beam-multiple-inputs';
 import Subscription from './(dashboard)/pricing/page';
 import {navItems,features, stats} from '@/lib/utils'
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell, Legend,
+} from 'recharts';
+
+const growthData = [
+  { month: 'Jan', conversations: 420 },
+  { month: 'Feb', conversations: 780 },
+  { month: 'Mar', conversations: 1100 },
+  { month: 'Apr', conversations: 1650 },
+  { month: 'May', conversations: 2300 },
+  { month: 'Jun', conversations: 3200 },
+  { month: 'Jul', conversations: 4800 },
+  { month: 'Aug', conversations: 6400 },
+  { month: 'Sep', conversations: 9100 },
+  { month: 'Oct', conversations: 13500 },
+  { month: 'Nov', conversations: 19800 },
+  { month: 'Dec', conversations: 28000 },
+];
+
+const topicData = [
+  { name: 'Product Q&A', value: 38, color: '#cff45f' },
+  { name: 'Onboarding', value: 24, color: '#ff9b7a' },
+  { name: 'Billing', value: 17, color: '#93c5fd' },
+  { name: 'Technical', value: 13, color: '#c4b5fd' },
+  { name: 'Other', value: 8, color: '#d9ddd4' },
+];
+
+const volumeData = [
+  { day: 'Mon', resolved: 310, escalated: 22 },
+  { day: 'Tue', resolved: 480, escalated: 31 },
+  { day: 'Wed', resolved: 520, escalated: 18 },
+  { day: 'Thu', resolved: 690, escalated: 42 },
+  { day: 'Fri', resolved: 820, escalated: 35 },
+  { day: 'Sat', resolved: 410, escalated: 14 },
+  { day: 'Sun', resolved: 290, escalated: 9 },
+];
 
 export default function Home() {
   const { data } = useSession();
@@ -112,9 +149,7 @@ export default function Home() {
       <AnimatedBeamMultipleOutputDemo />
       </div>
     </section>
-
-     
-
+ 
     <section className="story-section section-pad" id="platform">
       
       <div className="section-intro items-start! flex! flex-col!"> 
@@ -225,6 +260,77 @@ export default function Home() {
       </div>
     </section>
 
+     <section className="border-t border-[#d9ddd4] bg-[#f6f5ef] py-24 px-[max(6vw,32px)]" id="scale">
+      <motion.div
+        initial={{ opacity: 0, y: 36 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65, ease: 'easeOut' }}
+        viewport={{ once: true, amount: 0.2 }}
+        className="mb-12"
+      >
+         <h2 className='text-[#17221d] [text-shadow:_-3px_2px_1px_#0000004d] text-[clamp(42px,5vw,70px)] font-bold leading-[0.94] tracking-[-4px] mt-3 mb-4'>
+          Start small.
+          <br />
+          <em className='font-[Georgia] font-normal'>Grow without limits.</em>
+        </h2>
+        <p className="text-[#64716a] text-[17px] leading-relaxed max-w-[500px]">
+          From your first 500 conversations to 28 million — Nexora scales with zero rearchitecting.
+        </p>
+      </motion.div>
+
+       <div className="flex flex-wrap gap-4 mb-10">
+        {[['28k+', 'conversations / month at peak'], ['66×', 'growth in 12 months'], ['< 2 min', 'to add capacity']].map(([n, l]) => (
+          <motion.div
+            key={n}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            viewport={{ once: true }}
+            className="flex items-baseline gap-2 bg-white border border-[#d9ddd4] rounded-xl px-5 py-3 shadow-sm"
+          >
+            <span className="text-2xl font-black tracking-tight text-[#17221d]">{n}</span>
+            <span className="text-xs text-[#64716a]">{l}</span>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* area chart */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.15 }}
+        viewport={{ once: true }}
+        className="bg-white border border-[#d9ddd4] rounded-2xl p-6 shadow-[-4px_4px_0_#d9ddd4]"
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <p className="text-xs font-bold tracking-widest text-[#64716a]">CONVERSATION GROWTH</p>
+            <p className="text-sm text-[#64716a] mt-0.5">Jan – Dec, illustrative trajectory</p>
+          </div>
+          <span className="text-xs bg-[#cff45f] text-[#17221d] font-bold px-3 py-1 rounded-full">↑ 66× YoY</span>
+        </div>
+        <ResponsiveContainer width="100%" height={280}>
+          <AreaChart data={growthData} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
+            <defs>
+              <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#cff45f" stopOpacity={0.5} />
+                <stop offset="95%" stopColor="#cff45f" stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e8ebe4" vertical={false} />
+            <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64716a' }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 11, fill: '#64716a' }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? `${v/1000}k` : v} />
+            <Tooltip
+              contentStyle={{ background: '#17221d', border: 'none', borderRadius: 10, color: '#f6f5ef', fontSize: 12 }}
+              itemStyle={{ color: '#cff45f' }}
+              formatter={(v: number) => [`${v.toLocaleString()} convos`, '']}
+            />
+            <Area type="monotone" dataKey="conversations" stroke="#97b246" strokeWidth={2.5} fill="url(#growthGrad)" dot={false} activeDot={{ r: 5, fill: '#17221d' }} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </motion.div>
+    </section>
+
     <section className="impact relative ">
 
       <div className="absolute left-1/2 -translate-x-1/2 -translate-y-px top-0 z-0 flex h-16 w-full max-w-[min(700px,calc(100vw-2rem))] items-start justify-center">
@@ -326,6 +432,133 @@ export default function Home() {
     </section>
 
     <Subscription />
+
+     <section className="bg-[#17221d] py-24 px-[max(6vw,32px)]" id="monitoring">
+       <motion.div
+        initial={{ opacity: 0, y: 36 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.65 }}
+        viewport={{ once: true, amount: 0.2 }}
+        className="mb-14"
+      >
+        <span className="text-[11px] font-black tracking-[1.5px] text-[#cff45f] flex items-center gap-2 mb-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#cff45f] animate-pulse" />
+          LIVE MONITORING
+        </span>
+        <h2 className="text-[clamp(38px,5vw,68px)] font-bold leading-[0.94] tracking-[-4px] text-[#f6f5ef] mt-0 mb-4">
+          Know what your agent<br />
+          <em className="font-[Georgia] font-normal text-[#cff45f]">is doing, always.</em>
+        </h2>
+        <p className="text-[#b9c6bd] text-[16px] leading-relaxed max-w-[480px]">
+          Real-time dashboards for topic distribution, resolution rates, and
+          daily conversation volume — all in one view.
+        </p>
+      </motion.div>
+ 
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-6">
+ 
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="bg-[#1e2e27] border border-[#2e4038] rounded-2xl p-6"
+        >
+          <p className="text-xs font-bold tracking-widest text-[#b9c6bd] mb-0.5">TOPIC DISTRIBUTION</p>
+          <p className="text-sm text-[#788f83] mb-4">What your customers ask about</p>
+          <ResponsiveContainer width="100%" height={240}>
+            <PieChart>
+              <Pie
+                data={topicData}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={95}
+                paddingAngle={3}
+                dataKey="value"
+              >
+                {topicData.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} stroke="transparent" />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{ background: '#0f1a14', border: 'none', borderRadius: 10, color: '#f6f5ef', fontSize: 12 }}
+                formatter={(v: number) => [`${v}%`, '']}
+              />
+              <Legend
+                iconType="circle"
+                iconSize={8}
+                formatter={(value) => <span style={{ color: '#b9c6bd', fontSize: 12 }}>{value}</span>}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </motion.div>
+ 
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
+          className="bg-[#1e2e27] border border-[#2e4038] rounded-2xl p-6"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <p className="text-xs font-bold tracking-widest text-[#b9c6bd] mb-0.5">WEEKLY CONVERSATION VOLUME</p>
+              <p className="text-sm text-[#788f83]">Resolved vs escalated — last 7 days</p>
+            </div>
+            <div className="flex gap-4 text-xs text-[#788f83]">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#cff45f] inline-block" />Resolved</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#ff9b7a] inline-block" />Escalated</span>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={240}>
+            <AreaChart data={volumeData} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
+              <defs>
+                <linearGradient id="resolvedGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#cff45f" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#cff45f" stopOpacity={0.02} />
+                </linearGradient>
+                <linearGradient id="escalatedGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ff9b7a" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#ff9b7a" stopOpacity={0.02} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2e4038" vertical={false} />
+              <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#788f83' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: '#788f83' }} axisLine={false} tickLine={false} />
+              <Tooltip
+                contentStyle={{ background: '#0f1a14', border: 'none', borderRadius: 10, color: '#f6f5ef', fontSize: 12 }}
+                itemStyle={{ color: '#b9c6bd' }}
+              />
+              <Area type="monotone" dataKey="resolved" stroke="#97b246" strokeWidth={2} fill="url(#resolvedGrad)" dot={false} activeDot={{ r: 4, fill: '#cff45f' }} />
+              <Area type="monotone" dataKey="escalated" stroke="#b95645" strokeWidth={2} fill="url(#escalatedGrad)" dot={false} activeDot={{ r: 4, fill: '#ff9b7a' }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </motion.div>
+      </div>
+ 
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        {[
+          { label: 'Avg. response time', value: '1.2s', delta: '↓ 0.4s', good: true },
+          { label: 'Resolution rate', value: '94.3%', delta: '↑ 6.1%', good: true },
+          { label: 'Escalation rate', value: '5.7%', delta: '↓ 2.3%', good: true },
+          { label: 'CSAT score', value: '4.8/5', delta: '↑ 0.3', good: true },
+        ].map(({ label, value, delta, good }, i) => (
+          <motion.div
+            key={label}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.08 }}
+            viewport={{ once: true }}
+            className="bg-[#1e2e27] border border-[#2e4038] rounded-xl px-5 py-4"
+          >
+            <p className="text-xs text-[#788f83] mb-1">{label}</p>
+            <p className="text-2xl font-black tracking-tight text-[#f6f5ef]">{value}</p>
+            <p className={`text-xs font-bold mt-1 ${good ? 'text-[#cff45f]' : 'text-[#ff9b7a]'}`}>{delta} vs last week</p>
+          </motion.div>
+        ))}
+      </div>
+    </section>
 
     <section className="final-cta"  >
        <span className="eyebrow">YOUR TEAM IS READY</span>

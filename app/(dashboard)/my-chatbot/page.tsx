@@ -396,7 +396,7 @@ const MyChatBot = () => {
 
       )}
 
-      {/*   Agent Cards    */}
+      
       {viewMode === 'cards' && (
         isLoading ? (
           <Loading boxes={3} child={' h-[300px]  w-[500px] rounded-2xl '} parent={' !flex-row !flex-warp h-[400px] w-full '} />
@@ -478,13 +478,11 @@ const MyChatBot = () => {
             }
           </div>
         )
-      )}\n
-      {/* ─── Training Drawer ─── */}
-      <AnimatePresence>
+      )} 
+       <AnimatePresence>
         {trainingModel && (
           <>
-            {/* Backdrop */}
-            <motion.div
+             <motion.div
               key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -492,8 +490,7 @@ const MyChatBot = () => {
               onClick={() => setTrainingModel(null)}
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
             />
-            {/* Panel */}
-            <motion.div
+             <motion.div
               key="panel"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
